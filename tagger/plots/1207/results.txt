@@ -1,0 +1,200 @@
+** mode: btag
+total: 971995
+1 noAll: 522901 (53.8 %)
+2 yesPNet_noParT: 43382 (4.5 %)
+3 noPNet_yesParT: 17998 (1.9 %)
+4 yesAll: 387714 (39.9 %)
+- yesPNet: 431096 (44.4 %) ovl 89.9 %
+- yesParT: 405712 (41.7 %) ovl 95.6 %
+
+
+** mode: btag_bjet
+total: 474879
+1 noAll: 59047 (12.4 %)
+2 yesPNet_noParT: 20353 (4.3 %)
+3 noPNet_yesParT: 14356 (3.0 %)
+4 yesAll: 381123 (80.3 %)
+- yesPNet: 401476 (84.5 %) ovl 94.9 %
+- yesParT: 395479 (83.3 %) ovl 96.4 %
+
+
+** mode: btag_cjet
+total: 24905
+1 noAll: 19678 (79.0 %)
+2 yesPNet_noParT: 1805 (7.2 %)
+3 noPNet_yesParT: 896 (3.6 %)
+4 yesAll: 2526 (10.1 %)
+- yesPNet: 4331 (17.4 %) ovl 58.3 %
+- yesParT: 3422 (13.7 %) ovl 73.8 %
+
+
+** mode: btag_lfjet
+total: 472211
+1 noAll: 444176 (94.1 %)
+2 yesPNet_noParT: 21224 (4.5 %)
+3 noPNet_yesParT: 2746 (0.6 %)
+4 yesAll: 4065 (0.9 %)
+- yesPNet: 25289 (5.4 %) ovl 16.1 %
+- yesParT: 6811 (1.4 %) ovl 59.7 %
+
+
+** mode: PNetC
+total: 971995
+1 noAll: 2489 (0.3 %)
+2 yesPNet_noParT: 349482 (36.0 %)
+3 noPNet_yesParT: 327298 (33.7 %)
+4 yesAll: 292726 (30.1 %)
+- yesPNet: 642208 (66.1 %) ovl 45.6 %
+- yesParT: 620024 (63.8 %) ovl 47.2 %
+
+
+** mode: ParTC
+total: 971995
+1 noAll: 3925 (0.4 %)
+2 yesPNet_noParT: 337045 (34.7 %)
+3 noPNet_yesParT: 389897 (40.1 %)
+4 yesAll: 241128 (24.8 %)
+- yesPNet: 578173 (59.5 %) ovl 41.7 %
+- yesParT: 631025 (64.9 %) ovl 38.2 %
+
+
+** mode: PNetC_bjet
+total: 474879
+1 noAll: 61 (0.0 %)
+2 yesPNet_noParT: 340366 (71.7 %)
+3 noPNet_yesParT: 17678 (3.7 %)
+4 yesAll: 116774 (24.6 %)
+- yesPNet: 457140 (96.3 %) ovl 25.5 %
+- yesParT: 134452 (28.3 %) ovl 86.9 %
+
+
+** mode: ParTC_bjet
+total: 474879
+1 noAll: 3390 (0.7 %)
+2 yesPNet_noParT: 334395 (70.4 %)
+3 noPNet_yesParT: 21191 (4.5 %)
+4 yesAll: 115903 (24.4 %)
+- yesPNet: 450298 (94.8 %) ovl 25.7 %
+- yesParT: 137094 (28.9 %) ovl 84.5 %
+
+
+** mode: PNetC_cjet
+total: 24905
+1 noAll: 28 (0.1 %)
+2 yesPNet_noParT: 1365 (5.5 %)
+3 noPNet_yesParT: 9181 (36.9 %)
+4 yesAll: 14331 (57.5 %)
+- yesPNet: 15696 (63.0 %) ovl 91.3 %
+- yesParT: 23512 (94.4 %) ovl 61.0 %
+
+
+** mode: ParTC_cjet
+total: 24905
+1 noAll: 10 (0.0 %)
+2 yesPNet_noParT: 849 (3.4 %)
+3 noPNet_yesParT: 9907 (39.8 %)
+4 yesAll: 14139 (56.8 %)
+- yesPNet: 14988 (60.2 %) ovl 94.3 %
+- yesParT: 24046 (96.6 %) ovl 58.8 %
+
+
+** mode: PNetC_lfjet
+total: 472211
+1 noAll: 2400 (0.5 %)
+2 yesPNet_noParT: 7751 (1.6 %)
+3 noPNet_yesParT: 300439 (63.6 %)
+4 yesAll: 161621 (34.2 %)
+- yesPNet: 169372 (35.9 %) ovl 95.4 %
+- yesParT: 462060 (97.9 %) ovl 35.0 %
+
+
+** mode: ParTC_lfjet
+total: 472211
+1 noAll: 525 (0.1 %)
+2 yesPNet_noParT: 1801 (0.4 %)
+3 noPNet_yesParT: 358799 (76.0 %)
+4 yesAll: 111086 (23.5 %)
+- yesPNet: 112887 (23.9 %) ovl 98.4 %
+- yesParT: 469885 (99.5 %) ovl 23.6 %
+
+
+** mode: PNetC_ParTctagged
+total: 241128
+1 noAll: 144 (0.1 %)
+2 yesPNet_noParT: 28795 (11.9 %)
+3 noPNet_yesParT: 37518 (15.6 %)
+4 yesAll: 174671 (72.4 %)
+- yesPNet: 203466 (84.4 %) ovl 85.8 %
+- yesParT: 212189 (88.0 %) ovl 82.3 %
+
+
+** mode: ParTC_PNetctagged
+total: 292726
+1 noAll: 515 (0.2 %)
+2 yesPNet_noParT: 24910 (8.5 %)
+3 noPNet_yesParT: 92630 (31.6 %)
+4 yesAll: 174671 (59.7 %)
+- yesPNet: 199581 (68.2 %) ovl 87.5 %
+- yesParT: 267301 (91.3 %) ovl 65.3 %
+
+
+** mode: PNetC_ParTctagged_bjet
+total: 115903
+1 noAll: 16 (0.0 %)
+2 yesPNet_noParT: 25692 (22.2 %)
+3 noPNet_yesParT: 4446 (3.8 %)
+4 yesAll: 85749 (74.0 %)
+- yesPNet: 111441 (96.2 %) ovl 76.9 %
+- yesParT: 90195 (77.8 %) ovl 95.1 %
+
+
+** mode: ParTC_PNetctagged_bjet
+total: 116774
+1 noAll: 314 (0.3 %)
+2 yesPNet_noParT: 23797 (20.4 %)
+3 noPNet_yesParT: 6914 (5.9 %)
+4 yesAll: 85749 (73.4 %)
+- yesPNet: 109546 (93.8 %) ovl 78.3 %
+- yesParT: 92663 (79.4 %) ovl 92.5 %
+
+
+** mode: PNetC_ParTctagged_cjet
+total: 14139
+1 noAll: 3 (0.0 %)
+2 yesPNet_noParT: 685 (4.8 %)
+3 noPNet_yesParT: 1641 (11.6 %)
+4 yesAll: 11810 (83.5 %)
+- yesPNet: 12495 (88.4 %) ovl 94.5 %
+- yesParT: 13451 (95.1 %) ovl 87.8 %
+
+
+** mode: ParTC_PNetctagged_cjet
+total: 14331
+1 noAll: 5 (0.0 %)
+2 yesPNet_noParT: 292 (2.0 %)
+3 noPNet_yesParT: 2224 (15.5 %)
+4 yesAll: 11810 (82.4 %)
+- yesPNet: 12102 (84.4 %) ovl 97.6 %
+- yesParT: 14034 (97.9 %) ovl 84.2 %
+
+
+** mode: PNetC_ParTctagged_lfjet
+total: 111086
+1 noAll: 125 (0.1 %)
+2 yesPNet_noParT: 2418 (2.2 %)
+3 noPNet_yesParT: 31431 (28.3 %)
+4 yesAll: 77112 (69.4 %)
+- yesPNet: 79530 (71.6 %) ovl 97.0 %
+- yesParT: 108543 (97.7 %) ovl 71.0 %
+
+
+** mode: ParTC_PNetctagged_lfjet
+total: 161621
+1 noAll: 196 (0.1 %)
+2 yesPNet_noParT: 821 (0.5 %)
+3 noPNet_yesParT: 83492 (51.7 %)
+4 yesAll: 77112 (47.7 %)
+- yesPNet: 77933 (48.2 %) ovl 98.9 %
+- yesParT: 160604 (99.4 %) ovl 48.0 %
+
+
