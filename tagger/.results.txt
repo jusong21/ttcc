@@ -1,0 +1,200 @@
+** mode: btag
+total: 208713
+1 noAll: 135663 (65.0 %)
+2 yesPNet_noParT: 8502 (4.1 %)
+3 noPNet_yesParT: 2966 (1.4 %)
+4 yesAll: 61582 (29.5 %)
+- yesPNet: 70084 (33.6 %)ovl 1 %
+- yesParT: 64548 (30.9 %)ovl 1 %
+
+
+** mode: btag_bjet
+total: 76169
+1 noAll: 9877 (13.0 %)
+2 yesPNet_noParT: 3393 (4.5 %)
+3 noPNet_yesParT: 2413 (3.2 %)
+4 yesAll: 60486 (79.4 %)
+- yesPNet: 63879 (83.9 %)ovl 1 %
+- yesParT: 62899 (82.6 %)ovl 1 %
+
+
+** mode: btag_cjet
+total: 4495
+1 noAll: 3674 (81.7 %)
+2 yesPNet_noParT: 292 (6.5 %)
+3 noPNet_yesParT: 137 (3.0 %)
+4 yesAll: 392 (8.7 %)
+- yesPNet: 684 (15.2 %)ovl 1 %
+- yesParT: 529 (11.8 %)ovl 1 %
+
+
+** mode: btag_lfjet
+total: 128049
+1 noAll: 122112 (95.4 %)
+2 yesPNet_noParT: 4817 (3.8 %)
+3 noPNet_yesParT: 416 (0.3 %)
+4 yesAll: 704 (0.5 %)
+- yesPNet: 5521 (4.3 %)ovl 0 %
+- yesParT: 1120 (0.9 %)ovl 1 %
+
+
+** mode: PNetC
+total: 208713
+1 noAll: 589 (0.3 %)
+2 yesPNet_noParT: 55731 (26.7 %)
+3 noPNet_yesParT: 67121 (32.2 %)
+4 yesAll: 85272 (40.9 %)
+- yesPNet: 141003 (67.6 %)ovl 1 %
+- yesParT: 152393 (73.0 %)ovl 1 %
+
+
+** mode: ParTC
+total: 208713
+1 noAll: 696 (0.3 %)
+2 yesPNet_noParT: 53514 (25.6 %)
+3 noPNet_yesParT: 115956 (55.6 %)
+4 yesAll: 38547 (18.5 %)
+- yesPNet: 92061 (44.1 %)ovl 0 %
+- yesParT: 154503 (74.0 %)ovl 0 %
+
+
+** mode: PNetC_bjet
+total: 76169
+1 noAll: 7 (0.0 %)
+2 yesPNet_noParT: 54081 (71.0 %)
+3 noPNet_yesParT: 2942 (3.9 %)
+4 yesAll: 19139 (25.1 %)
+- yesPNet: 73220 (96.1 %)ovl 0 %
+- yesParT: 22081 (29.0 %)ovl 1 %
+
+
+** mode: ParTC_bjet
+total: 76169
+1 noAll: 593 (0.8 %)
+2 yesPNet_noParT: 53070 (69.7 %)
+3 noPNet_yesParT: 3676 (4.8 %)
+4 yesAll: 18830 (24.7 %)
+- yesPNet: 71900 (94.4 %)ovl 0 %
+- yesParT: 22506 (29.5 %)ovl 1 %
+
+
+** mode: PNetC_cjet
+total: 4495
+1 noAll: 7 (0.2 %)
+2 yesPNet_noParT: 230 (5.1 %)
+3 noPNet_yesParT: 1691 (37.6 %)
+4 yesAll: 2567 (57.1 %)
+- yesPNet: 2797 (62.2 %)ovl 1 %
+- yesParT: 4258 (94.7 %)ovl 1 %
+
+
+** mode: ParTC_cjet
+total: 4495
+1 noAll: 1 (0.0 %)
+2 yesPNet_noParT: 131 (2.9 %)
+3 noPNet_yesParT: 2105 (46.8 %)
+4 yesAll: 2258 (50.2 %)
+- yesPNet: 2389 (53.1 %)ovl 1 %
+- yesParT: 4363 (97.1 %)ovl 1 %
+
+
+** mode: PNetC_lfjet
+total: 128049
+1 noAll: 575 (0.4 %)
+2 yesPNet_noParT: 1420 (1.1 %)
+3 noPNet_yesParT: 62488 (48.8 %)
+4 yesAll: 63566 (49.6 %)
+- yesPNet: 64986 (50.8 %)ovl 1 %
+- yesParT: 126054 (98.4 %)ovl 1 %
+
+
+** mode: ParTC_lfjet
+total: 128049
+1 noAll: 102 (0.1 %)
+2 yesPNet_noParT: 313 (0.2 %)
+3 noPNet_yesParT: 110175 (86.0 %)
+4 yesAll: 17459 (13.6 %)
+- yesPNet: 17772 (13.9 %)ovl 1 %
+- yesParT: 127634 (99.7 %)ovl 0 %
+
+
+** mode: PNetC_ParTctagged
+total: 38547
+1 noAll: 14 (0.0 %)
+2 yesPNet_noParT: 4670 (12.1 %)
+3 noPNet_yesParT: 6130 (15.9 %)
+4 yesAll: 27733 (71.9 %)
+- yesPNet: 32403 (84.1 %)ovl 1 %
+- yesParT: 33863 (87.8 %)ovl 1 %
+
+
+** mode: ParTC_PNetctagged
+total: 85272
+1 noAll: 107 (0.1 %)
+2 yesPNet_noParT: 4025 (4.7 %)
+3 noPNet_yesParT: 53407 (62.6 %)
+4 yesAll: 27733 (32.5 %)
+- yesPNet: 31758 (37.2 %)ovl 1 %
+- yesParT: 81140 (95.2 %)ovl 0 %
+
+
+** mode: PNetC_ParTctagged_bjet
+total: 18830
+1 noAll: 2 (0.0 %)
+2 yesPNet_noParT: 4149 (22.0 %)
+3 noPNet_yesParT: 731 (3.9 %)
+4 yesAll: 13948 (74.1 %)
+- yesPNet: 18097 (96.1 %)ovl 1 %
+- yesParT: 14679 (78.0 %)ovl 1 %
+
+
+** mode: ParTC_PNetctagged_bjet
+total: 19139
+1 noAll: 71 (0.4 %)
+2 yesPNet_noParT: 3840 (20.1 %)
+3 noPNet_yesParT: 1280 (6.7 %)
+4 yesAll: 13948 (72.9 %)
+- yesPNet: 17788 (92.9 %)ovl 1 %
+- yesParT: 15228 (79.6 %)ovl 1 %
+
+
+** mode: PNetC_ParTctagged_cjet
+total: 2258
+1 noAll: 1 (0.0 %)
+2 yesPNet_noParT: 132 (5.8 %)
+3 noPNet_yesParT: 266 (11.8 %)
+4 yesAll: 1859 (82.3 %)
+- yesPNet: 1991 (88.2 %)ovl 1 %
+- yesParT: 2125 (94.1 %)ovl 1 %
+
+
+** mode: ParTC_PNetctagged_cjet
+total: 2567
+1 noAll: 0 (0.0 %)
+2 yesPNet_noParT: 48 (1.9 %)
+3 noPNet_yesParT: 660 (25.7 %)
+4 yesAll: 1859 (72.4 %)
+- yesPNet: 1907 (74.3 %)ovl 1 %
+- yesParT: 2519 (98.1 %)ovl 1 %
+
+
+** mode: PNetC_ParTctagged_lfjet
+total: 17459
+1 noAll: 11 (0.1 %)
+2 yesPNet_noParT: 389 (2.2 %)
+3 noPNet_yesParT: 5133 (29.4 %)
+4 yesAll: 11926 (68.3 %)
+- yesPNet: 12315 (70.5 %)ovl 1 %
+- yesParT: 17059 (97.7 %)ovl 1 %
+
+
+** mode: ParTC_PNetctagged_lfjet
+total: 63566
+1 noAll: 36 (0.1 %)
+2 yesPNet_noParT: 137 (0.2 %)
+3 noPNet_yesParT: 51467 (81.0 %)
+4 yesAll: 11926 (18.8 %)
+- yesPNet: 12063 (19.0 %)ovl 1 %
+- yesParT: 63393 (99.7 %)ovl 0 %
+
+
