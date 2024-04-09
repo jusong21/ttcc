@@ -1,1 +1,0 @@
-/user/jusong/analysis/ttcc/b-hive/hlt_test/test.root
