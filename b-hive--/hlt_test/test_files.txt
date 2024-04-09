@@ -1,2 +1,0 @@
-/user/jusong/analysis/ttcc/b-hive/hlt_test/TT_inclusive_01.root
-/user/jusong/analysis/ttcc/b-hive/hlt_test/QCD_120_170.root
