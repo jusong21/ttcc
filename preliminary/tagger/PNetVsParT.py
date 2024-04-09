@@ -52,11 +52,11 @@ def draw_plots( xval, yval, xcut, ycut, out ):
 		h.SetMarkerSize(2.5)
 		info = yval+':'+xval+'>>'+name
 
-		if 'resp' in name:
-			c2.cd()
-			tree.Draw(info, cut, 'colz text')
-			c2.Print(out+'_resp.pdf')
-			c2.Clear()
+#		if 'resp' in name:
+#			c2.cd()
+#			tree.Draw(info, cut, 'colz text')
+#			c2.Print(out+'_resp.pdf')
+#			c2.Clear()
 
 		if 'pass' in xval: continue
 		if 'scat' in name:
@@ -69,23 +69,37 @@ def draw_plots( xval, yval, xcut, ycut, out ):
 			lx.SetLineWidth(3)
 			ly.SetLineColor(kBlue)
 			ly.SetLineWidth(3)
-			lx.Draw()
-			ly.Draw()
+			#lx.Draw()
+			#ly.Draw()
+			lz = TLine(0, 0, 1, 1)
+			lz.SetLineColor(kRed)
+			lz.SetLineWidth(2)
+			lz.Draw()
 
 			c1.Print(out+'_scat.pdf')
 			c1.Clear()
 
-		if 'lego' in name:
-			c2.cd()
-			tree.Draw(info, cut, 'colz')
-			c2.Print(out+'_lego.pdf')
-			c2.Clear()
+#		if 'lego' in name:
+#			c2.cd()
+#			tree.Draw(info, cut, 'colz')
+#			c2.Print(out+'_lego.pdf')
+#			c2.Clear()
 
 
 #draw_plots('Jet_btagPNetB', 'Jet_btagRobustParTAK4B', btagPNetB, btagParTB, 'h_alljet_btag')
 #draw_plots('Jet_btagPNetB', 'Jet_btagRobustParTAK4B', btagPNetB, btagParTB, 'h_bjet_btag')
 #draw_plots('Jet_btagPNetB', 'Jet_btagRobustParTAK4B', btagPNetB, btagParTB, 'h_cjet_btag')
-draw_plots('Jet_btagPNetB', 'Jet_btagRobustParTAK4B', btagPNetB, btagParTB, 'h_lfjet_btag')
+#draw_plots('Jet_btagPNetB', 'Jet_btagRobustParTAK4B', btagPNetB, btagParTB, 'h_lfjet_btag')
+
+draw_plots('Jet_btagPNetCvL', 'Jet_btagRobustParTAK4CvL', btagPNetCvL, btagParTCvL, 'h_alljet_CvL')
+draw_plots('Jet_btagPNetCvL', 'Jet_btagRobustParTAK4CvL', btagPNetCvL, btagParTCvL, 'h_bjet_CvL')
+draw_plots('Jet_btagPNetCvL', 'Jet_btagRobustParTAK4CvL', btagPNetCvL, btagParTCvL, 'h_cjet_CvL')
+draw_plots('Jet_btagPNetCvL', 'Jet_btagRobustParTAK4CvL', btagPNetCvL, btagParTCvL, 'h_lfjet_CvL')
+
+draw_plots('Jet_btagPNetCvB', 'Jet_btagRobustParTAK4CvB', btagPNetCvB, btagParTCvB, 'h_alljet_CvB')
+draw_plots('Jet_btagPNetCvB', 'Jet_btagRobustParTAK4CvB', btagPNetCvB, btagParTCvB, 'h_bjet_CvB')
+draw_plots('Jet_btagPNetCvB', 'Jet_btagRobustParTAK4CvB', btagPNetCvB, btagParTCvB, 'h_cjet_CvB')
+draw_plots('Jet_btagPNetCvB', 'Jet_btagRobustParTAK4CvB', btagPNetCvB, btagParTCvB, 'h_lfjet_CvB')
 
 
 #draw_plots('Jet_btagPNetCvL', 'Jet_btagPNetCvB', btagPNetCvL, btagPNetCvB, 'h_alljet_PNet_ctag')
@@ -98,9 +112,9 @@ draw_plots('Jet_btagPNetB', 'Jet_btagRobustParTAK4B', btagPNetB, btagParTB, 'h_l
 #draw_plots('Jet_btagRobustParTAK4CvL', 'Jet_btagRobustParTAK4CvB', btagParTCvL, btagParTCvB, 'h_cjet_ParT_ctag')
 #draw_plots('Jet_btagRobustParTAK4CvL', 'Jet_btagRobustParTAK4CvB', btagParTCvL, btagParTCvB, 'h_lfjet_ParT_ctag')
 
-draw_plots('Jet_PNetCpass', 'Jet_ParTCpass', 3, 3, 'h_bjet_ctagged')
-draw_plots('Jet_PNetCpass', 'Jet_ParTCpass', 3, 3, 'h_cjet_ctagged')
-draw_plots('Jet_PNetCpass', 'Jet_ParTCpass', 3, 3, 'h_lfjet_ctagged')
+#draw_plots('Jet_PNetCpass', 'Jet_ParTCpass', 3, 3, 'h_bjet_ctagged')
+#draw_plots('Jet_PNetCpass', 'Jet_ParTCpass', 3, 3, 'h_cjet_ctagged')
+#draw_plots('Jet_PNetCpass', 'Jet_ParTCpass', 3, 3, 'h_lfjet_ctagged')
 
 ###from datetime import datetime
 ###txt = open('results.txt', 'a')
