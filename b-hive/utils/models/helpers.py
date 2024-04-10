@@ -38,59 +38,55 @@ class InputProcess(nn.Module):
     def __init__(self, **kwargs):
         super(InputProcess, self).__init__(**kwargs)
 
-        self.cpf_bn = torch.nn.BatchNorm1d(16, eps=0.001, momentum=0.6)
-        self.cpf_conv1 = InputConv(16, 64)
-        self.cpf_conv2 = InputConv(64, 32)
-        self.cpf_conv3 = InputConv(32, 32)
-        self.cpf_conv4 = InputConv(32, 8)
+		# (n_var, eps, momentum)
+        self.jet_bn = torch.nn.BatchNorm1d(6, eps=0.001, momentum=0.6)
+        self.jet_conv1 = InputConv(6, 32)
+        self.jet_conv2 = InputConv(32, 16)
+        self.jet_conv3 = InputConv(16, 4)
 
-        self.npf_bn = torch.nn.BatchNorm1d(6, eps=0.001, momentum=0.6)
-        self.npf_conv1 = InputConv(6, 32)
-        self.npf_conv2 = InputConv(32, 16)
-        self.npf_conv3 = InputConv(16, 4)
+    def forward(self, jet):
+#        cpf = self.cpf_bn(torch.transpose(cpf, 1, 2))
+#        cpf = self.cpf_conv1(cpf)
+#        cpf = self.cpf_conv2(cpf)
+#        cpf = self.cpf_conv3(cpf)
+#        cpf = self.cpf_conv4(cpf, norm=False)
+#        cpf = torch.transpose(cpf, 1, 2)
+#
+#        npf = self.npf_bn(torch.transpose(npf, 1, 2))
+#        npf = self.npf_conv1(npf)
+#        npf = self.npf_conv2(npf)
+#        npf = self.npf_conv3(npf, norm=False)
+#        npf = torch.transpose(npf, 1, 2)
+#
+#        vtx = self.vtx_bn(torch.transpose(vtx, 1, 2))
+#        vtx = self.vtx_conv1(vtx)
+#        vtx = self.vtx_conv2(vtx)
+#        vtx = self.vtx_conv3(vtx)
+#        vtx = self.vtx_conv4(vtx, norm=False)
+#        vtx = torch.transpose(vtx, 1, 2)
 
-        self.vtx_bn = torch.nn.BatchNorm1d(12, eps=0.001, momentum=0.6)
-        self.vtx_conv1 = InputConv(12, 64)
-        self.vtx_conv2 = InputConv(64, 32)
-        self.vtx_conv3 = InputConv(32, 32)
-        self.vtx_conv4 = InputConv(32, 8)
+        jet = self.jet_bn(torch.transpose(jet, 1, 2))
+        jet = self.jet_conv1(jet)
+        jet = self.jet_conv2(jet)
+        jet = self.jet_conv3(jet, norm=False)
+        jet = torch.transpose(jet, 1, 2)
 
-    def forward(self, cpf, npf, vtx):
-        cpf = self.cpf_bn(torch.transpose(cpf, 1, 2))
-        cpf = self.cpf_conv1(cpf)
-        cpf = self.cpf_conv2(cpf)
-        cpf = self.cpf_conv3(cpf)
-        cpf = self.cpf_conv4(cpf, norm=False)
-        cpf = torch.transpose(cpf, 1, 2)
-
-        npf = self.npf_bn(torch.transpose(npf, 1, 2))
-        npf = self.npf_conv1(npf)
-        npf = self.npf_conv2(npf)
-        npf = self.npf_conv3(npf, norm=False)
-        npf = torch.transpose(npf, 1, 2)
-
-        vtx = self.vtx_bn(torch.transpose(vtx, 1, 2))
-        vtx = self.vtx_conv1(vtx)
-        vtx = self.vtx_conv2(vtx)
-        vtx = self.vtx_conv3(vtx)
-        vtx = self.vtx_conv4(vtx, norm=False)
-        vtx = torch.transpose(vtx, 1, 2)
-
-        return cpf, npf, vtx
+        #return cpf, npf, vtx
+        return jet
 
 
 class DenseClassifier(nn.Module):
     def __init__(self, **kwargs):
         super(DenseClassifier, self).__init__(**kwargs)
 
-        self.LinLayer1 = LinLayer(265, 200)
-        self.LinLayer2 = LinLayer(200, 100)
-        self.LinLayer3 = LinLayer(100, 100)
-        self.LinLayer4 = LinLayer(100, 100)
-        self.LinLayer5 = LinLayer(100, 100)
-        self.LinLayer6 = LinLayer(100, 100)
-        self.LinLayer7 = LinLayer(100, 100)
-        self.LinLayer8 = LinLayer(100, 100)
+        self.LinLayer1 = LinLayer(53, 50)
+        self.LinLayer2 = LinLayer(50, 25)
+        self.LinLayer3 = LinLayer(25, 25)
+        self.LinLayer4 = LinLayer(25, 25)
+        self.LinLayer5 = LinLayer(25, 25)
+        self.LinLayer6 = LinLayer(25, 25)
+        self.LinLayer7 = LinLayer(25, 25)
+        self.LinLayer8 = LinLayer(25, 25)
 
     def forward(self, x):
         x = self.LinLayer1(x)

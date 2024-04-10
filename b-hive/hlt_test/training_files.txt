@@ -1,1 +1,1 @@
-/user/jusong/analysis/ttcc/b-hive/hlt_test/test.root
+/user/jusong/analysis/ttcc/b-hive/hlt_test/TT_inclusive_02.root
