@@ -3,6 +3,7 @@
 *.coffea
 
 preliminary/tagger/rootfiles/
+preliminary/tagger/skimmed/
 
 BTVNanoCommissioning/runinfo/
 BTVNanoCommissioning/plot/
