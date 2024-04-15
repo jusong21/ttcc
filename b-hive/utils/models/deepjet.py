@@ -20,6 +20,7 @@ from rich.progress import (
 
 class DeepJet(Classifier, nn.Module):
 	n_jet = 4
+	n_lepton = 2
 	datasetClass = DeepJetDataset
 	optimizerClass = torch.optim.Adam
 
@@ -44,6 +45,12 @@ class DeepJet(Classifier, nn.Module):
 		"Jet_drLep2",
 	]
 
+	lepton_features = [
+		"Lepton_pt",
+		"Lepton_eta",
+		"Lepton_phi",
+		"Lepton_mass",
+	]
 	def __init__(self, feature_edges=[15, 415, 565, 613], **kwargs):
 		super(DeepJet, self).__init__(**kwargs)
 
@@ -56,21 +63,30 @@ class DeepJet(Classifier, nn.Module):
 			input_size=4, hidden_size=50, num_layers=1, batch_first=True
 		) #input_size should be the same as final conv
 
+		self.lepton_lstm = torch.nn.LSTM(
+			input_size=4, hidden_size=50, num_layers=1, batch_first=True
+		) #input_size should be the same as final conv
+
 		self.jet_bn = torch.nn.BatchNorm1d(50, eps=0.001, momentum=0.6)
+		self.lepton_bn = torch.nn.BatchNorm1d(50, eps=0.001, momentum=0.6)
 
 		self.jet_dropout = nn.Dropout(0.1)
+		self.lepton_dropout = nn.Dropout(0.1)
 
 		#self.Linear = nn.Linear(100, len(self.classes))
 		self.Linear = nn.Linear(25, len(self.classes))
 
-	def forward(self, global_features, jet_features):
+	def forward(self, global_features, jet_features, lepton_features):
 		global_features = self.global_bn(global_features)
 
-		jet = self.InputProcess(jet_features)
+		jet, lepton = self.InputProcess(jet_features, lepton_features)
 		jet = self.jet_lstm(torch.flip(jet, dims=[1]))[0][:, -1]
 		jet = self.jet_dropout(self.jet_bn(jet))
 
-		fts = torch.cat((global_features, jet), dim=1)
+		lepton = self.lepton_lstm(torch.flip(lepton, dims=[1]))[0][:, -1]
+		lepton = self.lepton_dropout(self.lepton_bn(lepton))
+
+		fts = torch.cat((global_features, jet, lepton), dim=1)
 		fts = self.DenseClassifier(fts)
 
 		output = self.Linear(fts)
@@ -156,6 +172,7 @@ class DeepJet(Classifier, nn.Module):
 		for (
 			global_features,
 			jet_features,
+			lepton_features,
 			truth,
 			weight,
 			process,
@@ -169,6 +186,7 @@ class DeepJet(Classifier, nn.Module):
 						for feature in [
 							global_features,
 							jet_features,
+							lepton_features,
 						]
 					]
 				)
@@ -211,6 +229,7 @@ class DeepJet(Classifier, nn.Module):
 			for (
 				global_features,
 				jet_features,
+				lepton_features,
 				truth,
 				weight,
 				process,
@@ -224,6 +243,7 @@ class DeepJet(Classifier, nn.Module):
 							for feature in [
 								global_features,
 								jet_features,
+								lepton_features,
 							]
 						]
 					)
@@ -290,6 +310,7 @@ class DeepJet(Classifier, nn.Module):
 			for (
 				global_features,
 				jet_features,
+				lepton_features,
 				truth,
 				weight,
 				process,
@@ -301,6 +322,7 @@ class DeepJet(Classifier, nn.Module):
 							for feature in [
 								global_features,
 								jet_features,
+								lepton_features,
 							]
 						]
 					)
@@ -384,6 +406,7 @@ class DeepJet(Classifier, nn.Module):
 
 class DeepJetHLT(DeepJet):
 	n_jet = 4
+	n_lepton = 2
 	global_features = [
 		"nJet",
 		"nbJet",
@@ -396,4 +419,10 @@ class DeepJetHLT(DeepJet):
 		"Jet_mass",
 		"Jet_drLep1",
 		"Jet_drLep2",
+	]
+	lepton_features = [
+		"Lepton_pt",
+		"Lepton_eta",
+		"Lepton_phi",
+		"Lepton_mass",
 	]

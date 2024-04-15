@@ -44,26 +44,12 @@ class InputProcess(nn.Module):
         self.jet_conv2 = InputConv(32, 16)
         self.jet_conv3 = InputConv(16, 4)
 
-    def forward(self, jet):
-#        cpf = self.cpf_bn(torch.transpose(cpf, 1, 2))
-#        cpf = self.cpf_conv1(cpf)
-#        cpf = self.cpf_conv2(cpf)
-#        cpf = self.cpf_conv3(cpf)
-#        cpf = self.cpf_conv4(cpf, norm=False)
-#        cpf = torch.transpose(cpf, 1, 2)
-#
-#        npf = self.npf_bn(torch.transpose(npf, 1, 2))
-#        npf = self.npf_conv1(npf)
-#        npf = self.npf_conv2(npf)
-#        npf = self.npf_conv3(npf, norm=False)
-#        npf = torch.transpose(npf, 1, 2)
-#
-#        vtx = self.vtx_bn(torch.transpose(vtx, 1, 2))
-#        vtx = self.vtx_conv1(vtx)
-#        vtx = self.vtx_conv2(vtx)
-#        vtx = self.vtx_conv3(vtx)
-#        vtx = self.vtx_conv4(vtx, norm=False)
-#        vtx = torch.transpose(vtx, 1, 2)
+        self.lepton_bn = torch.nn.BatchNorm1d(4, eps=0.001, momentum=0.6)
+        self.lepton_conv1 = InputConv(4, 32)
+        self.lepton_conv2 = InputConv(32, 16)
+        self.lepton_conv3 = InputConv(16, 4)
+
+    def forward(self, jet, lepton):
 
         jet = self.jet_bn(torch.transpose(jet, 1, 2))
         jet = self.jet_conv1(jet)
@@ -71,15 +57,21 @@ class InputProcess(nn.Module):
         jet = self.jet_conv3(jet, norm=False)
         jet = torch.transpose(jet, 1, 2)
 
+        lepton = self.lepton_bn(torch.transpose(lepton, 1, 2))
+        lepton = self.lepton_conv1(lepton)
+        lepton = self.lepton_conv2(lepton)
+        lepton = self.lepton_conv3(lepton, norm=False)
+        lepton = torch.transpose(lepton, 1, 2)
+
         #return cpf, npf, vtx
-        return jet
+        return jet, lepton
 
 
 class DenseClassifier(nn.Module):
     def __init__(self, **kwargs):
         super(DenseClassifier, self).__init__(**kwargs)
 
-        self.LinLayer1 = LinLayer(53, 50)
+        self.LinLayer1 = LinLayer(103, 50)
         self.LinLayer2 = LinLayer(50, 25)
         self.LinLayer3 = LinLayer(25, 25)
         self.LinLayer4 = LinLayer(25, 25)

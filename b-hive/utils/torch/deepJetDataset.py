@@ -88,7 +88,7 @@ class DeepJetDataset(IterableDataset):
 				truths = np.ones(len(data["truth"]))
 				# this is not nice at all but here we are...
 				for index, (name, flavours) in enumerate(self.model.classes.items()):
-					print('name:', name, ' flavours:', flavours)
+					#print('name:', name, ' flavours:', flavours)
 					for flav in flavours:
 						truths[data["truth"][flav]] = index
 				truths = truths[mask]
@@ -99,9 +99,7 @@ class DeepJetDataset(IterableDataset):
 				"""
 				global_arrs = data["global_features"][mask][self.model.global_features]
 				jet_arrs = data["jet_features"][mask][self.model.jet_features]
-#				cpf_arrs = data["cpf_arr"][mask][self.model.cpf_candidates]
-#				npf_arrs = data["npf_arr"][mask][self.model.npf_candidates]
-#				vtx_arrs = data["vtx_arr"][mask][self.model.vtx_features]
+				lepton_arrs = data["lepton_features"][mask][self.model.lepton_features]
 
 				N = len(global_arrs)
 				global_arrs = recfunctions.structured_to_unstructured(global_arrs)
@@ -111,47 +109,30 @@ class DeepJetDataset(IterableDataset):
 					.reshape(N, len(jet_arrs.dtype.names), -1)
 					.transpose(0, 2, 1)
 				)
-#				cpf_arrs = (
-#					recfunctions.structured_to_unstructured(cpf_arrs)
-#					.reshape(N, len(cpf_arrs.dtype.names), -1)
-#					.transpose(0, 2, 1)
-#				)
-#				npf_arrs = (
-#					recfunctions.structured_to_unstructured(npf_arrs)
-#					.reshape(N, len(npf_arrs.dtype.names), -1)
-#					.transpose(0, 2, 1)
-#				)
-#				vtx_arrs = (
-#					recfunctions.structured_to_unstructured(vtx_arrs)
-#					.reshape(N, len(vtx_arrs.dtype.names), -1)
-#					.transpose(0, 2, 1)
-#				)
+				lepton_arrs = (
+					recfunctions.structured_to_unstructured(lepton_arrs)
+					.reshape(N, len(lepton_arrs.dtype.names), -1)
+					.transpose(0, 2, 1)
+				)
 				for (
 					global_arr,
 					jet_arr,
-#					cpf_arr,
-#					npf_arr,
-#					vtx_arr,
+					lepton_arr,
 					truth,
 					weight,
 					process,
 				) in zip(
 					global_arrs,
 					jet_arrs,
-#					cpf_arrs,
-#					npf_arrs,
-#					vtx_arrs,
+					lepton_arrs,
 					truths,
 					weights,
 					processes,
 				):
 					# trim down to number of candidates
 					jet_arr = jet_arr[: self.model.n_jet]
-#					cpf_arr = cpf_arr[: self.model.n_cpf]
-#					npf_arr = npf_arr[: self.model.n_npf]
-#					vtx_arr = vtx_arr[: self.model.n_vtx]
-					#yield global_arr, cpf_arr, npf_arr, vtx_arr, truth, weight, process
-					yield global_arr, jet_arr, truth, weight, process
+					lepton_arr = lepton_arr[: self.model.n_lepton]
+					yield global_arr, jet_arr, lepton_arr, truth, weight, process
 		return None
 
 	def get_all_weights(self):

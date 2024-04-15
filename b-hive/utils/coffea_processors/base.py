@@ -9,6 +9,7 @@ from coffea import processor
 
 class DataPreprocessing_BaseClass(processor.ProcessorABC):
 	n_jet = 4
+	n_lepton = 2
 #	n_cpf = 50
 #	n_npf = 50
 #	n_vtx = 5
@@ -22,15 +23,11 @@ class DataPreprocessing_BaseClass(processor.ProcessorABC):
 		precision=np.float32,
 		global_features: List[str] = None,
 		jet_features: List[str] = None,
-#		cpf_candidates: List[str] = None,
-#		npf_candidates: List[str] = None,
-#		vtx_features: List[str] = None,
+		lepton_features: List[str] = None,
 		truths: List[str] = None,
 		processes: List[str] = None,
 		n_jet_candidates=4,
-#		n_cpf_candidates=50,
-#		n_npf_candidates=50,
-#		n_vtx_features=5,
+		n_lepton_candidates=2,
 	):
 		self._accumulator = processor.dict_accumulator({})
 		self.bins_eta = bins_eta
@@ -39,16 +36,12 @@ class DataPreprocessing_BaseClass(processor.ProcessorABC):
 		self.precision = precision
 		self.prefix = prefix
 		self.processes = processes
-#		self.cpf = cpf_candidates
-#		self.npf = npf_candidates
-#		self.vtx = vtx_features
 		self.global_features = global_features
 		self.jet_features = jet_features
+		self.lepton_features = lepton_features
 		self.truths = truths
 		self.n_jet = n_jet_candidates
-#		self.n_cpf = n_cpf_candidates
-#		self.n_npf = n_npf_candidates
-#		self.n_vtx = n_vtx_features
+		self.n_lepton = n_lepton_candidates
 		if self.processes is None:
 			self.processes = []
 
@@ -68,14 +61,10 @@ class DataPreprocessing_BaseClass(processor.ProcessorABC):
 
 		feature_names.append(self.global_features)
 		feature_edges.append(len(feature_names))
-#		feature_edges.append(feature_edges[-1] + len(self.cpf) * self.n_cpf)
-#		feature_names.extend(self.cpf)
-#		feature_edges.append(feature_edges[-1] + len(self.npf) * self.n_npf)
-#		feature_names.extend(self.npf)
-#		feature_edges.append(feature_edges[-1] + len(self.vtx) * self.n_vtx)
-#		feature_names.extend(self.vtx)
 		feature_edges.append(feature_edges[-1] + len(self.jet_features) * self.n_jet)
 		feature_names.extend(self.jet_features)
+		feature_edges.append(feature_edges[-1] + len(self.lepton_features) * self.n_lepton)
+		feature_names.extend(self.lepton_features)
 		feature_names.append("truths")
 		feature_names.extend(self.truths)
 		feature_names.append("process")
@@ -99,7 +88,7 @@ class DataPreprocessing_BaseClass(processor.ProcessorABC):
 		start = events.metadata["entrystart"]
 		stop = events.metadata["entrystop"]
 		filename = "_".join(events.metadata["filename"].split("/")[1:]).split(".")[0]
-		print('filename: ', filename)
+		#print('filename: ', filename)
 
 		# assign process number
 		if self.processes == ["default"]:
@@ -116,9 +105,7 @@ class DataPreprocessing_BaseClass(processor.ProcessorABC):
 		(
 			global_arr,
 			jet_arr,
-#			cpf_arr,
-#			npf_arr,
-#			vtx_arr,
+			lepton_arr,
 			truth,
 			process,
 		) = self.callColumnAccumulator(
@@ -140,9 +127,7 @@ class DataPreprocessing_BaseClass(processor.ProcessorABC):
 		output_location_list.append(output_location)
 
 		self.saveOutput(
-			#output_location, global_arr, cpf_arr, npf_arr, vtx_arr, truth, process
-			output_location, global_arr, jet_arr, truth, process
-			#output_location, global_arr, jet_arr, truth, 
+			output_location, global_arr, jet_arr, lepton_arr, truth, process
 		)
 		ret = {}
 		ret["output_location"] = output_location_list

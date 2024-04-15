@@ -56,6 +56,12 @@ jet_features:
 - "Jet_drLep1"
 - "Jet_drLep2"
 
+lepton_features:
+- "Lepton_pt"
+- "Lepton_eta"
+- "Lepton_phi"
+- "Lepton_mass"
+
 truths:
 - "isttbb"
 - "isttbj"

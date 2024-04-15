@@ -9,7 +9,7 @@ from utils.dataset.structured_arrays import (
 )
 
 
-class JetFeatureProcessing(DataPreprocessing_BaseClass):
+class TTCCProcessing(DataPreprocessing_BaseClass):
     def callColumnAccumulator(self, output, events, flag, **kwargs):
         # slicing based on p_T and eta
 
@@ -44,6 +44,14 @@ class JetFeatureProcessing(DataPreprocessing_BaseClass):
             feature_length=self.n_jet,
         )
 
+        lepton_arr = structured_array_from_tree(
+            #events=events[data_slice],
+            events=events,
+            keys=self.lepton_features,
+            precision=self.precision,
+            feature_length=self.n_lepton,
+        )
+
         # create an array with the process value
         process = np.ones(len(global_arr)) * flag
 
@@ -62,22 +70,35 @@ class JetFeatureProcessing(DataPreprocessing_BaseClass):
         else:
             jet_mask = np.ones(len(global_arr))
 
-        nan_mask = reduce(np.logical_and, [glob_mask, jet_mask])
+        if lepton_arr.dtype.names:
+            lepton_mask = reduce(
+                np.logical_and,
+                [
+                    ~np.any(np.isnan(lepton_arr[key]), axis=1)
+                    for key in lepton_arr.dtype.names
+                ],
+            )
+        else:
+            lepton_mask = np.ones(len(global_arr))
+
+        nan_mask = reduce(np.logical_and, [glob_mask, jet_mask, lepton_mask])
 
         return (
             global_arr[nan_mask],
             jet_arr[nan_mask],
+            lepton_arr[nan_mask],
             truth_arr[nan_mask],
             process[nan_mask],
         )
 
     def saveOutput(
-        self, output_location, global_arr, jet_arr, truth, process
+        self, output_location, global_arr, jet_arr, lepton_arr, truth, process
     ):
         np.savez(
             output_location,
             global_features=global_arr,
             jet_features=jet_arr,
+            lepton_features=lepton_arr,
             truth=truth,
             process=process,
         )
