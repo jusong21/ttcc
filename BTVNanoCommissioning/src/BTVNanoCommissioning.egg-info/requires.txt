@@ -1,9 +1,0 @@
-vector
-coffea==0.7.22
-
-[dev]
-pytest>=6
-black>=23.1.0
-
-[test]
-pytest>=6

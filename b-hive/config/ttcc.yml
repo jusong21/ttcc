@@ -45,8 +45,6 @@ global_features:
 - "nJet"
 - "nbJet"
 - "ncJet"
-#- "Lepton_pt"
-#- "Lepton_eta"
 
 jet_features:
 - "Jet_pt"
@@ -55,6 +53,9 @@ jet_features:
 - "Jet_mass"
 - "Jet_drLep1"
 - "Jet_drLep2"
+- "Jet_btagDeepFlavB"
+- "Jet_btagDeepFlavCvB"
+- "Jet_btagDeepFlavCvL"
 
 lepton_features:
 - "Lepton_pt"

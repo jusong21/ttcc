@@ -39,8 +39,8 @@ class InputProcess(nn.Module):
         super(InputProcess, self).__init__(**kwargs)
 
 		# (n_var, eps, momentum)
-        self.jet_bn = torch.nn.BatchNorm1d(6, eps=0.001, momentum=0.6)
-        self.jet_conv1 = InputConv(6, 32)
+        self.jet_bn = torch.nn.BatchNorm1d(9, eps=0.001, momentum=0.6)
+        self.jet_conv1 = InputConv(9, 32)
         self.jet_conv2 = InputConv(32, 16)
         self.jet_conv3 = InputConv(16, 4)
 

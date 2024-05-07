@@ -43,6 +43,9 @@ class DeepJet(Classifier, nn.Module):
 		"Jet_mass",
 		"Jet_drLep1",
 		"Jet_drLep2",
+		"Jet_btagDeepFlavB",
+		"Jet_btagDeepFlavCvB",
+		"Jet_btagDeepFlavCvL",
 	]
 
 	lepton_features = [

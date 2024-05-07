@@ -1,4 +1,5 @@
 .*
+*.pyc
 *.npz
 *.coffea
 
@@ -19,3 +20,7 @@ BTVNanoCommissioning/dask-worker-space/
 BTVNanoCommissioning/.job_wrapper_failure
 BTVNanoCommissioning/jobs_*
 BTVNanoCommissioning/.success
+BTVNanoCommissioning/array*
+BTVNanoCommissioning/hist*
+
+b-hive/output/*
