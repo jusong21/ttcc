@@ -512,7 +512,7 @@ class NanoProcessor(processor.ProcessorABC):
 				#if "BTV" in self.SF_map.keys():
 				if "btag" in self.SF_map.keys():
 					btagSFs(pad_jets, self.SF_map, weights, "DeepJetC", syst_wei)
-					btagSFs(pad_jets, self.SF_map, weights, "DeepJetB", syst_wei)
+					#btagSFs(pad_jets, self.SF_map, weights, "DeepJetB", syst_wei)
 		else:
 			genflavor = ak.zeros_like(pad_jets.pt, dtype=int)
 

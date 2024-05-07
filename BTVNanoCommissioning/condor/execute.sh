@@ -41,9 +41,15 @@ mkdir BTVNanoCommissioning
 cd BTVNanoCommissioning
 if [ ! -f $WORKDIR/BTVNanoCommissioning.tar.gz ]; then
     ## clone the BTVNanoCommissioning repo only, no submodule
-    git clone ${ARGS[remoteRepo]} .
+#    git clone ${ARGS[remoteRepo]} .
+	git clone git@github.com:jusong21/ttcc.git
+	git checkout ttcc
+	cd BTVNanoCommissioning
 else
-    tar xaf $WORKDIR/BTVNanoCommissioning.tar.gz
+#    tar xaf $WORKDIR/BTVNanoCommissioning.tar.gz
+	git clone git@github.com:jusong21/ttcc.git
+	git checkout ttcc
+	cd BTVNanoCommissioning
 fi
 rm -rf src/BTVNanoCommissioning/jsonpog-integration
 ln -s /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration src/BTVNanoCommissioning/jsonpog-integration  # link jsonpog-integration
