@@ -2,6 +2,7 @@
 *.pyc
 *.npz
 *.coffea
+*.tar.gz
 
 preliminary/tagger/rootfiles/
 preliminary/tagger/skimmed/
