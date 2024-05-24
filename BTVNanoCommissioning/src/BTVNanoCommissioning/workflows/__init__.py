@@ -4,6 +4,10 @@ from functools import partial
 from BTVNanoCommissioning.workflows.ttcc2L2Nu_producer import (
     NanoProcessor as TTCCdilepProcessor,
 )
+# for TTCC ntuplizer
+from BTVNanoCommissioning.workflows.analyzer import (
+    NanoProcessor as TTCCntuplizer,
+)
 
 # Validation
 from BTVNanoCommissioning.workflows.validation import (
@@ -65,6 +69,7 @@ from BTVNanoCommissioning.workflows.QCD_validation import (
 workflows = {}
 
 workflows["ttcc2L2Nu"] = TTCCdilepProcessor
+workflows["ttccNtuple"] = TTCCntuplizer
 
 workflows["validation"] = ValidationProcessor
 
