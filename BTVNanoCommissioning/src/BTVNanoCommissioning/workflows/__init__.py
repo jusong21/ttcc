@@ -1,22 +1,16 @@
 from functools import partial
 
-# for TTCC dileptonic analyzer
+# for dileptonic analyzer
 from BTVNanoCommissioning.workflows.ttcc2L2Nu_producer import (
     NanoProcessor as TTCCdilepProcessor,
 )
-# for TTCC ntuplizer
-from BTVNanoCommissioning.workflows.analyzer import (
-    NanoProcessor as TTCCntuplizer,
-)
+
 # Validation
 from BTVNanoCommissioning.workflows.validation import (
     NanoProcessor as ValidationProcessor,
 )
 
 # TTbar
-from BTVNanoCommissioning.workflows.ttbar_validation import (
-    NanoProcessor as TTbarValidProcessor,
-)
 from BTVNanoCommissioning.workflows.ttsemilep_valid_sf import (
     NanoProcessor as TTsemilepValidSFProcessor,
 )
@@ -59,19 +53,22 @@ from BTVNanoCommissioning.workflows.BTA_ttbar_producer import (
     NanoProcessor as BTA_ttbar_processor,
 )
 
-from BTVNanoCommissioning.workflows.example import (
-    NanoProcessor as ExampleProcessor,
+# from BTVNanoCommissioning.workflows.example import (
+#     NanoProcessor as ExampleProcessor,
+# )
+##QCD
+from BTVNanoCommissioning.workflows.QCD_validation import (
+    NanoProcessor as QCDValidProcessor,
 )
 
 # FIXME - make names more systematic?
 workflows = {}
-workflows["validation"] = ValidationProcessor
 
 workflows["ttcc2L2Nu"] = TTCCdilepProcessor
-workflows["ttccNtuple"] = TTCCntuplizer
+
+workflows["validation"] = ValidationProcessor
 
 # TTBar
-workflows["ttcom"] = TTbarValidProcessor
 workflows["ttdilep_sf"] = TTdilepValidSFProcessor
 workflows["ttsemilep_sf"] = TTsemilepValidSFProcessor
 workflows["emctag_ttdilep_sf"] = CTAGEMDilepttValidSFProcessor
@@ -80,6 +77,8 @@ workflows["ectag_ttdilep_sf"] = CTAGEDilepttValidSFProcessor
 workflows["ctag_ttsemilep_sf"] = CTAGSemilepttValidSFProcessor
 workflows["ectag_ttsemilep_sf"] = CTAGETTSemilepValidSFProcessor
 
+##QCD
+workflows["QCD_sf"] = QCDValidProcessor
 
 # W+c
 workflows["ctag_Wc_sf"] = CTAGWcValidSFProcessor
@@ -90,7 +89,7 @@ workflows["ctag_DY_sf"] = CTAGDYValidSFProcessor
 workflows["ectag_DY_sf"] = CTAGeDYValidSFProcessor
 
 # Tutorial
-workflows["example"] = ExampleProcessor
+# workflows["example"] = ExampleProcessor
 # BTA producers
 workflows["BTA"] = BTA_processor
 workflows["BTA_addPFMuons"] = partial(BTA_processor, addPFMuons=True)
