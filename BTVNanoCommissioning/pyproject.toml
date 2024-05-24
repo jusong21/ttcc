@@ -3,5 +3,5 @@ requires = ["setuptools>=42","setuptools<=66","setuptools_scm[toml]>=3.4","setup
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
-write_to = "/afs/cern.ch/user/j/jusong/analysis/ttcc/BTVNanoCommissioning/src/BTVNanoCommissioning/version.py"
+write_to = "BTVNanoCommissioning/src/BTVNanoCommissioning/version.py"
 root = ".."
