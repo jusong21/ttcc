@@ -25,3 +25,14 @@ BTVNanoCommissioning/array*
 BTVNanoCommissioning/hist*
 
 b-hive/output/*
+b-hive/__pycache__
+b-hive/tasks/__pycache__
+b-hive/workflows/__pycache__
+b-hive/utils/coffea_processors/__pycache__
+b-hive/utils/config/__pycache__
+b-hive/utils/dataset/__pycache__
+b-hive/utils/evaluation/__pycache__
+b-hive/utils/models/__pycache__
+b-hive/utils/plotting/__pycache__
+b-hive/utils/torch/__pycache__
+b-hive/utils/weighting/__pycache__
