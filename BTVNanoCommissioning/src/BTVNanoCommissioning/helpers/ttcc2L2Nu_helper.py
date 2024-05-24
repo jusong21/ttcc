@@ -9,100 +9,100 @@ import os, psutil
 #  HLT table  #
 ###############
 def sel_HLT(dataset, campaign):
-	if 'Run2016H' in dataset:
-		print('Run2016H trigger')
-		HLT_chns = [
-			('HLT_Ele27_WPTight_Gsf', 'ee'),
-			('HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 'ee'),
-			('HLT_DoubleEle33_CaloIdL_MW', 'ee'),
-			('HLT_DoubleEle33_CaloIdL_GsfTrkIdVL', 'ee'),
-			('HLT_IsoMu24', 'mm'),
-			('HLT_IsoTkMu24', 'mm'),
-			('HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', 'mm'),
-			('HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ', 'mm'),
-			('HLT_Ele27_WPTight_Gsf', 'em'),
-			('HLT_IsoMu24', 'em'),
-			('HLT_IsoTkMu24', 'em'),
-			('HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
-			('HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
-		]
-	elif 'Run2017B' in dataset:
-		print('Run2017B trigger')
-		HLT_chns = [
-			('Ele35_WPTight_Gsf', 'ee'),
-			('DoubleEle33_CaloIdL_MW', 'ee'),
-			('Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 'ee'),
-			('IsoMu27', 'mm'),
-			('Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', 'mm'),
-			('Ele35_WPTight_Gsf', 'em'),
-			('IsoMu27', 'em'),
-			('Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', 'em'),
-			('Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
-		]
-	elif 'Run2017' in dataset:
-		print('Run2017C-F trigger')
-		HLT_chns = [
-			('Ele35_WPTight_Gsf', 'ee'),
-			('DoubleEle33_CaloIdL_MW', 'ee'),
-			('Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 'ee'),
-			('IsoMu27', 'mm'),
-			('Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8', 'mm'),
-			('Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', 'mm'),
-			('Ele35_WPTight_Gsf', 'em'),
-			('IsoMu27', 'em'),
-			('Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', 'em'),
-			('Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
-		]
+    if 'Run2016H' in dataset:
+        print('Run2016H trigger')
+        HLT_chns = [
+            ('HLT_Ele27_WPTight_Gsf', 'ee'),
+            ('HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 'ee'),
+            ('HLT_DoubleEle33_CaloIdL_MW', 'ee'),
+            ('HLT_DoubleEle33_CaloIdL_GsfTrkIdVL', 'ee'),
+            ('HLT_IsoMu24', 'mm'),
+            ('HLT_IsoTkMu24', 'mm'),
+            ('HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', 'mm'),
+            ('HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ', 'mm'),
+            ('HLT_Ele27_WPTight_Gsf', 'em'),
+            ('HLT_IsoMu24', 'em'),
+            ('HLT_IsoTkMu24', 'em'),
+            ('HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
+            ('HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
+        ]
+    elif 'Run2017B' in dataset:
+        print('Run2017B trigger')
+        HLT_chns = [
+            ('Ele35_WPTight_Gsf', 'ee'),
+            ('DoubleEle33_CaloIdL_MW', 'ee'),
+            ('Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 'ee'),
+            ('IsoMu27', 'mm'),
+            ('Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', 'mm'),
+            ('Ele35_WPTight_Gsf', 'em'),
+            ('IsoMu27', 'em'),
+            ('Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', 'em'),
+            ('Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
+        ]
+    elif 'Run2017' in dataset:
+        print('Run2017C-F trigger')
+        HLT_chns = [
+            ('Ele35_WPTight_Gsf', 'ee'),
+            ('DoubleEle33_CaloIdL_MW', 'ee'),
+            ('Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 'ee'),
+            ('IsoMu27', 'mm'),
+            ('Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8', 'mm'),
+            ('Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', 'mm'),
+            ('Ele35_WPTight_Gsf', 'em'),
+            ('IsoMu27', 'em'),
+            ('Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', 'em'),
+            ('Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
+        ]
 
-	elif ('2016' in campaign) & ('Run2016H' not in dataset):
-		print('Run2016B-G & MC trigger')
-		HLT_chns = [
-			('HLT_Ele27_WPTight_Gsf', 'ee'),
-			('HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 'ee'),
-			('HLT_DoubleEle33_CaloIdL_MW', 'ee'),
-			('HLT_DoubleEle33_CaloIdL_GsfTrkIdVL', 'ee'),
-			('HLT_IsoMu24', 'mm'),
-			('HLT_IsoTkMu24', 'mm'),
-			('HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL', 'mm'),
-			('HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL', 'mm'),
-			('HLT_Ele27_WPTight_Gsf', 'em'),
-			('HLT_IsoMu24', 'em'),
-			('HLT_IsoTkMu24', 'em'),
-			('HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', 'em'),
-			('HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL', 'em'),
-		]
-	elif '2017' in campaign:
-		print('2017 MC trigger')
-		HLT_chns = [
-			('Ele35_WPTight_Gsf', 'ee'),
-			('DoubleEle33_CaloIdL_MW', 'ee'),
-			('Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 'ee'),
-			('IsoMu27', 'mm'),
-			('Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', 'mm'),
-			('Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8', 'mm'),
-			('Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', 'mm'),
-			('Ele35_WPTight_Gsf', 'em'),
-			('IsoMu27', 'em'),
-			('Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', 'em'),
-			('Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
-		]
-	elif '2018' in campaign:
-		print('2018 data & MC trigger')
-		HLT_chns = [
-			('Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', 'ee'),
-			('Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 'ee'),
-			('Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', 'ee'),
-			('Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', 'em'),
-			('Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
-			('Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
-			('Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
-		]
+    elif ('2016' in campaign) & ('Run2016H' not in dataset):
+        print('Run2016B-G & MC trigger')
+        HLT_chns = [
+            ('HLT_Ele27_WPTight_Gsf', 'ee'),
+            ('HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 'ee'),
+            ('HLT_DoubleEle33_CaloIdL_MW', 'ee'),
+            ('HLT_DoubleEle33_CaloIdL_GsfTrkIdVL', 'ee'),
+            ('HLT_IsoMu24', 'mm'),
+            ('HLT_IsoTkMu24', 'mm'),
+            ('HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL', 'mm'),
+            ('HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL', 'mm'),
+            ('HLT_Ele27_WPTight_Gsf', 'em'),
+            ('HLT_IsoMu24', 'em'),
+            ('HLT_IsoTkMu24', 'em'),
+            ('HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', 'em'),
+            ('HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL', 'em'),
+        ]
+    elif '2017' in campaign:
+        print('2017 MC trigger')
+        HLT_chns = [
+            ('Ele35_WPTight_Gsf', 'ee'),
+            ('DoubleEle33_CaloIdL_MW', 'ee'),
+            ('Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 'ee'),
+            ('IsoMu27', 'mm'),
+            ('Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', 'mm'),
+            ('Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8', 'mm'),
+            ('Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', 'mm'),
+            ('Ele35_WPTight_Gsf', 'em'),
+            ('IsoMu27', 'em'),
+            ('Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', 'em'),
+            ('Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
+        ]
+    elif '2018' in campaign:
+        print('2018 data & MC trigger')
+        HLT_chns = [
+            ('Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', 'ee'),
+            ('Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 'ee'),
+            ('Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', 'ee'),
+            ('Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', 'em'),
+            ('Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
+            ('Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
+            ('Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
+        ]
 
-	print('cam: ', campaign, ' dataset: ', dataset)
-	print('cam: ', campaign, ' dataset: ', dataset)
-	print(HLT_chns)
-	print(HLT_chns)
-	return HLT_chns
+    print('cam: ', campaign, ' dataset: ', dataset)
+    print('cam: ', campaign, ' dataset: ', dataset)
+    print(HLT_chns)
+    print(HLT_chns)
+    return HLT_chns
 
 ################
 #  Mass table  #
@@ -170,18 +170,18 @@ def is_from_GSP(GenPart):
 
 @nb.njit
 def to_bitwise_trigger(pass_trig, builder):
-	for it in pass_trig:
-		# group by every 32 bits
-		builder.begin_list()
-		for bitidx in range(len(it) // 32 + 1):
-			trig = 0
-			start = bitidx * 32
-			end = min((bitidx + 1) * 32, len(it))
-			for i, b in enumerate(it[start:end]):
-				trig += b << i
-			builder.integer(trig)
-		builder.end_list()
-	return builder
+    for it in pass_trig:
+        # group by every 32 bits
+        builder.begin_list()
+        for bitidx in range(len(it) // 32 + 1):
+            trig = 0
+            start = bitidx * 32
+            end = min((bitidx + 1) * 32, len(it))
+            for i, b in enumerate(it[start:end]):
+                trig += b << i
+            builder.integer(trig)
+        builder.end_list()
+    return builder
 
 
 @nb.vectorize([nb.float64(nb.int64)], forceobj=True)
