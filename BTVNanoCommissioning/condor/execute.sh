@@ -41,15 +41,9 @@ mkdir BTVNanoCommissioning
 cd BTVNanoCommissioning
 if [ ! -f $WORKDIR/BTVNanoCommissioning.tar.gz ]; then
     ## clone the BTVNanoCommissioning repo only, no submodule
-#    git clone ${ARGS[remoteRepo]} .
-	git clone git@github.com:jusong21/ttcc.git
-	git checkout ttcc
-	cd BTVNanoCommissioning
+    git clone ${ARGS[remoteRepo]} .
 else
-#    tar xaf $WORKDIR/BTVNanoCommissioning.tar.gz
-	git clone git@github.com:jusong21/ttcc.git
-	git checkout ttcc
-	cd BTVNanoCommissioning
+    tar xaf $WORKDIR/BTVNanoCommissioning.tar.gz
 fi
 rm -rf src/BTVNanoCommissioning/jsonpog-integration
 ln -s /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration src/BTVNanoCommissioning/jsonpog-integration  # link jsonpog-integration
@@ -68,7 +62,10 @@ OPTS="--wf ${ARGS[workflow]} --year ${ARGS[year]} --campaign ${ARGS[campaign]} -
 if [ "${ARGS[voms]}" != "null" ]; then
     OPTS="$OPTS --voms ${ARGS[voms]}"
 fi
-for key in  isSyst isArray noHist overwrite skipbadfiles; do
+if [ "${ARGS[isSyst]}" != "null" ]; then
+    OPTS="$OPTS --isSyst ${ARGS[isSyst]}"
+fi
+for key in  isArray noHist overwrite skipbadfiles; do
     if [ "${ARGS[$key]}" == true ]; then
         OPTS="$OPTS --$key"
     fi
