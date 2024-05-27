@@ -131,7 +131,9 @@ if __name__ == "__main__":
     print(args)
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    base_dir = current_dir.replace("/condor", "")
+    #base_dir = current_dir.replace("/condor", "")
+    base_dir = current_dir.replace("/BTVNanoCommissioning/condor", "")
+    print('base_dir: ', base_dir)
 
     if args.remoteRepo is not None:
         print("Will use a remote path to access BTVNanoCommissioning:", args.remoteRepo)
@@ -155,7 +157,7 @@ if __name__ == "__main__":
             make_tarfile(
                 "BTVNanoCommissioning.tar.gz",
                 base_dir,
-                exclude_dirs=["jsonpog-integration", "BTVNanoCommissioning.egg-info"],
+                exclude_dirs=["jsonpog-integration", "BTVNanoCommissioning.egg-info", "b-hive", "preliminary"],
             )
 
     # Create job dir
@@ -238,11 +240,11 @@ transfer_output_files   = .success
 
 Queue JOBNUM from {jobnum_file}
 """.format(
-        executable=f"{base_dir}/condor/execute.sh",
-        log_dir=f"{base_dir}/{job_dir}/log",
-        transfer_input_files=f"{base_dir}/{job_dir}/arguments.json,{base_dir}/{job_dir}/split_samples.json,{base_dir}/{job_dir}/jobnum_list.txt"
-        + ("" if args.remoteRepo else f",{base_dir}/BTVNanoCommissioning.tar.gz"),
-        jobnum_file=f"{base_dir}/{job_dir}/jobnum_list.txt",
+        executable=f"{base_dir}/BTVNanoCommissioning/condor/execute.sh",
+        log_dir=f"{base_dir}/BTVNanoCommissioning/{job_dir}/log",
+        transfer_input_files=f"{base_dir}/BTVNanoCommissioning/{job_dir}/arguments.json,{base_dir}/BTVNanoCommissioning/{job_dir}/split_samples.json,{base_dir}/BTVNanoCommissioning/{job_dir}/jobnum_list.txt"
+        + ("" if args.remoteRepo else f",{base_dir}/BTVNanoCommissioning/BTVNanoCommissioning.tar.gz"),
+        jobnum_file=f"{base_dir}/BTVNanoCommissioning/{job_dir}/jobnum_list.txt",
     )
     with open(os.path.join(job_dir, "submit.jdl"), "w") as f:
         f.write(jdl_template)
