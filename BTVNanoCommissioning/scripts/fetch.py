@@ -180,7 +180,6 @@ def getFilesFromDas(args):
 							xrd = sites_xrootd_prefix[site]
 			else:
 				for site in possible_sites:
-					print('s',site)
 					if site=="T2_BE_UCL":	continue
 					if (
 						args.blacklist_sites is not None
@@ -190,6 +189,7 @@ def getFilesFromDas(args):
 					# get first site in possible_sites
 					else:
 						try:
+							print('sites_xrootd_prefix[site] ', sites_xrootd_prefix[site])
 							ty = type(sites_xrootd_prefix[site])
 							if ty == str:
 								xrd = sites_xrootd_prefix[site]
@@ -292,7 +292,9 @@ def validate(file):
 			return fin["Events"].num_entries
 		except:
 			print("retries", n_tries, file)
-			n_tries += n_tries
+			#n_tries += n_tries
+			n_tries += 1
+			print('\nntries: ', n_tries)
 	if not_able_open:
 		return f"FailedRetries: {file}"
 
