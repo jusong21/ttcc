@@ -609,7 +609,12 @@ def JME_shifts(
                 add_jec_variables(events.Jet, events.fixedGridRhoFastjetAll),
                 lazy_cache=events.caches[0],
             )
-            met = correct_map["JME"]["met_factory"].build(events.PuppiMET, jets, {})
+            #met = correct_map["JME"]["met_factory"].build(events.PuppiMET, jets, {})
+            if "22" in campaign or "23" in campaign:
+                met = correct_map["JME"]["met_factory"].build(events.PuppiMET, jets, {})
+            else: 
+                met = correct_map["JME"]["met_factory"].build(events.MET, jets, {})
+
             ## systematics
         if not isRealData:
             if systematic != False:
@@ -689,7 +694,9 @@ def JME_shifts(
                         ]
 
     else:
-        met = events.PuppiMET
+        met = (
+            events.PuppiMET if "22" in campaign or "23" in campaign else events.MET
+        )
         jets = events.Jet
     # perform jet veto
     if "jetveto" in correct_map.keys():
