@@ -2,6 +2,9 @@
 
 JOBID=$1
 
+#export XRD_LOGLEVEL=Debug
+
+
 export HOME=`pwd`
 if [ -d /afs/cern.ch/user/${USER:0:1}/$USER ]; then
   export HOME=/afs/cern.ch/user/${USER:0:1}/$USER  # crucial on lxplus condor but cannot set on cmsconnect
@@ -103,5 +106,6 @@ fi
 #     # SAMPLENAME=$(echo "$filename" | sed -E 's/(.*)_[0-9a-z]{9}-[0-9a-z]{4}-.*\.root/\1/')
 #     xrdcp --silent -p -f $filename ${ARGS[outputXrootdDir]}/$SAMPLENAME/
 # done
+
 
 touch $WORKDIR/.success

@@ -25,7 +25,7 @@ def get_condor_submitter_parser(parser):
     parser.add_argument(
         "--condorFileSize",
         type=int,
-        default=50,
+        default=1,
         help="Number of files proceed per condor job",
     )
     parser.add_argument(
