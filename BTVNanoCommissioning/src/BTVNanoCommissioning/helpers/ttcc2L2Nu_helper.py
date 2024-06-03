@@ -39,7 +39,7 @@ def sel_HLT(dataset, campaign):
             ('Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', 'em'),
             ('Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
         ]
-    elif 'Run2017' in dataset:
+    elif ('Run2017' in dataset) & ('Run2017B' not in dataset):
         print('Run2017C-F trigger')
         HLT_chns = [
             ('Ele35_WPTight_Gsf', 'ee'),
