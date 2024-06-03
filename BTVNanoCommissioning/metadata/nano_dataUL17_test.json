@@ -1,0 +1,17 @@
+{
+    "DoubleEGRun2017B": [
+        "root://grid-cms-xrootd.physik.rwth-aachen.de:1094//store/data/Run2017B/DoubleEG/NANOAOD/UL2017_MiniAODv2_NanoAODv9-v1/70000/D3707E68-5015-C240-B8A6-4134B9387B09.root"
+    ],
+    "DoubleEGRun2017C": [
+        "root://lyogrid06.in2p3.fr//dpm/in2p3.fr/home/cms/data/store/data/Run2017C/DoubleEG/NANOAOD/UL2017_MiniAODv2_NanoAODv9-v1/270000/E02E822C-D33F-C847-9693-59B0FF8DF214.root"
+    ],
+    "DoubleEGRun2017D": [
+        "root://hip-cms-se.csc.fi:1094//store/data/Run2017D/DoubleEG/NANOAOD/UL2017_MiniAODv2_NanoAODv9-v1/270000/48F712BC-1E99-EF48-A8BB-02AFC53A7FA8.root"
+    ],
+    "DoubleEGRun2017E": [
+        "root://lyogrid06.in2p3.fr//dpm/in2p3.fr/home/cms/data/store/data/Run2017E/DoubleEG/NANOAOD/UL2017_MiniAODv2_NanoAODv9-v1/270000/5A20F287-0360-4B44-8BB9-CB06FD3F9CF8.root"
+    ],
+    "DoubleEGRun2017F": [
+        "root://cmsxrd.ts.infn.it:1094//store/data/Run2017F/DoubleEG/NANOAOD/UL2017_MiniAODv2_NanoAODv9-v1/270000/98C333B9-FAFB-5B47-B30C-2BBB154C661A.root"
+    ]
+}
