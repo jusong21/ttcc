@@ -45,6 +45,7 @@ class NanoProcessor(processor.ProcessorABC):
         isArray=False,
         noHist=False,
         chunksize=75000,
+        isTTbar=False,
     ):
         self._year = year
         self._campaign = campaign
@@ -75,7 +76,7 @@ class NanoProcessor(processor.ProcessorABC):
                 shifts, self.SF_map, events, self._campaign, isRealData, syst_JERC
             )
         else:
-            if int(self._year) > 2020:
+            if int(self._year) < 2020:
                 shifts = [
                     ({"Jet": events.Jet, "MET": events.MET, "Muon": events.Muon}, None)
                 ]
@@ -409,17 +410,17 @@ class NanoProcessor(processor.ProcessorABC):
                     weight=weight,
                 )
             output["njet"].fill(syst, nseljet, weight=weight)
-            output["npvs"].fill(
-                syst,
-                events[event_level].PV.npvs,
-                weight=weight,
-            )
-            if not isRealData:
-                output["pu"].fill(
-                    syst,
-                    events[event_level].Pileup.nTrueInt,
-                    weight=weight,
-                )
+#            output["npvs"].fill(
+#                syst,
+#                events[event_level].PV.npvs,
+#                weight=weight,
+#            )
+#            if not isRealData:
+#                output["pu"].fill(
+#                    syst,
+#                    events[event_level].Pileup.nTrueInt,
+#                    weight=weight,
+#                )
         #######################
         #  Create root files  #
         #######################

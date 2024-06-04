@@ -248,6 +248,7 @@ if __name__ == "__main__":
         sample_dict = json.load(f)
     for key in sample_dict.keys():
         sample_dict[key] = sample_dict[key][: args.limit]
+        print('sample dic here: ',  sample_dict[key][: args.limit])
     if args.executor == "dask/casa":
         for key in sample_dict.keys():
             sample_dict[key] = [
@@ -319,6 +320,8 @@ if __name__ == "__main__":
             if input("Remove bad files? (y/n): ") == "y":
                 print("Removing...")
                 json = args.samplejson
+                print("json here " , json)
+                print("json here " , json)
                 jsonnew = json.replace(".json", "") + "_backup.json"
                 os.system("mv %s %s" % (json, jsonnew))
                 inf = open(jsonnew, "r")

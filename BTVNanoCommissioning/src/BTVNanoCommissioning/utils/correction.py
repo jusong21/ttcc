@@ -702,7 +702,7 @@ def JME_shifts(
     if "jetveto" in correct_map.keys():
         events.Jet = update(events.Jet, {"veto": jetveto(events, correct_map)})
     shifts += [({"Jet": jets, "MET": met}, None)]
-    print("in shift", met.pt)
+    #print("in shift", met.pt)
     return shifts
 
 
@@ -856,10 +856,7 @@ def btagSFs(jet, correct_map, weights, SFtype, syst=False):
     sfs_up_all, sfs_down_all = {}, {}
     alljet = jet if jet.ndim > 1 else ak.singletons(jet)
 
-    print('syst ', syst)
-    print('syst ', syst)
-    print('syst ', syst)
-    print('syst ', syst)
+    #print('syst ', syst)
     for i, sys in enumerate(systlist):
         sfs, sfs_down, sfs_up = (
             np.ones_like(alljet[:, 0].pt),

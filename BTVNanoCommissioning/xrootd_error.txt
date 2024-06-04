@@ -1,0 +1,83 @@
+"""
+Traceback (most recent call last):
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/uproot/extras.py", line 75, in XRootD_client
+    import XRootD.client
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/XRootD/client/__init__.py", line 3, in <module>
+    from .glob_funcs import glob, iglob
+ModuleNotFoundError: No module named 'XRootD.client.glob_funcs'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/concurrent/futures/process.py", line 243, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/coffea/processor/executor.py", line 1367, in automatic_retries
+    raise e
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/coffea/processor/executor.py", line 1336, in automatic_retries
+    return func(*args, **kwargs)
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/coffea/processor/executor.py", line 1417, in metadata_fetcher
+    with uproot.open({item.filename: None}, timeout=xrootdtimeout) as file:
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/uproot/reading.py", line 141, in open
+    file = ReadOnlyFile(
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/uproot/reading.py", line 580, in __init__
+    self._source = Source(
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/uproot/source/xrootd.py", line 272, in __init__
+    self._open()
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/uproot/source/xrootd.py", line 275, in _open
+    self._resource = XRootDResource(self._file_path, self._timeout)
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/uproot/source/xrootd.py", line 83, in __init__
+    self._open()
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/uproot/source/xrootd.py", line 86, in _open
+    XRootD_client = uproot.extras.XRootD_client()
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/uproot/extras.py", line 78, in XRootD_client
+    raise ModuleNotFoundError(
+ModuleNotFoundError: Install XRootD python bindings with:
+
+    conda install -c conda-forge xrootd
+
+(or download from http://xrootd.org/dload.html and manually compile with cmake; setting PYTHONPATH and LD_LIBRARY_PATH appropriately).
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/coffea/processor/executor.py", line 786, in _processwith
+    merged = _watcher(FH, self, reducer, pool)
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/coffea/processor/executor.py", line 402, in _watcher
+    batch = FH.fetch(len(FH.completed))
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/coffea/processor/executor.py", line 286, in fetch
+    raise bad_futures[0].exception()
+ModuleNotFoundError: Install XRootD python bindings with:
+
+    conda install -c conda-forge xrootd
+
+(or download from http://xrootd.org/dload.html and manually compile with cmake; setting PYTHONPATH and LD_LIBRARY_PATH appropriately).
+Traceback (most recent call last):
+  File "/afs/cern.ch/user/j/jusong/analysis/ttcc/BTVNanoCommissioning/runner.py", line 443, in <module>
+    output = processor.run_uproot_job(
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/coffea/processor/__init__.py", line 104, in _run_x_job
+    return run(
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/coffea/processor/executor.py", line 1700, in __call__
+    wrapped_out = self.run(fileset, processor_instance, treename)
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/coffea/processor/executor.py", line 1782, in run
+    chunks = self.preprocess(fileset, treename)
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/coffea/processor/executor.py", line 1734, in preprocess
+    self._preprocess_fileset(fileset)
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/coffea/processor/executor.py", line 1461, in _preprocess_fileset
+    out, _ = pre_executor(to_get, closure, out)
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/coffea/processor/executor.py", line 817, in __call__
+    return _processwith(pool=poolinstance, mergepool=mergepoolinstance)
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/coffea/processor/executor.py", line 801, in _processwith
+    raise e from None
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/coffea/processor/executor.py", line 786, in _processwith
+    merged = _watcher(FH, self, reducer, pool)
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/coffea/processor/executor.py", line 402, in _watcher
+    batch = FH.fetch(len(FH.completed))
+  File "/eos/home-j/jusong/miniforge3/envs/btv_coffea/lib/python3.10/site-packages/coffea/processor/executor.py", line 286, in fetch
+    raise bad_futures[0].exception()
+ModuleNotFoundError: Install XRootD python bindings with:
+
+    conda install -c conda-forge xrootd
+
+(or download from http://xrootd.org/dload.html and manually compile with cmake; setting PYTHONPATH and LD_LIBRARY_PATH appropriately).
+

@@ -71,13 +71,17 @@ class NanoProcessor(processor.ProcessorABC):
 
     ## Apply corrections on momentum/mass on MET, Jet, Muon
     def process(self, events):
-        print("**************************************")
-        print("This is ", self._campaign, "ttcc dilepton channel producer")
-        print("**************************************")
+        print("\n**************************************************")
+        print("* This is", self._campaign, "ttcc dilepton channel producer ")
+        print("* isSyst:    ", self.isSyst)
+        print("* isArray:   ", self.isArray)
+        print("* isTTbar:   ", self.isTTbar)
+        print("**************************************************\n")
         isRealData = not hasattr(events, "genWeight")
         dataset = events.metadata["dataset"]
         events = missing_branch(events)
         shifts = []
+
         if "JME" in self.SF_map.keys():
             syst_JERC = self.isSyst
             if self.isSyst == "JERC_split":
@@ -99,12 +103,9 @@ class NanoProcessor(processor.ProcessorABC):
         else:
             shifts[0][0]["Muon"] = events.Muon
 
-        for collections, name in shifts:
-            print('n ', name)
-            print('n ', name)
-            print('n ', name)
-            print('col', collections)
-            print('col', collections)
+#        for collections, name in shifts:
+#            print('n ', name)
+#            print('col', collections)
 
         return processor.accumulate(
             self.process_shift(update(events, collections), name)
@@ -130,7 +131,7 @@ class NanoProcessor(processor.ProcessorABC):
             output["sumw"] = ak.sum(events.genWeight)
 
         #################
-        #    Selections    #
+        #   Selections  #
         #################
         ## Lumimask
         req_lumi = np.ones(len(events), dtype="bool")
@@ -145,8 +146,6 @@ class NanoProcessor(processor.ProcessorABC):
         else: MET_filters = met_filters[self._campaign]["mc"]
 
         filters = [f for f in MET_filters]
-        print('filters: ', filters)
-        print('filters: ', filters)
 
         checkFlag = ak.Array([hasattr(events.Flag, _filt) for _filt in filters])
         if ak.all(checkFlag == False):
@@ -157,17 +156,15 @@ class NanoProcessor(processor.ProcessorABC):
         filt_arrs = [
             events.Flag[_filt] for _filt in filters if hasattr(events.Flag, _filt)
         ]
-        for _filt in filters:
-            print(_filt, ' ', events.Flag[_filt])
+#        for _filt in filters:
+#            print(_filt, ' ', events.Flag[_filt])
 
         req_flag = np.ones_like(len(events), dtype="bool")
         for f in filt_arrs:
             req_flag = req_flag & f
 
-        print(req_flag)
-        print(req_flag)
         ###########
-        #    HLT   #
+        #   HLT   #
         ###########
 
         ttdilep_HLT_chns = sel_HLT(dataset, self._campaign)
@@ -197,9 +194,9 @@ class NanoProcessor(processor.ProcessorABC):
         for i, (trig, chn) in enumerate(ttdilep_HLT_chns):  # loop over ee, mm, em chanenl
             pass_trig_chn[chn] |= pass_trig[:, i]
         
-        output["ttbar_trigWord"] = to_bitwise_trigger(
-            pass_trig, ak.ArrayBuilder()
-        ).snapshot()[:, 0]
+#        output["ttbar_trigWord"] = to_bitwise_trigger(
+#            pass_trig, ak.ArrayBuilder()
+#        ).snapshot()[:, 0]
         
         #################
         #    Electronss    #
@@ -290,6 +287,7 @@ class NanoProcessor(processor.ProcessorABC):
             ak.fill_none(met_mask, False),
             True,
         )
+        met = events.MET
         
         ##########
         #  jets  #
@@ -454,6 +452,8 @@ class NanoProcessor(processor.ProcessorABC):
         #  Event selections  #
         #####################
         req_event = req_trig & req_lumi & req_lep & req_jet & req_bjet & req_mll & req_mz & req_met & req_flag
+        #req_event = req_trig & req_lumi & req_lep & req_jet & req_bjet & req_mll & req_mz & req_flag
+
         if self.isTTbar: req_event = req_event & req_Genjet
         
         req_event = ak.fill_none(req_event, False)
@@ -475,6 +475,7 @@ class NanoProcessor(processor.ProcessorABC):
         sel_muons = muons[req_event]
         sel_electrons = electrons[req_event]
         sel_leptons = leptons[req_event]
+        sel_met = met[req_event]
         #sel_jets = jets[req_event][:,:4]
         sel_jets = jets[req_event]
 
@@ -529,13 +530,14 @@ class NanoProcessor(processor.ProcessorABC):
         #######################
         if self.isArray:
             # Keep the structure of events and pruned the object size
-            pruned_ev = {'Jet': sel_jets, 'Muon': sel_muons, 'Electron': sel_electrons, 'Lepton': sel_leptons}
+            pruned_ev = {'Jet': sel_jets, 'Muon': sel_muons, 'Electron': sel_electrons, 'Lepton': sel_leptons, 'MET': sel_met}
             pruned_ev['Channel'] = channel[req_event]
-            pruned_ev['trig_bit'] = ak.to_numpy(output["ttbar_trigWord"][req_event])
+            #pruned_ev['trig_bit'] = ak.to_numpy(output["ttbar_trigWord"][req_event])
             pruned_ev['nbJet'] = ak.to_numpy(nbjets[req_event])
             pruned_ev['mll'] = ak.to_numpy(mll[req_event])
 
             # Create a list of variables want to store. For objects from the PFNano file, specify as {object}_{variable}, wildcard option only accepted at the end of the string
+            # out_branch = ["events", "run", "luminosityBlock", "Channel", "trig_bit", "nbJet"]
             out_branch = ["events", "run", "luminosityBlock", "Channel", "trig_bit", "nbJet"]
             if not isRealData:
                 pruned_ev["weight"] = weights.weight()
@@ -563,6 +565,8 @@ class NanoProcessor(processor.ProcessorABC):
                     "Jet_hadronFlavour",
                     "Muon_pfRelIso04_all",
                     "Muon_tightId",
+                    "MET_pt",
+                    "MET_phi",
                 ],
             )
             if self.isTTbar:
@@ -585,8 +589,16 @@ class NanoProcessor(processor.ProcessorABC):
 
             # write to root files
             os.system(f"mkdir -p {self.name}/{dataset}")
+#            print(f"{events.metadata['filename']}")
+#            print(f"{events.metadata['filename'].split('_')[-1].replace('.root','')}")
+#            print(f"{events.metadata['filename'].split('/')[-1].replace('.root','')}")
+#            print(f"{self.name}/{dataset}/f{events.metadata['filename'].split('_')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root")
+#            print(f"{self.name}/{dataset}/f{events.metadata['filename'].split('_')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root")
+#            print(f"{self.name}/{dataset}/f{events.metadata['filename'].split('_')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root")
+            if isRealData: outname = f"{self.name}/{dataset}/f{events.metadata['filename'].split('/')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root" 
+            else: outname = f"{self.name}/{dataset}/f{events.metadata['filename'].split('_')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root" 
             with uproot.recreate(
-                f"{self.name}/{dataset}/f{events.metadata['filename'].split('_')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root"
+                outname
             ) as fout:
                 fout["Events"] = uproot_writeable(pruned_ev, include=out_branch)
         return {dataset: output}

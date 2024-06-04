@@ -36,7 +36,7 @@ def sel_HLT(dataset, campaign):
             ('Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', 'mm'),
             ('Ele35_WPTight_Gsf', 'em'),
             ('IsoMu27', 'em'),
-            ('Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', 'em'),
+            #('Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', 'em'),
             ('Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
         ]
     elif ('Run2017' in dataset) & ('Run2017B' not in dataset):
@@ -98,10 +98,8 @@ def sel_HLT(dataset, campaign):
             ('Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', 'em'),
         ]
 
-    print('cam: ', campaign, ' dataset: ', dataset)
-    print('cam: ', campaign, ' dataset: ', dataset)
-    print(HLT_chns)
-    print(HLT_chns)
+    #print('cam: ', campaign, ' dataset: ', dataset)
+    #print(HLT_chns)
     return HLT_chns
 
 ################
