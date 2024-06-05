@@ -157,7 +157,7 @@ if __name__ == "__main__":
             make_tarfile(
                 "BTVNanoCommissioning.tar.gz",
                 base_dir,
-                exclude_dirs=["jsonpog-integration", "BTVNanoCommissioning.egg-info", "b-hive", "preliminary"],
+                exclude_dirs=["jsonpog-integration", "BTVNanoCommissioning.egg-info", "b-hive", "preliminary", "arrays*", "hists*"],
             )
 
     # Create job dir

@@ -88,15 +88,17 @@ python runner.py $OPTS
 # Transfer output
 if [[ ${ARGS[outputXrootdDir]} == root://* ]]; then
 
-    #xrdcp --silent -p -f -r hists_* ${ARGS[outputXrootdDir]}/
+    xrdcp --silent -p -f -r hists_* ${ARGS[outputXrootdDir]}/
     if [[ "$OPTS" == *"isArray"* ]]; then
-	xrdcp --silent -p -f -r arrays_ttcc* ${ARGS[outputXrootdDir]}/
+	#xrdcp --silent -p -f -r arrays_ttcc* ${ARGS[outputXrootdDir]}/
+	xrdcp --silent -p -f -r arrays_* ${ARGS[outputXrootdDir]}/
     fi
 else
     mkdir -p ${ARGS[outputXrootdDir]}
-    #cp -p -f -r hists_* ${ARGS[outputXrootdDir]}/
+    cp -p -f -r hists_* ${ARGS[outputXrootdDir]}/
     if [[ "$OPTS" == *"isArray"* ]]; then
-	cp -p -f -r arrays_ttcc* ${ARGS[outputXrootdDir]}/
+	#cp -p -f -r arrays_ttcc* ${ARGS[outputXrootdDir]}/
+	cp -p -f -r arrays_* ${ARGS[outputXrootdDir]}/
     fi
 fi
 
