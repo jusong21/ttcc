@@ -1,0 +1,3 @@
+[submodule "BTVNanoCommissioning/src/BTVNanoCommissioning/jsonpog-integration"]
+	path = BTVNanoCommissioning/src/BTVNanoCommissioning/jsonpog-integration
+	url = ssh://git@gitlab.cern.ch:7999/cms-nanoAOD/jsonpog-integration.git

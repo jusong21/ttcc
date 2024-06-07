@@ -38,6 +38,7 @@ class InputProcess(nn.Module):
     def __init__(self, **kwargs):
         super(InputProcess, self).__init__(**kwargs)
 
+<<<<<<< HEAD
         self.cpf_bn = torch.nn.BatchNorm1d(16, eps=0.001, momentum=0.6)
         self.cpf_conv1 = InputConv(16, 64)
         self.cpf_conv2 = InputConv(64, 32)
@@ -77,12 +78,42 @@ class InputProcess(nn.Module):
         vtx = torch.transpose(vtx, 1, 2)
 
         return cpf, npf, vtx
+=======
+		# (n_var, eps, momentum)
+        self.jet_bn = torch.nn.BatchNorm1d(9, eps=0.001, momentum=0.6)
+        self.jet_conv1 = InputConv(9, 32)
+        self.jet_conv2 = InputConv(32, 16)
+        self.jet_conv3 = InputConv(16, 4)
+
+        self.lepton_bn = torch.nn.BatchNorm1d(4, eps=0.001, momentum=0.6)
+        self.lepton_conv1 = InputConv(4, 32)
+        self.lepton_conv2 = InputConv(32, 16)
+        self.lepton_conv3 = InputConv(16, 4)
+
+    def forward(self, jet, lepton):
+
+        jet = self.jet_bn(torch.transpose(jet, 1, 2))
+        jet = self.jet_conv1(jet)
+        jet = self.jet_conv2(jet)
+        jet = self.jet_conv3(jet, norm=False)
+        jet = torch.transpose(jet, 1, 2)
+
+        lepton = self.lepton_bn(torch.transpose(lepton, 1, 2))
+        lepton = self.lepton_conv1(lepton)
+        lepton = self.lepton_conv2(lepton)
+        lepton = self.lepton_conv3(lepton, norm=False)
+        lepton = torch.transpose(lepton, 1, 2)
+
+        #return cpf, npf, vtx
+        return jet, lepton
+>>>>>>> develop
 
 
 class DenseClassifier(nn.Module):
     def __init__(self, **kwargs):
         super(DenseClassifier, self).__init__(**kwargs)
 
+<<<<<<< HEAD
         self.LinLayer1 = LinLayer(265, 200)
         self.LinLayer2 = LinLayer(200, 100)
         self.LinLayer3 = LinLayer(100, 100)
@@ -91,6 +122,16 @@ class DenseClassifier(nn.Module):
         self.LinLayer6 = LinLayer(100, 100)
         self.LinLayer7 = LinLayer(100, 100)
         self.LinLayer8 = LinLayer(100, 100)
+=======
+        self.LinLayer1 = LinLayer(103, 50)
+        self.LinLayer2 = LinLayer(50, 25)
+        self.LinLayer3 = LinLayer(25, 25)
+        self.LinLayer4 = LinLayer(25, 25)
+        self.LinLayer5 = LinLayer(25, 25)
+        self.LinLayer6 = LinLayer(25, 25)
+        self.LinLayer7 = LinLayer(25, 25)
+        self.LinLayer8 = LinLayer(25, 25)
+>>>>>>> develop
 
     def forward(self, x):
         x = self.LinLayer1(x)

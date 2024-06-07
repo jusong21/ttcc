@@ -45,8 +45,11 @@ global_features:
 - "nJet"
 - "nbJet"
 - "ncJet"
+<<<<<<< HEAD
 #- "Lepton_pt"
 #- "Lepton_eta"
+=======
+>>>>>>> develop
 
 jet_features:
 - "Jet_pt"
@@ -55,6 +58,18 @@ jet_features:
 - "Jet_mass"
 - "Jet_drLep1"
 - "Jet_drLep2"
+<<<<<<< HEAD
+=======
+- "Jet_btagDeepFlavB"
+- "Jet_btagDeepFlavCvB"
+- "Jet_btagDeepFlavCvL"
+
+lepton_features:
+- "Lepton_pt"
+- "Lepton_eta"
+- "Lepton_phi"
+- "Lepton_mass"
+>>>>>>> develop
 
 truths:
 - "isttbb"

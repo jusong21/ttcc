@@ -84,13 +84,18 @@ Either you forgot to specify the path to the file or are using a wrong dataset-v
             maxchunks=None if not (self.debug) else 10,
         )
         #processorClass = ProcessorLoader(config.get("processor", "PFCandidateAndVertexProcessing"),  
+<<<<<<< HEAD
         processorClass = ProcessorLoader(config.get("processor", "JetFeatureProcessing"),  
+=======
+        processorClass = ProcessorLoader(config.get("processor", "TTCCProcessing"),  
+>>>>>>> develop
                 output_directory=self.local_path(),
                 bins_pt=config.get("bins_pt", None),
                 bins_eta=config.get("bins_eta", None),
                 processes=config.get("processes", None),
                 global_features=config.get("global_features", []),
                 jet_features=config.get("jet_features", []),
+<<<<<<< HEAD
 				n_jet_candidates=config.get("n_jet_candidates", 4),
 #                cpf_candidates=config.get("cpf_candidates", []),
 #                npf_candidates=config.get("npf_candidates", []),
@@ -98,6 +103,11 @@ Either you forgot to specify the path to the file or are using a wrong dataset-v
 #                n_cpf_candidates=config.get("n_cpf_candidates", 50),
 #                n_npf_candidates=config.get("n_npf_candidates", 50),
 #                n_vtx_features=config.get("n_vtx_features", 5),
+=======
+                lepton_features=config.get("lepton_features", []),
+				n_jet_candidates=config.get("n_jet_candidates", 4),
+				n_lepton_candidates=config.get("n_lepton_candidates", 2),
+>>>>>>> develop
                 truths=config.get("truths", None),
                 )
         print("Processor:")
