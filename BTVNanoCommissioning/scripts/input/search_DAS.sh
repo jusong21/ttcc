@@ -23,8 +23,9 @@ while read line; do
     	dasgoclient --query="dataset=$line instance=prod/phys03" >> mc_private.txt
     	#dasgoclient --query="dataset=$line | grep dataset.nevents" >> tmp.txt
 	else
-		echo "Global Datasets!"
+		#echo "Global Datasets!"
     	dasgoclient --query="dataset=$line" >> mc_global.txt
+    	#dasgoclient --query="file dataset=$line" >> wj.txt
 	fi
 
 done < $input
