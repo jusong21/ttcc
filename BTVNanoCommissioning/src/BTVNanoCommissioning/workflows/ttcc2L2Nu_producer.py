@@ -75,7 +75,7 @@ class NanoProcessor(processor.ProcessorABC):
         print("* This is", self._campaign, "ttcc dilepton channel producer ")
         print("* isSyst:    ", self.isSyst)
         print("* isArray:   ", self.isArray)
-        print("* isTTbar:   ", self.isTTbar)
+        #print("* isTTbar:   ", self.isTTbar)
         print("**************************************************\n")
         isRealData = not hasattr(events, "genWeight")
         dataset = events.metadata["dataset"]
@@ -103,10 +103,6 @@ class NanoProcessor(processor.ProcessorABC):
         else:
             shifts[0][0]["Muon"] = events.Muon
 
-#        for collections, name in shifts:
-#            print('n ', name)
-#            print('col', collections)
-
         return processor.accumulate(
             self.process_shift(update(events, collections), name)
             for collections, name in shifts
@@ -115,6 +111,8 @@ class NanoProcessor(processor.ProcessorABC):
     def process_shift(self, events, shift_name):
         dataset = events.metadata["dataset"]
         isRealData = not hasattr(events, "genWeight")
+        isTTbar = "TTTo" in dataset
+
         ## Create histograms
         _hist_event_dict = (
             {"": None} if self.noHist else histogrammer(events, "ttcc2L2Nu")
@@ -193,10 +191,6 @@ class NanoProcessor(processor.ProcessorABC):
         }
         for i, (trig, chn) in enumerate(ttdilep_HLT_chns):  # loop over ee, mm, em chanenl
             pass_trig_chn[chn] |= pass_trig[:, i]
-        
-#        output["ttbar_trigWord"] = to_bitwise_trigger(
-#            pass_trig, ak.ArrayBuilder()
-#        ).snapshot()[:, 0]
         
         #################
         #    Electronss    #
@@ -308,15 +302,31 @@ class NanoProcessor(processor.ProcessorABC):
         nbjets = ak.num(bjets)
         req_bjet = nbjets >= 2
 
+        bjets_t = jets[
+            btag_wp(jets, self._campaign, "DeepFlav", "b", "T")
+        ]
+        nbjets_t = ak.num(bjets_t)
+
+        # c tagged jets (M)
+        cjets = jets[
+            btag_wp(jets, self._campaign, "DeepFlav", "c", "M")
+        ]
+        ncjets = ak.num(cjets)
+        cjets_t = jets[
+            btag_wp(jets, self._campaign, "DeepFlav", "c", "T")
+        ]
+        ncjets_t = ak.num(cjets_t)
+
         ####################
         #  Gen-level info  #
         ####################
         # tt test
-        if self.isTTbar:
+        #if self.isTTbar:
+        if isTTbar:
             print('This is ttbar sample')
         else: print('This is not ttbar sample')
 
-        if self.isTTbar:
+        if isTTbar:
             ############
             #  Genlep  #
             ############
@@ -454,7 +464,7 @@ class NanoProcessor(processor.ProcessorABC):
         req_event = req_trig & req_lumi & req_lep & req_jet & req_bjet & req_mll & req_mz & req_met & req_flag
         #req_event = req_trig & req_lumi & req_lep & req_jet & req_bjet & req_mll & req_mz & req_flag
 
-        if self.isTTbar: req_event = req_event & req_Genjet
+        if isTTbar: req_event = req_event & req_Genjet
         
         req_event = ak.fill_none(req_event, False)
 
@@ -532,13 +542,16 @@ class NanoProcessor(processor.ProcessorABC):
             # Keep the structure of events and pruned the object size
             pruned_ev = {'Jet': sel_jets, 'Muon': sel_muons, 'Electron': sel_electrons, 'Lepton': sel_leptons, 'MET': sel_met}
             pruned_ev['Channel'] = channel[req_event]
-            #pruned_ev['trig_bit'] = ak.to_numpy(output["ttbar_trigWord"][req_event])
-            pruned_ev['nbJet'] = ak.to_numpy(nbjets[req_event])
+            pruned_ev['nJets'] = ak.to_numpy(njets[req_event])
+            pruned_ev['nbJets'] = ak.to_numpy(nbjets[req_event])
+            pruned_ev['nbJets_T'] = ak.to_numpy(nbjets_t[req_event])
+            pruned_ev['ncJets'] = ak.to_numpy(ncjets[req_event])
+            pruned_ev['ncJets_T'] = ak.to_numpy(ncjets_t[req_event])
             pruned_ev['mll'] = ak.to_numpy(mll[req_event])
 
             # Create a list of variables want to store. For objects from the PFNano file, specify as {object}_{variable}, wildcard option only accepted at the end of the string
             # out_branch = ["events", "run", "luminosityBlock", "Channel", "trig_bit", "nbJet"]
-            out_branch = ["events", "run", "luminosityBlock", "Channel", "trig_bit", "nbJet"]
+            out_branch = ["events", "run", "luminosityBlock", "Channel", "nJets", "nbJets", "nbJets_T", "ncJets", "ncJets_T"]
             if not isRealData:
                 pruned_ev["weight"] = weights.weight()
                 out_branch = np.append(out_branch, "weight")
@@ -569,7 +582,7 @@ class NanoProcessor(processor.ProcessorABC):
                     "MET_phi",
                 ],
             )
-            if self.isTTbar:
+            if isTTbar:
                 pruned_ev.update({"addbJet": Genaddbjets[req_event]})
                 pruned_ev.update({"addcJet": Genaddcjets[req_event]})
                 pruned_ev.update({"Genjets": Genjets[req_event]})

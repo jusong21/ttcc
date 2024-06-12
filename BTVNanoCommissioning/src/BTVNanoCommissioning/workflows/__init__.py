@@ -5,7 +5,7 @@ from BTVNanoCommissioning.workflows.ttcc2L2Nu_producer import (
     NanoProcessor as TTCCdilepProcessor,
 )
 # for TTCC ntuplizer
-from BTVNanoCommissioning.workflows.analyzer import (
+from BTVNanoCommissioning.workflows.ttcc_ntuplizer import (
     NanoProcessor as TTCCntuplizer,
 )
 
