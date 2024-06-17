@@ -55,7 +55,8 @@ class NanoProcessor(processor.ProcessorABC):
 	def process_shift(self, events):
 		dataset = events.metadata["dataset"]
 		isRealData = not hasattr(events, "genweight")
-		isTTbar = 'TTTo' in dataset
+		#isTTbar = 'TTTo' in dataset
+		isTTbar = ("TTTo" in dataset) or ("TTbb" in dataset)
 
 		## Create histograms
 		_hist_event_dict = (
