@@ -1,15 +1,6 @@
 {
 "TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8": [
-		"root://maite.iihe.ac.be:1094/pnfs/iihe/cms/store/user/jusong/topNanoAOD/v9-1-1/2017UL/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/TopNanoAODv9-1-1_2017UL/231011_064252/0000/tree_33.root",
-		"root://maite.iihe.ac.be:1094/pnfs/iihe/cms/store/user/jusong/topNanoAOD/v9-1-1/2017UL/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/TopNanoAODv9-1-1_2017UL/231011_064252/0000/tree_858.root"
-		],
-"TTToHadronic_TuneCP5_13TeV-powheg-pythia8":[
-		"root://maite.iihe.ac.be:1094/pnfs/iihe/cms/store/user/jusong/topNanoAOD/v9-1-1/2017UL/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/TopNanoAODv9-1-1_2017UL/231011_064539/0001/tree_1402.root",
-		"root://maite.iihe.ac.be:1094/pnfs/iihe/cms/store/user/jusong/topNanoAOD/v9-1-1/2017UL/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/TopNanoAODv9-1-1_2017UL/231011_064539/0001/tree_1209.root"
-		],
-"TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8":[
-		"root://maite.iihe.ac.be:1094/pnfs/iihe/cms/store/user/jusong/topNanoAOD/v9-1-1/2017UL/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/TopNanoAODv9-1-1_2017UL/231011_064802/0000/tree_641.root",
-		"root://maite.iihe.ac.be:1094/pnfs/iihe/cms/store/user/jusong/topNanoAOD/v9-1-1/2017UL/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/TopNanoAODv9-1-1_2017UL/231011_064802/0000/tree_810.root"
+		"root://maite.iihe.ac.be:1094/pnfs/iihe/cms/store/user/jusong/topNanoAOD/v9-1-1/2017UL/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/TopNanoAODv9-1-1_2017UL/231011_064252/0000/tree_33.root"
 		]
 }
 
