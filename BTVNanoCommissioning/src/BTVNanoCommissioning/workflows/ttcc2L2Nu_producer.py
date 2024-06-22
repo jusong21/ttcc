@@ -75,7 +75,6 @@ class NanoProcessor(processor.ProcessorABC):
         print("* This is", self._campaign, "ttcc dilepton channel producer ")
         print("* isSyst:    ", self.isSyst)
         print("* isArray:   ", self.isArray)
-        #print("* isTTbar:   ", self.isTTbar)
         print("**************************************************\n")
         isRealData = not hasattr(events, "genWeight")
         dataset = events.metadata["dataset"]
@@ -84,7 +83,9 @@ class NanoProcessor(processor.ProcessorABC):
 
         if "JME" in self.SF_map.keys():
             syst_JERC = self.isSyst
-            if self.isSyst == "JERC_split":
+            if self.isSyst == "weight_only":
+                syst_JERC = False
+            elif self.isSyst == "JERC_split":
                 syst_JERC = "split"
             shifts = JME_shifts(
                 shifts, self.SF_map, events, self._campaign, isRealData, syst_JERC
@@ -103,6 +104,8 @@ class NanoProcessor(processor.ProcessorABC):
         else:
             shifts[0][0]["Muon"] = events.Muon
 
+        for collections, name in shifts:
+            print('c:', collections, 'n:', name)
         return processor.accumulate(
             self.process_shift(update(events, collections), name)
             for collections, name in shifts
@@ -154,8 +157,6 @@ class NanoProcessor(processor.ProcessorABC):
         filt_arrs = [
             events.Flag[_filt] for _filt in filters if hasattr(events.Flag, _filt)
         ]
-#        for _filt in filters:
-#            print(_filt, ' ', events.Flag[_filt])
 
         req_flag = np.ones_like(len(events), dtype="bool")
         for f in filt_arrs:
@@ -494,6 +495,9 @@ class NanoProcessor(processor.ProcessorABC):
         ####################
         
         weights = Weights(len(events[req_event]), storeIndividual=True)
+        weightsup = Weights(len(events[req_event]), storeIndividual=True)
+        weightsdown = Weights(len(events[req_event]), storeIndividual=True)
+
         if not isRealData:
             weights.add("genweight", events[req_event].genWeight)
 
@@ -506,18 +510,20 @@ class NanoProcessor(processor.ProcessorABC):
                         events[req_event].Pileup.nTrueInt,
                         self.SF_map,
                         weights,
+                        weightsup,
+                        weightsdown,
                         syst_wei,
                     )
                 if "HLT" in self.SF_map.keys():
-                    HLTSFs(pad_lep1, pad_lep2, channel[req_event], self.SF_map, weights)
+                    HLTSFs(pad_lep1, pad_lep2, channel[req_event], self.SF_map, weights, weightsup, weightsdown)
                 if "MUO" in self.SF_map.keys():
-                    muSFs(pad_muons, self.SF_map, weights, syst_wei, False)
+                    muSFs(pad_muons, self.SF_map, weights, weightsup, weightsdown, syst_wei, False)
                 if "EGM" in self.SF_map.keys():
-                    eleSFs(pad_electrons, self.SF_map, weights, syst_wei, False)
+                    eleSFs(pad_electrons, self.SF_map, weights, weightsup, weightsdown, syst_wei, False)
                 #if "BTV" in self.SF_map.keys():
                 if "btag" in self.SF_map.keys():
-                    btagSFs(pad_jets, self.SF_map, weights, "DeepJetC", syst_wei)
-                    #btagSFs(pad_jets, self.SF_map, weights, "DeepJetB", syst_wei)
+                    btagSFs(pad_jets, self.SF_map, weights, weightsup, weightsdown, "DeepJetC", syst_wei)
+                    btagSFs(pad_jets, self.SF_map, weights, weightsup, weightsdown, "DeepJetB", syst_wei)
         else:
             genflavor = ak.zeros_like(pad_jets.pt, dtype=int)
 
@@ -527,20 +533,15 @@ class NanoProcessor(processor.ProcessorABC):
         else:
             systematics = [shift_name]
 
-        exclude_btv = [
-            "DeepJetB",
-            "DeepJetB",
-        ]  # exclude b-tag SFs for btag inputs
-
-        for ind_wei in weights.weightStatistics.keys():
-            np.set_printoptions(linewidth=np.inf, threshold=100)
+#        for ind_wei in weights.weightStatistics.keys():
+#            np.set_printoptions(linewidth=np.inf, threshold=100)
 
         #######################
         #  Create root files  #
         #######################
         if self.isArray:
             # Keep the structure of events and pruned the object size
-            pruned_ev = {'Jet': sel_jets, 'Muon': sel_muons, 'Electron': sel_electrons, 'Lepton': sel_leptons, 'MET': sel_met}
+            pruned_ev = {'Jet': sel_jets, 'Muon': sel_muons, 'Electron': sel_electrons, 'Lepton': sel_leptons, 'MET': sel_met, 'PV_npvs': ak.to_numpy(events.PV.npvs[req_event]), 'PV_npvsGood': ak.to_numpy(events.PV.npvsGood[req_event])}
             pruned_ev['Channel'] = channel[req_event]
             pruned_ev['nJets'] = ak.to_numpy(njets[req_event])
             pruned_ev['nbJets'] = ak.to_numpy(nbjets[req_event])
@@ -551,7 +552,7 @@ class NanoProcessor(processor.ProcessorABC):
 
             # Create a list of variables want to store. For objects from the PFNano file, specify as {object}_{variable}, wildcard option only accepted at the end of the string
             # out_branch = ["events", "run", "luminosityBlock", "Channel", "trig_bit", "nbJet"]
-            out_branch = ["events", "run", "luminosityBlock", "Channel", "nJets", "nbJets", "nbJets_T", "ncJets", "ncJets_T"]
+            out_branch = ["events", "run", "luminosityBlock", 'PV_npvs', 'PV_npvsGood', "Channel", "nJets", "nbJets", "nbJets_T", "ncJets", "ncJets_T"]
             if not isRealData:
                 pruned_ev["weight"] = weights.weight()
                 out_branch = np.append(out_branch, "weight")
@@ -560,6 +561,22 @@ class NanoProcessor(processor.ProcessorABC):
                         include=[ind_wei]
                     )   
                     out_branch = np.append(out_branch, f"{ind_wei}_weight")
+#                for vari_wei in weights.variations:
+#                    print('vari_wei', vari_wei)
+#                    pruned_ev[f"{vari_wei}_weight"] = weights.weight(vari_wei)
+#                    out_branch = np.append(out_branch, f"{vari_wei}_weight")
+
+                for ind_wei in weightsup.weightStatistics.keys():
+                    pruned_ev[f"{ind_wei}Up_weight"] = weightsup.partial_weight(
+                        include=[ind_wei]
+                    )   
+                    out_branch = np.append(out_branch, f"{ind_wei}Up_weight")
+
+                for ind_wei in weightsdown.weightStatistics.keys():
+                    pruned_ev[f"{ind_wei}Down_weight"] = weightsdown.partial_weight(
+                        include=[ind_wei]
+                    )   
+                    out_branch = np.append(out_branch, f"{ind_wei}Down_weight")
 
             for kin in ["pt", "eta", "phi", "mass", "dz", "dxy"]:
                 for obj in ["Jet", "Electron", "Muon", "Lepton"]:
@@ -602,12 +619,6 @@ class NanoProcessor(processor.ProcessorABC):
 
             # write to root files
             os.system(f"mkdir -p {self.name}/{dataset}")
-#            print(f"{events.metadata['filename']}")
-#            print(f"{events.metadata['filename'].split('_')[-1].replace('.root','')}")
-#            print(f"{events.metadata['filename'].split('/')[-1].replace('.root','')}")
-#            print(f"{self.name}/{dataset}/f{events.metadata['filename'].split('_')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root")
-#            print(f"{self.name}/{dataset}/f{events.metadata['filename'].split('_')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root")
-#            print(f"{self.name}/{dataset}/f{events.metadata['filename'].split('_')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root")
             if isRealData: outname = f"{self.name}/{dataset}/f{events.metadata['filename'].split('/')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root" 
             else: outname = f"{self.name}/{dataset}/f{events.metadata['filename'].split('_')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root" 
             with uproot.recreate(
