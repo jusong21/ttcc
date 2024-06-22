@@ -631,7 +631,7 @@ class NanoProcessor(processor.ProcessorABC):
                     "addbJet": addbjets[req_event],
                     "addcJet": addcjets[req_event],
                     "addlfJet": addlfjets[req_event],
-#                    "GenJets": Genjets[req_event],
+                    "nGenJets": ak.to_numpy(nGenjets[req_event]),
                     "nbJetsFromT": ak.to_numpy(nbjetsFromTop[req_event]),
                     "nbJetsFromW": ak.to_numpy(nbjetsFromW[req_event]),
                     "ncJetsFromW": ak.to_numpy(nbjetsFromW[req_event]),
@@ -647,63 +647,11 @@ class NanoProcessor(processor.ProcessorABC):
                 pruned_ev.update(ttbar_ev)
                 for kin in ["pt", "eta", "phi", "mass"]:
                     for obj in list(ttbar_ev.keys()):
-                        if ("nbJ" in obj) or ("ncJ" in obj) or ("nadd" in obj) or ("istt" in obj):
+                        if ("nG" in obj) or ("nbJ" in obj) or ("ncJ" in obj) or ("nadd" in obj) or ("istt" in obj):
                             out_branch = np.append(out_branch, [obj])
                             continue
                         out_branch = np.append(out_branch, [f"{obj}_{kin}"])
 
-#                pruned_ev.update({
-#                    "bJetFromT": bjetsFromTop[req_event],
-#                    "bJetFromW": bjetsFromW[req_event],
-#                    "cJetFromW": bjetsFromW[req_event],
-#                    "addbJet": addbjets[req_event],
-#                    "addcJet": addcjets[req_event],
-#                    "addlfJet": addlfjets[req_event],
-#                    "GenJets": Genjets[req_event],
-#                    "nbJetsFromT": ak.to_numpy(nbjetsFromTop[req_event]),
-#                    "nbJetsFromW": ak.to_numpy(nbjetsFromW[req_event]),
-#                    "ncJetsFromW": ak.to_numpy(nbjetsFromW[req_event]),
-#                    "naddbJets": ak.to_numpy(naddbjets[req_event]),
-#                    "naddcJets": ak.to_numpy(naddcjets[req_event]),
-#                    "naddlfJets": ak.to_numpy(naddlfjets[req_event]),
-#                    "isttbb" = isttbb[req_event],
-#                    "isttbj" = isttbj[req_event],
-#                    "isttcc" = isttcc[req_event],
-#                    "isttcj" = isttcj[req_event],
-#                    "isttother" = isttother[req_event],
-#                })
-
-#                pruned_ev.update({"bJetFromT": bjetsFromTop[req_event]})
-#                pruned_ev.update({"bJetFromW": bjetsFromW[req_event]})
-#                pruned_ev.update({"cJetFromW": bjetsFromW[req_event]})
-#                pruned_ev.update({"addbJet": addbjets[req_event]})
-#                pruned_ev.update({"addcJet": addcjets[req_event]})
-#                pruned_ev.update({"addlfJet": addlfjets[req_event]})
-#                pruned_ev.update({"GenJets": Genjets[req_event]})
-#
-#                pruned_ev.update({"nbJetsFromT": ak.to_numpy(nbjetsFromTop[req_event])})
-#                pruned_ev.update({"nbJetsFromW": ak.to_numpy(nbjetsFromW[req_event])})
-#                pruned_ev.update({"ncJetsFromW": ak.to_numpy(nbjetsFromW[req_event])})
-#                pruned_ev.update({"naddbJets": ak.to_numpy(naddbjets[req_event])})
-#                pruned_ev.update({"naddcJets": ak.to_numpy(naddcjets[req_event])})
-#                pruned_ev.update({"naddlfJets": ak.to_numpy(naddlfjets[req_event])})
-#            
-#                pruned_ev['isttbb'] = isttbb[req_event]
-#                pruned_ev['isttbj'] = isttbj[req_event]
-#                pruned_ev['isttcc'] = isttcc[req_event]
-#                pruned_ev['isttcj'] = isttcj[req_event]
-#                pruned_ev['isttother'] = isttother[req_event]
-
-#                out_branch = np.append(
-#                    out_branch, 
-#                    [
-#                        'isttbb', 'isttbj', 'isttcc', 'isttcj', 'isttother',
-#                        'addbJet_pt', 'addbJet_eta', 'addbJet_phi', 'addbJet_mass', 
-#                        'addcJet_pt', 'addcJet_eta', 'addcJet_phi', 'addcJet_mass',
-#                        'bJetFromT*', 'bJetFromW*', 'cJetFromW*', 'addbJet*', 'addcJet*', 'addlfJet*',
-#                        "nbjetsFromT", "nbjetsFromW", "ncjetsFromW", "naddbjets", "naddcjets", "naddlfjets", "naddlfjets2",
-#                    ]
-#                )
                 print('out: ', out_branch)
                 print('out: ', out_branch)
                 print('out: ', out_branch)
