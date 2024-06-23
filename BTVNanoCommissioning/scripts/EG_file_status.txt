@@ -1,0 +1,6 @@
+DoubleEGRun2017B-UL2017_MiniAODv2_NanoAODv Events: 58088760
+DoubleEGRun2017C-UL2017_MiniAODv2_NanoAODv Events: 65181125
+DoubleEGRun2017D-UL2017_MiniAODv2_NanoAODv Events: 25911432
+DoubleEGRun2017E-UL2017_MiniAODv2_NanoAODv Events: 56241190
+DoubleEGRun2017F-UL2017_MiniAODv2_NanoAODv Events: 74265012
+No bad files found!
