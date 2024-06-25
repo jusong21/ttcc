@@ -14,6 +14,7 @@ from coffea.lookup_tools import extractor, txt_converters, rochester_lookup
 from coffea.lumi_tools import LumiMask
 from coffea.btag_tools import BTagScaleFactor
 import correctionlib
+from correctionlib import _core
 
 from BTVNanoCommissioning.helpers.cTagSFReader import getSF
 from BTVNanoCommissioning.helpers.func import update

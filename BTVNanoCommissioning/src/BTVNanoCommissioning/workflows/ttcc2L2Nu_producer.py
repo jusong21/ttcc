@@ -658,8 +658,13 @@ class NanoProcessor(processor.ProcessorABC):
 #
             # write to root files
             os.system(f"mkdir -p {self.name}/{dataset}")
-            if isRealData: outname = f"{self.name}/{dataset}/f{events.metadata['filename'].split('/')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root" 
-            else: outname = f"{self.name}/{dataset}/f{events.metadata['filename'].split('_')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root" 
+
+            if isTTbar: outname = f"{self.name}/{dataset}/f{events.metadata['filename'].split('_')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root"
+            else: outname = f"{self.name}/{dataset}/f{events.metadata['filename'].split('/')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root"
+            #else: outname = f"{self.name}/{dataset}/f{events.metadata['filename'].split('/')[-1].replace('.root','')}_{int(events.metadata['entrystop']/self.chunksize)}.root"
+
+            print('outname:', outname)
+            print('outname:', outname)
             with uproot.recreate(
                 outname
             ) as fout:
