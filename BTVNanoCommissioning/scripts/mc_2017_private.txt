@@ -1,0 +1,8 @@
+/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/jusong-TopNanoAODv9-1-1_2017UL-27efd120551babaabc6bd4b4b90d69e0/USER
+/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/jusong-TopNanoAODv9-1-1_2017UL-27efd120551babaabc6bd4b4b90d69e0/USER
+/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/jusong-TopNanoAODv9-1-1_2017UL-27efd120551babaabc6bd4b4b90d69e0/USER
+/TTbb_4f_TTTo2L2Nu_TuneCP5-Powheg-Openloops-Pythia8/jusong-TopNanoAODv9-1-1_2017UL-27efd120551babaabc6bd4b4b90d69e0/USER
+/TTbb_4f_TTToHadronic_TuneCP5-Powheg-Openloops-Pythia8/jusong-TopNanoAODv9-1-1_2017UL-27efd120551babaabc6bd4b4b90d69e0/USER
+/TTbb_4f_TTToSemiLeptonic_TuneCP5-Powheg-Openloops-Pythia8/jusong-TopNanoAODv9-1-1_2017UL-27efd120551babaabc6bd4b4b90d69e0/USER
+/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/jusong-TopNanoAODv9-1-1_2017UL-27efd120551babaabc6bd4b4b90d69e0/USER
+/ttHTobb_M125_TuneCP5_13TeV-powheg-pythia8/jusong-TopNanoAODv9-1-1_2017UL-27efd120551babaabc6bd4b4b90d69e0/USER

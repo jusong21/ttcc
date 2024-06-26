@@ -14,6 +14,7 @@ from coffea.lookup_tools import extractor, txt_converters, rochester_lookup
 from coffea.lumi_tools import LumiMask
 from coffea.btag_tools import BTagScaleFactor
 import correctionlib
+from correctionlib import _core
 
 from BTVNanoCommissioning.helpers.cTagSFReader import getSF
 from BTVNanoCommissioning.helpers.func import update
@@ -57,12 +58,10 @@ def load_SF(campaign, syst=False):
                         correct_map["PU"] = ext.make_evaluator()["PU"]
         elif SF == "HLT":
             ext = extractor()
-            
-            # with importlib.resources.path(_pu_path, config["HLT"]) as filename:
-            #for filename in config["HLT"]:
             ext.add_weight_sets([f"* * src/BTVNanoCommissioning/data/LSF/{campaign}/{config[campaign]['HLT']}"])
             ext.finalize()
             correct_map["HLT"] = ext.make_evaluator()
+            ext_err = extractor()
         ## btag weight
         elif SF == "BTV":
             if "btag" in config[campaign]["BTV"].keys() and config[campaign]["BTV"][
@@ -702,7 +701,6 @@ def JME_shifts(
     if "jetveto" in correct_map.keys():
         events.Jet = update(events.Jet, {"veto": jetveto(events, correct_map)})
     shifts += [({"Jet": jets, "MET": met}, None)]
-    #print("in shift", met.pt)
     return shifts
 
 
@@ -792,40 +790,66 @@ def Roccor_shifts(shifts, correct_map, events, isRealData, systematic=False):
 
 
 ## PU weight
-def puwei(nPU, correct_map, weights, syst=False):
+def puwei(nPU, correct_map, weights, weightsup, weightsdown, syst=False):
     if "correctionlib" in str(type(correct_map["PU"])):
+        weights.add(
+            "puweight",
+            correct_map["PU"][list(correct_map["PU"].keys())[0]].evaluate(nPU, "nominal"),
+        )
         if syst:
-            return weights.add(
+            weightsup.add(
                 "puweight",
-                correct_map["PU"][list(correct_map["PU"].keys())[0]].evaluate(
-                    nPU, "nominal"
-                ),
-                correct_map["PU"][list(correct_map["PU"].keys())[0]].evaluate(
-                    nPU, "up"
-                ),
-                correct_map["PU"][list(correct_map["PU"].keys())[0]].evaluate(
-                    nPU, "down"
-                ),
+                correct_map["PU"][list(correct_map["PU"].keys())[0]].evaluate(nPU, "up"),
             )
-        else:
-            return weights.add(
+            weightsdown.add(
                 "puweight",
-                correct_map["PU"][list(correct_map["PU"].keys())[0]].evaluate(
-                    nPU, "nominal"
-                ),
+                correct_map["PU"][list(correct_map["PU"].keys())[0]].evaluate(nPU, "down"),
             )
+#            return weights.add(
+#                "puweight",
+#                correct_map["PU"][list(correct_map["PU"].keys())[0]].evaluate(
+#                    nPU, "nominal"
+#                ),
+#                correct_map["PU"][list(correct_map["PU"].keys())[0]].evaluate(
+#                    nPU, "up"
+#                ),
+#                correct_map["PU"][list(correct_map["PU"].keys())[0]].evaluate(
+#                    nPU, "down"
+#                ),
+#            )
+#        else:
+#            return weights.add(
+#                "puweight",
+#                correct_map["PU"][list(correct_map["PU"].keys())[0]].evaluate(
+#                    nPU, "nominal"
+#                ),
+#            )
     else:
+        weights.add(
+            "puweight",
+            correct_map["PU"]["PU"](nPU),
+        )
+            
         if syst:
-            weights.add(
+            weightsup.add(
                 "puweight",
-                correct_map["PU"]["PU"](nPU),
                 correct_map["PU"]["PUup"](nPU),
+            )
+            weightsdown.add(
+                "puweight",
                 correct_map["PU"]["PUdown"](nPU),
             )
-        else:
-            weights.add("puweight", correct_map["PU"]["PU"](nPU))
+#            weights.add(
+#                "puweight",
+#                correct_map["PU"]["PU"](nPU),
+#                correct_map["PU"]["PUup"](nPU),
+#                correct_map["PU"]["PUdown"](nPU),
+#            )
+#        else:
+#            weights.add("puweight", correct_map["PU"]["PU"](nPU))
+    return weights
 
-def btagSFs(jet, correct_map, weights, SFtype, syst=False):
+def btagSFs(jet, correct_map, weights, weightsup, weightsdown, SFtype, syst=False):
     if SFtype == "DeepJetC" or SFtype == "DeepCSVC":
         systlist = [
             "Extrap",
@@ -848,15 +872,14 @@ def btagSFs(jet, correct_map, weights, SFtype, syst=False):
             "lf",
             "cferr1",
             "cferr2",
-            "hfstat1",
-            "hfstat2",
+            "hfstats1",
+            "hfstats2",
             "lfstats1",
             "lfstats2",
         ]
     sfs_up_all, sfs_down_all = {}, {}
     alljet = jet if jet.ndim > 1 else ak.singletons(jet)
 
-    #print('syst ', syst)
     for i, sys in enumerate(systlist):
         sfs, sfs_down, sfs_up = (
             np.ones_like(alljet[:, 0].pt),
@@ -866,14 +889,15 @@ def btagSFs(jet, correct_map, weights, SFtype, syst=False):
         for nj in range(ak.num(alljet.pt)[0]):
             jet = alljet[:, nj]
             masknone = ak.is_none(jet.pt)
+            maskcjet = (jet.hadronFlavour==4)
 
             jet_pt = ak.fill_none(jet.pt, 20)
             jet_eta = ak.fill_none(jet.eta, 2.39)
-            jet.btagDeepFlavCvL = ak.fill_none(jet.btagDeepFlavCvL, 0.0)
-            jet.btagDeepFlavCvB = ak.fill_none(jet.btagDeepFlavCvB, 0.0)
-            jet.btagDeepCvL = ak.fill_none(jet.btagDeepCvL, 0.0)
-            jet.btagDeepCvB = ak.fill_none(jet.btagDeepCvB, 0.0)
-            jet.hadronFlavour = ak.fill_none(jet.hadronFlavour, 0)
+            jet_hadronFlavour = ak.fill_none(jet.hadronFlavour, 0)
+            jet_btagDeepFlavB = ak.fill_none(jet.btagDeepFlavB, 0.0)
+            jet_btagDeepFlavCvL = ak.fill_none(jet.btagDeepFlavCvL, 0.0)
+            jet_btagDeepFlavCvB = ak.fill_none(jet.btagDeepFlavCvB, 0.0)
+
             if "correctionlib" in str(type(correct_map["ctag"])):
                 if SFtype == "DeepJetC":
                     tmp_sfs = np.where(
@@ -881,9 +905,9 @@ def btagSFs(jet, correct_map, weights, SFtype, syst=False):
                         1.0,
                         correct_map["ctag"]["deepJet_shape"].evaluate(
                             "central",
-                            jet.hadronFlavour,
-                            jet.btagDeepFlavCvL,
-                            jet.btagDeepFlavCvB,
+                            jet_hadronFlavour,
+                            jet_btagDeepFlavCvL,
+                            jet_btagDeepFlavCvB,
                         ),
                     )
                     if syst:
@@ -892,9 +916,9 @@ def btagSFs(jet, correct_map, weights, SFtype, syst=False):
                             1.0,
                             correct_map["ctag"]["deepJet_shape"].evaluate(
                                 f"up_{systlist[i]}",
-                                jet.hadronFlavour,
-                                jet.btagDeepFlavCvL,
-                                jet.btagDeepFlavCvB,
+                                jet_hadronFlavour,
+                                jet_btagDeepFlavCvL,
+                                jet_btagDeepFlavCvB,
                             ),
                         )
                         tmp_sfs_down = np.where(
@@ -902,9 +926,9 @@ def btagSFs(jet, correct_map, weights, SFtype, syst=False):
                             1.0,
                             correct_map["ctag"]["deepJet_shape"].evaluate(
                                 f"down_{systlist[i]}",
-                                jet.hadronFlavour,
-                                jet.btagDeepFlavCvL,
-                                jet.btagDeepFlavCvB,
+                                jet_hadronFlavour,
+                                jet_btagDeepFlavCvL,
+                                jet_btagDeepFlavCvB,
                             ),
                         )
             if "correctionlib" in str(type(correct_map["btag"])):
@@ -914,57 +938,90 @@ def btagSFs(jet, correct_map, weights, SFtype, syst=False):
                         1.0,
                         correct_map["btag"]["deepJet_shape"].evaluate(
                             "central",
-                            jet.hadronFlavour,
+                            jet_hadronFlavour,
                             abs(jet_eta),
                             jet_pt,
-                            jet.btagDeepFlavB,
+                            jet_btagDeepFlavB,
                         ),
                     )
                     if syst:
-                        tmp_sfs_up = np.where(
-                            masknone,
-                            1.0,
-                            correct_map["btag"]["deepJet_shape"].evaluate(
-                                f"up_{systlist[i]}",
-                                jet.hadronFlavour,
-                                abs(jet_eta),
-                                jet_pt,
-                                jet.btagDeepFlavB,
-                            ),
-                        )
-                        tmp_sfs_down = np.where(
-                            masknone,
-                            1.0,
-                            correct_map["btag"]["deepJet_shape"].evaluate(
-                                f"down_{systlist[i]}",
-                                jet.hadronFlavour,
-                                abs(jet_eta),
-                                jet_pt,
-                                jet.btagDeepFlavB,
-                            ),
-                        )
+                        if (systlist[i]=="cferr1") or (systlist[i]=="cferr2"):
+                            #print("it's c jet dedicated")
+                            jet_hadronFlavour_c = np.where(jet_hadronFlavour!=4, 4, jet_hadronFlavour)
+                            tmp_sfs_up = np.where(
+                                (~masknone) & maskcjet,
+                                correct_map["btag"]["deepJet_shape"].evaluate(
+                                    f"up_{systlist[i]}",
+                                    jet_hadronFlavour_c,
+                                    abs(jet_eta),
+                                    jet_pt,
+                                    jet_btagDeepFlavB,
+                                ),
+                                sfs,
+                            )
+                            tmp_sfs_down = np.where(
+                                (~masknone) & maskcjet,
+                                correct_map["btag"]["deepJet_shape"].evaluate(
+                                    f"down_{systlist[i]}",
+                                    jet_hadronFlavour_c,
+                                    abs(jet_eta),
+                                    jet_pt,
+                                    jet_btagDeepFlavB,
+                                ),
+                                sfs,
+                            )
+                        else: 
+                            #print("It's not c jet dedicated")
+                            jet_hadronFlavour_bl = np.where(jet_hadronFlavour==4, 0, jet_hadronFlavour)
+                            tmp_sfs_up = np.where(
+                                (~masknone) & (~maskcjet),
+                                correct_map["btag"]["deepJet_shape"].evaluate(
+                                    f"up_{systlist[i]}",
+                                    jet_hadronFlavour_bl,
+                                    abs(jet_eta),
+                                    jet_pt,
+                                    jet_btagDeepFlavB,
+                                ),
+                                sfs,
+                            )
+                            tmp_sfs_down = np.where(
+                                (~masknone) & (~maskcjet),
+                                correct_map["btag"]["deepJet_shape"].evaluate(
+                                    f"down_{systlist[i]}",
+                                    jet_hadronFlavour_bl,
+                                    abs(jet_eta),
+                                    jet_pt,
+                                    jet_btagDeepFlavB,
+                                ),
+                                sfs,
+                            )
             sfs = sfs * tmp_sfs
             if syst:
                 sfs_up = sfs_up * tmp_sfs_up
                 sfs_down = sfs_down * tmp_sfs_down
 
         if i == 0 and syst == False:
-            weights.add(SFtype, sfs)
+            #weights.add(SFtype, sfs)
             break
         else:
             sfs_up_all[sys] = sfs_up
             sfs_down_all[sys] = sfs_down
-    if syst == True:
-        weights.add_multivariation(
-            SFtype,
-            sfs,
-            systlist,
-            np.array(list(sfs_up_all.values())),
-            np.array(list(sfs_down_all.values())),
-        )
+
+            weightsup.add(f"{SFtype}_{sys}", sfs_up)
+            weightsdown.add(f"{SFtype}_{sys}", sfs_down)
+
+    weights.add(SFtype, sfs)
+#    if syst == True:
+#        weights.add_multivariation(
+#            SFtype,
+#            sfs,
+#            systlist,
+#            np.array(list(sfs_up_all.values())),
+#            np.array(list(sfs_down_all.values())),
+#        )
     return weights
 
-def HLTSFs(lep1, lep2, channel, correct_map, weights, syst=True):
+def HLTSFs(lep1, lep2, channel, correct_map, weights, weightsup, weightsdown, syst=True):
     lep1_pt = ak.fill_none(lep1.pt, 20)
     lep2_pt = ak.fill_none(lep2.pt, 20)
     
@@ -974,8 +1031,13 @@ def HLTSFs(lep1, lep2, channel, correct_map, weights, syst=True):
     em_mask = abs(channel)==143
     pt_mask = (lep1_pt > 20) & (lep2_pt > 20)
 
-    # only with errors
-    sfs = np.ones_like(lep1.pt)
+    #sfs = np.ones_like(lep1.pt)
+    sfs, sfs_err, sfs_up, sfs_down = (
+        np.ones_like(lep1.pt),
+        np.ones_like(lep1.pt),
+        np.ones_like(lep1.pt),
+        np.ones_like(lep1.pt),
+    )
     sfs = np.where(
         (~masknone) & pt_mask & ee_mask,
         correct_map["HLT"]["h2D_SF_ee_lepABpt_FullError"](lep1_pt, lep2_pt),
@@ -991,11 +1053,47 @@ def HLTSFs(lep1, lep2, channel, correct_map, weights, syst=True):
         correct_map["HLT"]["h2D_SF_emu_lepABpt_FullError"](lep1_pt, lep2_pt),
         sfs,
     )
-    return weights.add("HLT", sfs)
+    if syst:
+        sfs_up = np.where(
+            (~masknone) & pt_mask & ee_mask,
+            sfs + correct_map["HLT"]["h2D_SF_ee_lepABpt_FullError_error"](lep1_pt, lep2_pt),
+            sfs_up,
+        )
+        sfs_up = np.where(
+            (~masknone) & pt_mask & mm_mask,
+            sfs + correct_map["HLT"]["h2D_SF_mumu_lepABpt_FullError_error"](lep1_pt, lep2_pt),
+            sfs_up,
+        )
+        sfs_up = np.where(
+            (~masknone) & pt_mask & em_mask,
+            sfs + correct_map["HLT"]["h2D_SF_emu_lepABpt_FullError_error"](lep1_pt, lep2_pt),
+            sfs_up,
+        )
+        sfs_down = np.where(
+            (~masknone) & pt_mask & ee_mask,
+            sfs - correct_map["HLT"]["h2D_SF_ee_lepABpt_FullError_error"](lep1_pt, lep2_pt),
+            sfs_down,
+        )
+        sfs_down = np.where(
+            (~masknone) & pt_mask & mm_mask,
+            sfs - correct_map["HLT"]["h2D_SF_mumu_lepABpt_FullError_error"](lep1_pt, lep2_pt),
+            sfs_down,
+        )
+        sfs_down = np.where(
+            (~masknone) & pt_mask & em_mask,
+            sfs - correct_map["HLT"]["h2D_SF_emu_lepABpt_FullError_error"](lep1_pt, lep2_pt),
+            sfs_down,
+        )
+        #weights.add("HLT", sfs, sfs_up, sfs_down)
+        weightsup.add("HLT", sfs_up)
+        weightsdown.add("HLT", sfs_down)
+    weights.add("HLT", sfs)
+
+    return weights
 
 
 ### Lepton SFs
-def eleSFs(ele, correct_map, weights, syst=True, isHLT=False):
+def eleSFs(ele, correct_map, weights, weightsup, weightsdown, syst=True, isHLT=False):
     allele = ele if ele.ndim > 1 else ak.singletons(ele)
 
     for sf in correct_map["EGM_cfg"].keys():
@@ -1179,14 +1277,15 @@ def eleSFs(ele, correct_map, weights, syst=True, isHLT=False):
                 sfs_alle_down = sfs_alle_down * sfs_down
                 sfs_alle_up = sfs_alle_up * sfs_up
 
+        weights.add(sf.split(" ")[0], sfs_alle)
         if syst:
-            weights.add(sf.split(" ")[0], sfs_alle, sfs_alle_up, sfs_alle_down)
-        else:
-            weights.add(sf.split(" ")[0], sfs_alle)
+            weightsup.add(sf.split(" ")[0], sfs_alle_up)
+            weightsdown.add(sf.split(" ")[0], sfs_alle_down)
+
     return weights
 
 
-def muSFs(mu, correct_map, weights, syst=False, isHLT=False):
+def muSFs(mu, correct_map, weights, weightsup, weightsdown, syst=False, isHLT=False):
     allmu = mu if mu.ndim > 1 else ak.singletons(mu)
     for sf in correct_map["MUO_cfg"].keys():
         ## Only apply SFs for lepton pass HLT filter
@@ -1209,9 +1308,6 @@ def muSFs(mu, correct_map, weights, syst=False, isHLT=False):
             mask = mu_pt > 40
             sfs = 1.0
             if "correctionlib" in str(type(correct_map["MUO"])):
-#                if ("ID" in sf or "Reco" in sf) and "Summer22" not in correct_map[
-#                    "campaign"
-#                ]:
                 if "Reco" in sf:
                     mu_pt = ak.fill_none(np.where(mu.pt < 40, 40, mu.pt), 40)
                     mu_pt_low = ak.fill_none(np.where(mu.pt >= 40, 40, mu.pt), 40)
@@ -1320,10 +1416,11 @@ def muSFs(mu, correct_map, weights, syst=False, isHLT=False):
             if syst:
                 sfs_allmu_down = sfs_allmu_down * sfs_down
                 sfs_allmu_up = sfs_allmu_up * sfs_up
+
+        weights.add(sf.split(" ")[0], sfs_allmu)
         if syst:
-            weights.add(sf.split(" ")[0], sfs_allmu, sfs_allmu_up, sfs_allmu_down)
-        else:
-            weights.add(sf.split(" ")[0], sfs_allmu)
+            weightsup.add(sf.split(" ")[0], sfs_allmu_up)
+            weightsdown.add(sf.split(" ")[0], sfs_allmu_down)
     return weights
 
 
@@ -1381,6 +1478,8 @@ def jmar_sf(jet, correct_map, weights, syst=False):
             sfs_all = sfs * sfs_all
         if syst:
             weights.add(sf, sfs_all, sfs_all_up, sfs_all_down)
+            weightsup.add(sf, sfs_all_up)
+            weightsdown.add(sf, sfs_all_down)
         else:
             weights.add(sf, sfs_all)
 
