@@ -578,7 +578,11 @@ class NanoProcessor(processor.ProcessorABC):
             out_branch = ["events", "run", "luminosityBlock", 'PV_npvs', 'PV_npvsGood', "Channel", "nJets", "nbJets", "nbJets_T", "ncJets", "ncJets_T"]
             if not isRealData:
                 pruned_ev["weight"] = weights.weight()
-                out_branch = np.append(out_branch, "weight")
+                pruned_ev["L1PreFiringWeight_Nom"] = ak.to_numpy(events.L1PreFiringWeight.Nom[req_event])
+                pruned_ev["L1PreFiringWeight_Dn"] = ak.to_numpy(events.L1PreFiringWeight.Dn[req_event])
+                pruned_ev["L1PreFiringWeight_Up"] = ak.to_numpy(events.L1PreFiringWeight.Up[req_event])
+
+                out_branch = np.append(out_branch, ["weight", "L1PreFiringWeight_Nom", "L1PreFiringWeight_Dn", "L1PreFiringWeight_Up"])
                 for ind_wei in weights.weightStatistics.keys():
                     pruned_ev[f"{ind_wei}_weight"] = weights.partial_weight(
                         include=[ind_wei]
