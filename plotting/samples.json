@@ -1,0 +1,428 @@
+{
+	"Data": {
+		"processTag": "Data",
+		"processType": "Data",
+		"xsec": "",
+		"events":"",
+		"accuracy": "",
+		"legend": "Data",
+		"colour": 1,
+		"description": ""
+    },
+	"TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8": {
+		"processTag": "TTTo2L2Nu",
+		"processType": "MC",
+		"xsec": 88.5,
+		"events": 106724000,
+		"accuracy": "NLO",
+		"legend": "TT2L2Nu",
+		"colour": 606,
+		"description": ""
+    },
+	"TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8": {
+		"processTag": "TTToSemiLeptonic",
+		"processType": "MC",
+		"xsec": 366.3,
+		"events": 355196000,
+		"accuracy": "NLO",
+		"legend": "TTSemi",
+		"colour": 851,
+		"description": ""
+	},
+	"TTToHadronic_TuneCP5_13TeV-powheg-pythia8": {
+		"processTag": "TTToHadronic",
+		"processType": "MC",
+		"xsec": 378.9,
+		"events": 235719999,
+		"accuracy": "NLO",
+		"legend": "TTHad",
+		"colour": 432,
+		"description": ""
+	},
+	"ttHTobb_M125_TuneCP5_13TeV-powheg-pythia8": {
+		"processTag": "ttHTobb",
+		"processType": "MC",
+		"xsec": 0.2953,
+		"events": 7825000,
+		"accuracy": "NLO",
+		"legend": "ttH",
+		"colour": 800,
+		"description": ""
+    },
+	"ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8": {
+		"processTag": "ttHToNonbb",
+		"processType": "MC",
+		"xsec": 0.2118,
+		"events": 5070989,
+		"accuracy": "NLO",
+		"legend": "ttH",
+		"colour": 800,
+		"description": ""
+    },
+	"DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8": {
+		"processTag": "DYJetsToLL_M-10to50",
+		"processType": "MC",
+		"xsec": 18610.0,
+		"events": 68480179,
+		"accuracy": "NLO",
+		"legend": "Z+jet",
+		"colour": 626,
+		"description": ""
+	},
+	"DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8": {
+		"processTag": "DYJetsToLL_M-50_HT-70to100",
+		"processType": "MC",
+		"xsec": 211.21,
+		"events": 12205958,
+		"accuracy": "NLO",
+		"legend": "Z+jet",
+		"colour": 626,
+		"description": ""
+	},
+	"DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8": {
+		"processTag": "DYJetsToLL_M-50_HT-100to200",
+		"processType": "MC",
+		"xsec": 183.2,
+		"events": 18955253,
+		"accuracy": "NLO",
+		"legend": "Z+jet",
+		"colour": 626,
+		"description": ""
+	},
+	"DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8": {
+		"processTag": "DYJetsToLL_M-50_HT-200to400",
+		"processType": "MC",
+		"xsec": 55.29,
+		"events": 12513057,
+		"accuracy": "NLO",
+		"legend": "Z+jet",
+		"colour": 626,
+		"description": ""
+	},
+	"DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8": {
+		"processTag": "DYJetsToLL_M-50_HT-400to600", 
+		"processType": "MC",
+		"xsec": 7.846,
+		"events": 5543804,
+		"accuracy": "NLO",
+		"legend": "Z+jet",
+		"colour": 626,
+		"description": ""
+	},
+	"DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8": {
+		"processTag": "DYJetsToLL_M-50_HT-600to800",
+		"processType": "MC",
+		"xsec": 1.933,
+		"events": 5278417,
+		"accuracy": "NLO",
+		"legend": "Z+jet",
+		"colour": 626,
+		"description": ""
+	},
+	"DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8": {
+		"processTag": "DYJetsToLL_M-50_HT-800to1200",
+		"processType": "MC",
+		"xsec": 0.831,
+		"events": 4506887,
+		"accuracy": "NLO",
+		"legend": "Z+jet",
+		"colour": 626,
+		"description": ""
+	},
+	"DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8": {
+		"processTag": "DYJetsToLL_M-50_HT-1200to2500",
+		"processType": "MC",
+		"xsec": 0.183,
+		"events": 4802716,
+		"accuracy": "NLO",
+		"legend": "Z+jet",
+		"colour": 626,
+		"description": ""
+	},
+	"DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8": {
+		"processTag": "DYJetsToLL_M-50_HT-2500toInf",
+		"processType": "MC",
+		"xsec": 0.004,
+		"events": 1480047,
+		"accuracy": "NLO",
+		"legend": "Z+jet",
+		"colour": 626,
+		"description": ""
+	},
+	"ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8": {
+		"processTag": "ST_s-channel_4f_leptonDecays",
+		"processType": "MC",
+		"xsec": 2.29,
+		"events": 13882000,
+		"accuracy": "NLO",
+		"legend": "ST",
+		"colour": 402,
+		"description": ""
+	},
+	"ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8": {
+		"processTag": "ST_t-channel_antitop_4f_InclusiveDecays",
+		"processType": "MC",
+		"xsec": 80.0,
+		"events": 69921000,
+		"accuracy": "NLO",
+		"legend": "ST",
+		"colour": 402,
+		"description": ""
+	},
+	"ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8": {
+		"processTag": "ST_t-channel_top_4f_InclusiveDecays",
+		"processType": "MC",
+		"xsec": 134.2,
+		"events": 129903000,
+		"accuracy": "NLO",
+		"legend": "ST",
+		"colour": 402,
+		"description": ""
+	},
+	"ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8": {
+		"processTag": "ST_tW_antitop_5f_NoFullyHadronicDecays",
+		"processType": "MC",
+		"xsec": 21.6,
+		"events": 8433998,
+		"accuracy": "NLO",
+		"legend": "ST",
+		"colour": 402,
+		"description": ""
+	},
+	"ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8": {
+		"processTag": "ST_tW_top_5f_NoFullyHadronicDecays",
+		"processType": "MC",
+		"xsec": 21.6,
+		"events": 8507203,
+		"accuracy": "NLO",
+		"legend": "ST",
+		"colour": 402,
+		"description": ""
+	},
+	"TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8": {
+		"processTag": "TTWJetsToLNu",
+		"processType": "MC",
+		"xsec": 0.2043,
+		"events": 7460671,
+		"accuracy": "NLO",
+		"legend": "TTV",
+		"colour": 600,
+		"description": ""
+	},
+	"TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8": {
+		"processTag": "TTWJetsToQQ",
+		"processType": "MC",
+		"xsec": 0.4062,
+		"events": 655018,
+		"accuracy": "NLO",
+		"legend": "TTV",
+		"colour": 600,
+		"description": ""
+	},
+	"TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8": {
+		"processTag": "TTZToLLNuNu_M-10",
+		"processType": "MC",
+		"xsec": 0.2529,
+		"events": 14196000,
+		"accuracy": "NLO",
+		"legend": "TTV",
+		"colour": 600,
+		"description": ""
+	},
+	"TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8": {
+		"processTag": "TTZToQQ",
+		"processType": "MC",
+		"xsec": 0.5297,
+		"events": 13982000,
+		"accuracy": "NLO",
+		"legend": "TTV",
+		"colour": 600,
+		"description": ""
+	},
+	"WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8": {
+		"processTag": "WJetsToLNu_HT-200To400",
+		"processType": "MC",
+		"xsec": 1443.7,
+		"events": 44736228,
+		"accuracy": "NLO",
+		"legend": "W+jet",
+		"colour": 616,
+		"description": ""
+	},
+	"WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8": {
+		"processTag": "WJetsToLNu_HT-200To400",
+		"processType": "MC",
+		"xsec": 1434.5,
+		"events": 47424468,
+		"accuracy": "NLO",
+		"legend": "W+jet",
+		"colour": 616,
+		"description": ""
+	},
+	"WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8": {
+		"processTag": "WJetsToLNu_HT-200To400",
+		"processType": "MC",
+		"xsec": 383.19,
+		"events": 42602407,
+		"accuracy": "NLO",
+		"legend": "W+jet",
+		"colour": 616,
+		"description": ""
+	},
+	"WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8": {
+		"processTag": "WJetsToLNu_HT-400To600",
+		"processType": "MC",
+		"xsec": 51.68,
+		"events": 1435543,
+		"accuracy": "NLO",
+		"legend": "W+jet",
+		"colour": 616,
+		"description": ""
+	},
+	"WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8": {
+		"processTag": "WJetsToLNu_HT-600To800",
+		"processType": "MC",
+		"xsec": 12.53,
+		"events": 4481777,
+		"accuracy": "NLO",
+		"legend": "W+jet",
+		"colour": 616,
+		"description": ""
+	},
+	"WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8": {
+		"processTag": "WJetsToLNu_HT-800To1200",
+		"processType": "MC",
+		"xsec": 5.62,
+		"events": 5088483,
+		"accuracy": "NLO",
+		"legend": "W+jet",
+		"colour": 616,
+		"description": ""
+	},
+	"WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8": {
+		"processTag": "WJetsToLNu_HT-1200To2500",
+		"processType": "MC",
+		"xsec": 1.32,
+		"events": 4870855,
+		"accuracy": "NLO",
+		"legend": "W+jet",
+		"colour": 616,
+		"description": ""
+	},
+	"WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8": {
+		"processTag": "WJetsToLNu_HT-2500ToInf",
+		"processType": "MC",
+		"xsec": 0.009,
+		"events": 1185699,
+		"accuracy": "NLO",
+		"legend": "W+jet",
+		"colour": 616,
+		"description": ""
+	},
+	"WW_TuneCP5_13TeV-pythia8": {
+		"processTag": "WW",
+		"processType": "MC",
+		"xsec": 118.7,
+		"events": 15634000,
+		"accuracy": "NLO",
+		"legend": "VV",
+		"colour": 900,
+		"description": ""
+	},
+	"WZ_TuneCP5_13TeV-pythia8": {
+		"processTag": "WZ",
+		"processType": "MC",
+		"xsec": 65.5443,
+		"events": 10997522452,
+		"accuracy": "NLO",
+		"legend": "VV",
+		"colour": 900,
+		"description": ""
+	},
+	"ZZ_TuneCP5_13TeV-pythia8": {
+		"processTag": "ZZ",
+		"processType": "MC",
+		"xsec": 15.8274,
+		"events": 2706000,
+		"accuracy": "NLO",
+		"legend": "VV",
+		"colour": 900,
+		"description": ""
+	},
+	"WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8": {
+		"processTag": "WWW",
+		"processType": "MC",
+		"xsec": 0.216,
+		"events": 9854000,
+		"accuracy": "NLO",
+		"legend": "VVV",
+		"colour": 418,
+		"description": ""
+	},
+	"WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8": {
+		"processTag": "WWZ",
+		"processType": "MC",
+		"xsec": 0.171,
+		"events": 9938400,
+		"accuracy": "NLO",
+		"legend": "VVV",
+		"colour": 418,
+		"description": ""
+	},
+	"WZZ_TuneCP5_13TeV-amcatnlo-pythia8": {
+		"processTag": "WZZ",
+		"processType": "MC",
+		"xsec": 0.0571,
+		"events": 22547413000,
+		"accuracy": "NLO",
+		"legend": "VVV",
+		"colour": 418,
+		"description": ""
+	},
+	"ZZZ_TuneCP5_13TeV-amcatnlo-pythia8": {
+		"processTag": "ZZZ",
+		"processType": "MC",
+		"xsec": 0.0148,
+		"events": 9524000,
+		"accuracy": "NLO",
+		"legend": "VVV",
+		"colour": 418,
+		"description": ""
+	},
+
+
+	"TTbb_4f_TTTo2L2Nu_TuneCP5-Powheg-Openloops-Pythia8": {
+		"processTag": "TTbb_4f_TTTo2L2Nu",
+		"processType": "MC",
+		"xsec": "",
+		"events": "",
+		"accuracy": "NLO",
+		"legend": "",
+		"colour": "",
+		"description": ""
+	},
+
+	"TTbb_4f_TTToHadronic_TuneCP5-Powheg-Openloops-Pythia8": {
+		"processTag": "TTbb_4f_TTToHadronic",
+		"processType": "MC",
+		"xsec": "",
+		"events": "",
+		"accuracy": "NLO",
+		"legend": "",
+		"colour": "",
+		"description": ""
+	},
+
+	"TTbb_4f_TTToSemiLeptonic_TuneCP5-Powheg-Openloops-Pythia8": {
+		"processTag": "TTbb_4f_TTToSemiLeptonic",
+		"processType": "MC",
+		"xsec": "",
+		"events": "",
+		"accuracy": "NLO",
+		"legend": "",
+		"colour": "",
+		"description": ""
+	}
+
+
+}
