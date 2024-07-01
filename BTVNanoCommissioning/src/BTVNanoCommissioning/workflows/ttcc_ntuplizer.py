@@ -84,7 +84,8 @@ class NanoProcessor(processor.ProcessorABC):
 		jet_drLep1 = jets.delta_r(leptons[:,0])
 		jet_drLep2 = jets.delta_r(leptons[:,1])
 
-		pruned_ev = {'Channel': ak.to_numpy(events.Channel), 'nJets': ak.to_numpy(njets), 'nbJets': ak.to_numpy(events.nbJet)}
+		#pruned_ev = {'Channel': ak.to_numpy(events.Channel), 'nJets': ak.to_numpy(njets), 'nbJets': ak.to_numpy(events.nbJets), 'nbJets_T': ak.to_numpy(events.nbJets_T), 'ncJets': ak.to_numpy(events.ncJets), 'ncJets_T': ak.to_numpy(events.ncJets_T)}
+		pruned_ev = {'Channel': ak.to_numpy(events.Channel), 'nJets': ak.to_numpy(njets), 'nbJets': ak.to_numpy(events.nbJets), 'ncJets': ak.to_numpy(events.ncJets)}
 
 		# leptons
 		pruned_ev['Lepton1_pt'] = ak.to_numpy(leptons.pt[:,0])
@@ -191,8 +192,43 @@ class NanoProcessor(processor.ProcessorABC):
 		pruned_ev['sortJet4_btagDeepFlavCvB'] = ak.to_numpy(jets_bsort.btagDeepFlavCvB[:,3])
 		pruned_ev['sortJet4_btagDeepFlavCvL'] = ak.to_numpy(jets_bsort.btagDeepFlavCvL[:,3])
 
-#		if isTTbar:
-#			pruned_ev.update({'isttbb': ak.to_numpy(events.isttbb), 'isttbj': ak.to_numpy(events.isttbj), 'isttcc': ak.to_numpy(events.isttcc), 'isttcj': ak.to_numpy(events.isttcj), 'isttother': ak.to_numpy(events.isttother)})
+		if isTTbar:
+			pruned_ev.update({
+				'isttbb': ak.to_numpy(events.isttbb), 
+				'isttbj': ak.to_numpy(events.isttbj), 
+				'isttcc': ak.to_numpy(events.isttcc), 
+				'isttcj': ak.to_numpy(events.isttcj), 
+				'isttother': ak.to_numpy(events.isttother)
+			})
+#			#nbJetFromT = ak.num(events.nbJetsFromT)
+#			for ibj in range(events.nbJetsFromT):
+#				idx = ibj+1
+#				pruned_ev[f"bJetFromT{idx}_pt"] = ak.to_numpy(events.bJetFromT.pt[:,ibj])
+#				pruned_ev[f"bJetFromT{idx}_eta"] = ak.to_numpy(events.bJetFromT.eta[:,ibj])
+#				pruned_ev[f"bJetFromT{idx}_phi"] = ak.to_numpy(events.bJetFromT.phi[:,ibj])
+#				pruned_ev[f"bJetFromT{idx}_mass"] = ak.to_numpy(events.bJetFromT.mass[:,ibj])
+#
+#			for ibj in range(events.naddbJet):
+#				idx = ibj+1
+#				pruned_ev[f"addbJet{idx}_pt"] = ak.to_numpy(events.addbJet.pt[:,ibj])
+#				pruned_ev[f"addbJet{idx}_eta"] = ak.to_numpy(events.addbJet.eta[:,ibj])
+#				pruned_ev[f"addbJet{idx}_phi"] = ak.to_numpy(events.addbJet.phi[:,ibj])
+#				pruned_ev[f"addbJet{idx}_mass"] = ak.to_numpy(events.addbJet.mass[:,ibj])
+#
+#			for icj in range(events.naddcJet):
+#				idx = icj+1
+#				pruned_ev[f"addcJet{idx}_pt"] = ak.to_numpy(events.addcJet.pt[:,icj])
+#				pruned_ev[f"addcJet{idx}_eta"] = ak.to_numpy(events.addcJet.eta[:,icj])
+#				pruned_ev[f"addcJet{idx}_phi"] = ak.to_numpy(events.addcJet.phi[:,icj])
+#				pruned_ev[f"addcJet{idx}_mass"] = ak.to_numpy(events.addcJet.mass[:,icj])
+#
+#			for ilf in range(events.naddlfJet):
+#				idx = ilf+1
+#				pruned_ev[f"addlfJet{idx}_pt"] = ak.to_numpy(events.addlfJet.pt[:,ilf])
+#				pruned_ev[f"addlfJet{idx}_eta"] = ak.to_numpy(events.addlfJet.eta[:,ilf])
+#				pruned_ev[f"addlfJet{idx}_phi"] = ak.to_numpy(events.addlfJet.phi[:,ilf])
+#				pruned_ev[f"addlfJet{idx}_mass"] = ak.to_numpy(events.addlfJet.mass[:,ilf])
+
 
 		if not isRealData:
 			pruned_ev.update({
@@ -205,7 +241,79 @@ class NanoProcessor(processor.ProcessorABC):
 			   'mu_Iso_weight': ak.to_numpy(events.mu.Iso_weight),
 			   'ele_Reco_weight': ak.to_numpy(events.ele.Reco_weight),
 			   'ele_ID_weight': ak.to_numpy(events.ele.ID_weight),
-			   'DeepJetC_weight': ak.to_numpy(events.DeepJetC.weight)
+			   "L1PreFiringWeight_Nom": ak.to_numpy(events.L1PreFiringWeight.Nom),
+			   'DeepJetC_weight': ak.to_numpy(events.DeepJetC.weight),
+			   'DeepJetB_weight': ak.to_numpy(events.DeepJetB.weight),
+
+			   # up
+			   'puweightUp_weight': ak.to_numpy(events.puweightUp.weight),
+			   'HLTUp_weight': ak.to_numpy(events.HLTUp.weight),
+			   'mu_RecoUp_weight': ak.to_numpy(events.mu.RecoUp_weight),
+			   'mu_IDUp_weight': ak.to_numpy(events.mu.IDUp_weight),
+			   'mu_IsoUp_weight': ak.to_numpy(events.mu.IsoUp_weight),
+			   'ele_RecoUp_weight': ak.to_numpy(events.ele.RecoUp_weight),
+			   'ele_IDUp_weight': ak.to_numpy(events.ele.IDUp_weight),
+
+			   "DeepJetC_ExtrapUp_weight": ak.to_numpy(events.DeepJetC.ExtrapUp_weight),
+			   "DeepJetC_InterpUp_weight": ak.to_numpy(events.DeepJetC.InterpUp_weight),
+			   "DeepJetC_LHEScaleWeight_muFUp_weight": ak.to_numpy(events.DeepJetC.LHEScaleWeight_muFUp_weight),
+			   "DeepJetC_LHEScaleWeight_muRUp_weight": ak.to_numpy(events.DeepJetC.LHEScaleWeight_muRUp_weight),
+			   "DeepJetC_PSWeightFSRUp_weight": ak.to_numpy(events.DeepJetC.PSWeightFSRUp_weight),
+			   "DeepJetC_PSWeightISRUp_weight": ak.to_numpy(events.DeepJetC.PSWeightISRUp_weight),
+			   "DeepJetC_PUWeightUp_weight": ak.to_numpy(events.DeepJetC.PUWeightUp_weight),
+			   "DeepJetC_StatUp_weight": ak.to_numpy(events.DeepJetC.StatUp_weight),
+			   "DeepJetC_XSec_BRUnc_DYJets_bUp_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_DYJets_bUp_weight),
+			   "DeepJetC_XSec_BRUnc_DYJets_cUp_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_DYJets_cUp_weight),
+			   "DeepJetC_XSec_BRUnc_WJets_cUp_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_WJets_cUp_weight),
+			   "DeepJetC_jerUp_weight": ak.to_numpy(events.DeepJetC.jerUp_weight),
+			   "DeepJetC_jesTotalUp_weight": ak.to_numpy(events.DeepJetC.jesTotalUp_weight),
+
+			   "DeepJetB_hfUp_weight": ak.to_numpy(events.DeepJetB.hfUp_weight),
+			   "DeepJetB_lfUp_weight": ak.to_numpy(events.DeepJetB.lfUp_weight),
+			   "DeepJetB_cferr1Up_weight": ak.to_numpy(events.DeepJetB.cferr1Up_weight),
+			   "DeepJetB_cferr2Up_weight": ak.to_numpy(events.DeepJetB.cferr2Up_weight),
+			   "DeepJetB_hfstats1Up_weight": ak.to_numpy(events.DeepJetB.hfstats1Up_weight),
+			   "DeepJetB_hfstats2Up_weight": ak.to_numpy(events.DeepJetB.hfstats2Up_weight),
+			   "DeepJetB_lfstats1Up_weight": ak.to_numpy(events.DeepJetB.lfstats1Up_weight),
+			   "DeepJetB_lfstats2Up_weight": ak.to_numpy(events.DeepJetB.lfstats2Up_weight),
+
+			   # need to check
+			   "L1PreFiringWeight_Up": ak.to_numpy(events.L1PreFiringWeight.Dn),
+
+			   # down
+			   'puweightDown_weight': ak.to_numpy(events.puweightDown.weight),
+			   'HLTDown_weight': ak.to_numpy(events.HLTDown.weight),
+			   'mu_RecoDown_weight': ak.to_numpy(events.mu.RecoDown_weight),
+			   'mu_IDDown_weight': ak.to_numpy(events.mu.IDDown_weight),
+			   'mu_IsoDown_weight': ak.to_numpy(events.mu.IsoDown_weight),
+			   'ele_RecoDown_weight': ak.to_numpy(events.ele.RecoDown_weight),
+			   'ele_IDDown_weight': ak.to_numpy(events.ele.IDDown_weight),
+
+			   "DeepJetC_ExtrapDown_weight": ak.to_numpy(events.DeepJetC.ExtrapDown_weight),
+			   "DeepJetC_InterpDown_weight": ak.to_numpy(events.DeepJetC.InterpDown_weight),
+			   "DeepJetC_LHEScaleWeight_muFDown_weight": ak.to_numpy(events.DeepJetC.LHEScaleWeight_muFDown_weight),
+			   "DeepJetC_LHEScaleWeight_muRDown_weight": ak.to_numpy(events.DeepJetC.LHEScaleWeight_muRDown_weight),
+			   "DeepJetC_PSWeightFSRDown_weight": ak.to_numpy(events.DeepJetC.PSWeightFSRDown_weight),
+			   "DeepJetC_PSWeightISRDown_weight": ak.to_numpy(events.DeepJetC.PSWeightISRDown_weight),
+			   "DeepJetC_PUWeightDown_weight": ak.to_numpy(events.DeepJetC.PUWeightDown_weight),
+			   "DeepJetC_StatDown_weight": ak.to_numpy(events.DeepJetC.StatDown_weight),
+			   "DeepJetC_XSec_BRUnc_DYJets_bDown_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_DYJets_bDown_weight),
+			   "DeepJetC_XSec_BRUnc_DYJets_cDown_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_DYJets_cDown_weight),
+			   "DeepJetC_XSec_BRUnc_WJets_cDown_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_WJets_cDown_weight),
+			   "DeepJetC_jerDown_weight": ak.to_numpy(events.DeepJetC.jerDown_weight),
+			   "DeepJetC_jesTotalDown_weight": ak.to_numpy(events.DeepJetC.jesTotalDown_weight),
+
+			   "DeepJetB_hfDown_weight": ak.to_numpy(events.DeepJetB.hfDown_weight),
+			   "DeepJetB_lfDown_weight": ak.to_numpy(events.DeepJetB.lfDown_weight),
+			   "DeepJetB_cferr1Down_weight": ak.to_numpy(events.DeepJetB.cferr1Down_weight),
+			   "DeepJetB_cferr2Down_weight": ak.to_numpy(events.DeepJetB.cferr2Down_weight),
+			   "DeepJetB_hfstats1Down_weight": ak.to_numpy(events.DeepJetB.hfstats1Down_weight),
+			   "DeepJetB_hfstats2Down_weight": ak.to_numpy(events.DeepJetB.hfstats2Down_weight),
+			   "DeepJetB_lfstats1Down_weight": ak.to_numpy(events.DeepJetB.lfstats1Down_weight),
+			   "DeepJetB_lfstats2Down_weight": ak.to_numpy(events.DeepJetB.lfstats2Down_weight),
+
+			   # need to check
+			   "L1PreFiringWeight_Down": ak.to_numpy(events.L1PreFiringWeight.Up),
 			})
 		
 		out_branch = list(pruned_ev.keys())
