@@ -121,6 +121,41 @@ hadron_mass_table = {**main, **{k: v for k, v in backup.items() if k not in main
 ###############
 #  Functions  #
 ###############
+uncs = {
+	"DeepJetC": {
+		"Up": {
+			"br": "DeepJetC_Up_tot",
+		 	"list": ["ExtrapUp_weight", "InterpUp_weight", "LHEScaleWeight_muFUp_weight", "LHEScaleWeight_muRUp_weight", "PSWeightFSRUp_weight", "PSWeightISRUp_weight", "PUWeightUp_weight", "StatUp_weight", "XSec_BRUnc_DYJets_bUp_weight", "XSec_BRUnc_DYJets_cUp_weight", "XSec_BRUnc_WJets_cUp_weight", "jerUp_weight", "jesTotalUp_weight"],
+		},
+		"Down": {
+			"br": "Down_tot",
+		 	"list": ["ExtrapDown_weight", "InterpDown_weight", "LHEScaleWeight_muFDown_weight", "LHEScaleWeight_muRDown_weight", "PSWeightFSRDown_weight", "PSWeightISRDown_weight", "PUWeightDown_weight", "StatDown_weight", "XSec_BRUnc_DYJets_bDown_weight", "XSec_BRUnc_DYJets_cDown_weight", "XSec_BRUnc_WJets_cDown_weight", "jerDown_weight", "jesTotalDown_weight"],
+		}
+	},
+	"DeepJetB": {
+		"Up": {
+			"br": "Up_tot",
+			"list": ["hfUp_weight", "lfUp_weight", "cferr1Up_weight", "cferr2Up_weight", "hfstats1Up_weight", "hfstats2Up_weight", "lfstats1Up_weight", "lfstats2Up_weight"],
+		},
+		"Down": {
+			"br": "Down_tot",
+			"list": ["hfDown_weight", "lfDown_weight", "cferr1Down_weight", "cferr2Down_weight", "hfstats1Down_weight", "hfstats2Down_weight", "lfstats1Down_weight", "lfstats2Down_weight"],
+		}
+	}
+}
+def calc_tot_unc(events, DeepJet):
+	sq_up_sum = 0
+	sq_down_sum = 0
+	for unc in uncs[DeepJet]["Up"]["list"]:
+		val = ak.to_numpy(events[DeepJet][unc])
+		sq_up_sum += val**2
+	for unc in uncs[DeepJet]["Down"]["list"]:
+		val = ak.to_numpy(events[DeepJet][unc])
+		sq_down_sum += val**2
+	tot_up = np.sqrt(sq_up_sum)
+	tot_down = np.sqrt(sq_down_sum)
+	return tot_down, tot_up
+
 def is_from_GSP(GenPart):
     QGP = ak.zeros_like(GenPart.genPartIdxMother)
     QGP = (

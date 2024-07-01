@@ -3,6 +3,8 @@ import os
 import uproot
 from coffea import processor
 from coffea.analysis_tools import Weights
+import math
+from BTVNanoCommissioning.helpers.ttcc2L2Nu_helper import calc_tot_unc
 
 # user helper function
 from BTVNanoCommissioning.helpers.func import (
@@ -231,89 +233,98 @@ class NanoProcessor(processor.ProcessorABC):
 
 
 		if not isRealData:
+			DeepJetC_totDown_weight, DeepJetC_totUp_weight = calc_tot_unc(events, "DeepJetC")
+			DeepJetB_totDown_weight, DeepJetB_totUp_weight = calc_tot_unc(events, "DeepJetB")
+
 			pruned_ev.update({
-			   'weight': ak.to_numpy(events.weight),
-			   'genweight_weight': ak.to_numpy(events.genweight.weight),
-			   'puweight_weight': ak.to_numpy(events.puweight.weight),
-			   'HLT_weight': ak.to_numpy(events.HLT.weight),
-			   'mu_Reco_weight': ak.to_numpy(events.mu.Reco_weight),
-			   'mu_ID_weight': ak.to_numpy(events.mu.ID_weight),
-			   'mu_Iso_weight': ak.to_numpy(events.mu.Iso_weight),
-			   'ele_Reco_weight': ak.to_numpy(events.ele.Reco_weight),
-			   'ele_ID_weight': ak.to_numpy(events.ele.ID_weight),
+			   "weight": ak.to_numpy(events.weight),
+			   "genweight_weight": ak.to_numpy(events.genweight.weight),
+			   "puweight_weight": ak.to_numpy(events.puweight.weight),
+			   "HLT_weight": ak.to_numpy(events.HLT.weight),
+			   "mu_Reco_weight": ak.to_numpy(events.mu.Reco_weight),
+			   "mu_ID_weight": ak.to_numpy(events.mu.ID_weight),
+			   "mu_Iso_weight": ak.to_numpy(events.mu.Iso_weight),
+			   "ele_Reco_weight": ak.to_numpy(events.ele.Reco_weight),
+			   "ele_ID_weight": ak.to_numpy(events.ele.ID_weight),
 			   "L1PreFiringWeight_Nom": ak.to_numpy(events.L1PreFiringWeight.Nom),
-			   'DeepJetC_weight': ak.to_numpy(events.DeepJetC.weight),
-			   'DeepJetB_weight': ak.to_numpy(events.DeepJetB.weight),
+			   "DeepJetC_weight": ak.to_numpy(events.DeepJetC.weight),
+			   "DeepJetB_weight": ak.to_numpy(events.DeepJetB.weight),
 
 			   # up
-			   'puweightUp_weight': ak.to_numpy(events.puweightUp.weight),
-			   'HLTUp_weight': ak.to_numpy(events.HLTUp.weight),
-			   'mu_RecoUp_weight': ak.to_numpy(events.mu.RecoUp_weight),
-			   'mu_IDUp_weight': ak.to_numpy(events.mu.IDUp_weight),
-			   'mu_IsoUp_weight': ak.to_numpy(events.mu.IsoUp_weight),
-			   'ele_RecoUp_weight': ak.to_numpy(events.ele.RecoUp_weight),
-			   'ele_IDUp_weight': ak.to_numpy(events.ele.IDUp_weight),
-
-			   "DeepJetC_ExtrapUp_weight": ak.to_numpy(events.DeepJetC.ExtrapUp_weight),
-			   "DeepJetC_InterpUp_weight": ak.to_numpy(events.DeepJetC.InterpUp_weight),
-			   "DeepJetC_LHEScaleWeight_muFUp_weight": ak.to_numpy(events.DeepJetC.LHEScaleWeight_muFUp_weight),
-			   "DeepJetC_LHEScaleWeight_muRUp_weight": ak.to_numpy(events.DeepJetC.LHEScaleWeight_muRUp_weight),
-			   "DeepJetC_PSWeightFSRUp_weight": ak.to_numpy(events.DeepJetC.PSWeightFSRUp_weight),
-			   "DeepJetC_PSWeightISRUp_weight": ak.to_numpy(events.DeepJetC.PSWeightISRUp_weight),
-			   "DeepJetC_PUWeightUp_weight": ak.to_numpy(events.DeepJetC.PUWeightUp_weight),
-			   "DeepJetC_StatUp_weight": ak.to_numpy(events.DeepJetC.StatUp_weight),
-			   "DeepJetC_XSec_BRUnc_DYJets_bUp_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_DYJets_bUp_weight),
-			   "DeepJetC_XSec_BRUnc_DYJets_cUp_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_DYJets_cUp_weight),
-			   "DeepJetC_XSec_BRUnc_WJets_cUp_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_WJets_cUp_weight),
-			   "DeepJetC_jerUp_weight": ak.to_numpy(events.DeepJetC.jerUp_weight),
-			   "DeepJetC_jesTotalUp_weight": ak.to_numpy(events.DeepJetC.jesTotalUp_weight),
-
-			   "DeepJetB_hfUp_weight": ak.to_numpy(events.DeepJetB.hfUp_weight),
-			   "DeepJetB_lfUp_weight": ak.to_numpy(events.DeepJetB.lfUp_weight),
-			   "DeepJetB_cferr1Up_weight": ak.to_numpy(events.DeepJetB.cferr1Up_weight),
-			   "DeepJetB_cferr2Up_weight": ak.to_numpy(events.DeepJetB.cferr2Up_weight),
-			   "DeepJetB_hfstats1Up_weight": ak.to_numpy(events.DeepJetB.hfstats1Up_weight),
-			   "DeepJetB_hfstats2Up_weight": ak.to_numpy(events.DeepJetB.hfstats2Up_weight),
-			   "DeepJetB_lfstats1Up_weight": ak.to_numpy(events.DeepJetB.lfstats1Up_weight),
-			   "DeepJetB_lfstats2Up_weight": ak.to_numpy(events.DeepJetB.lfstats2Up_weight),
-
+			   "puweightUp_weight": ak.to_numpy(events.puweightUp.weight),
+			   "HLTUp_weight": ak.to_numpy(events.HLTUp.weight),
+			   "mu_RecoUp_weight": ak.to_numpy(events.mu.RecoUp_weight),
+			   "mu_IDUp_weight": ak.to_numpy(events.mu.IDUp_weight),
+			   "mu_IsoUp_weight": ak.to_numpy(events.mu.IsoUp_weight),
+			   "ele_RecoUp_weight": ak.to_numpy(events.ele.RecoUp_weight),
+			   "ele_IDUp_weight": ak.to_numpy(events.ele.IDUp_weight),
+			   "DeepJetC_TotUp_weight": DeepJetC_totUp_weight,
+			   "DeepJetB_TotUp_weight": DeepJetB_totUp_weight,
+#			   "DeepJetC_TotUp_weight": ak.to_numpy(DeepJetC_totUp_weight),
+#			   "DeepJetB_TotUp_weight": ak.to_numpy(DeepJetB_totUp_weight),
 			   # need to check
 			   "L1PreFiringWeight_Up": ak.to_numpy(events.L1PreFiringWeight.Dn),
 
+#			   "DeepJetC_ExtrapUp_weight": ak.to_numpy(events.DeepJetC.ExtrapUp_weight),
+#			   "DeepJetC_InterpUp_weight": ak.to_numpy(events.DeepJetC.InterpUp_weight),
+#			   "DeepJetC_LHEScaleWeight_muFUp_weight": ak.to_numpy(events.DeepJetC.LHEScaleWeight_muFUp_weight),
+#			   "DeepJetC_LHEScaleWeight_muRUp_weight": ak.to_numpy(events.DeepJetC.LHEScaleWeight_muRUp_weight),
+#			   "DeepJetC_PSWeightFSRUp_weight": ak.to_numpy(events.DeepJetC.PSWeightFSRUp_weight),
+#			   "DeepJetC_PSWeightISRUp_weight": ak.to_numpy(events.DeepJetC.PSWeightISRUp_weight),
+#			   "DeepJetC_PUWeightUp_weight": ak.to_numpy(events.DeepJetC.PUWeightUp_weight),
+#			   "DeepJetC_StatUp_weight": ak.to_numpy(events.DeepJetC.StatUp_weight),
+#			   "DeepJetC_XSec_BRUnc_DYJets_bUp_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_DYJets_bUp_weight),
+#			   "DeepJetC_XSec_BRUnc_DYJets_cUp_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_DYJets_cUp_weight),
+#			   "DeepJetC_XSec_BRUnc_WJets_cUp_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_WJets_cUp_weight),
+#			   "DeepJetC_jerUp_weight": ak.to_numpy(events.DeepJetC.jerUp_weight),
+#			   "DeepJetC_jesTotalUp_weight": ak.to_numpy(events.DeepJetC.jesTotalUp_weight),
+#
+#			   "DeepJetB_hfUp_weight": ak.to_numpy(events.DeepJetB.hfUp_weight),
+#			   "DeepJetB_lfUp_weight": ak.to_numpy(events.DeepJetB.lfUp_weight),
+#			   "DeepJetB_cferr1Up_weight": ak.to_numpy(events.DeepJetB.cferr1Up_weight),
+#			   "DeepJetB_cferr2Up_weight": ak.to_numpy(events.DeepJetB.cferr2Up_weight),
+#			   "DeepJetB_hfstats1Up_weight": ak.to_numpy(events.DeepJetB.hfstats1Up_weight),
+#			   "DeepJetB_hfstats2Up_weight": ak.to_numpy(events.DeepJetB.hfstats2Up_weight),
+#			   "DeepJetB_lfstats1Up_weight": ak.to_numpy(events.DeepJetB.lfstats1Up_weight),
+#			   "DeepJetB_lfstats2Up_weight": ak.to_numpy(events.DeepJetB.lfstats2Up_weight),
+
 			   # down
-			   'puweightDown_weight': ak.to_numpy(events.puweightDown.weight),
-			   'HLTDown_weight': ak.to_numpy(events.HLTDown.weight),
-			   'mu_RecoDown_weight': ak.to_numpy(events.mu.RecoDown_weight),
-			   'mu_IDDown_weight': ak.to_numpy(events.mu.IDDown_weight),
-			   'mu_IsoDown_weight': ak.to_numpy(events.mu.IsoDown_weight),
-			   'ele_RecoDown_weight': ak.to_numpy(events.ele.RecoDown_weight),
-			   'ele_IDDown_weight': ak.to_numpy(events.ele.IDDown_weight),
-
-			   "DeepJetC_ExtrapDown_weight": ak.to_numpy(events.DeepJetC.ExtrapDown_weight),
-			   "DeepJetC_InterpDown_weight": ak.to_numpy(events.DeepJetC.InterpDown_weight),
-			   "DeepJetC_LHEScaleWeight_muFDown_weight": ak.to_numpy(events.DeepJetC.LHEScaleWeight_muFDown_weight),
-			   "DeepJetC_LHEScaleWeight_muRDown_weight": ak.to_numpy(events.DeepJetC.LHEScaleWeight_muRDown_weight),
-			   "DeepJetC_PSWeightFSRDown_weight": ak.to_numpy(events.DeepJetC.PSWeightFSRDown_weight),
-			   "DeepJetC_PSWeightISRDown_weight": ak.to_numpy(events.DeepJetC.PSWeightISRDown_weight),
-			   "DeepJetC_PUWeightDown_weight": ak.to_numpy(events.DeepJetC.PUWeightDown_weight),
-			   "DeepJetC_StatDown_weight": ak.to_numpy(events.DeepJetC.StatDown_weight),
-			   "DeepJetC_XSec_BRUnc_DYJets_bDown_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_DYJets_bDown_weight),
-			   "DeepJetC_XSec_BRUnc_DYJets_cDown_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_DYJets_cDown_weight),
-			   "DeepJetC_XSec_BRUnc_WJets_cDown_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_WJets_cDown_weight),
-			   "DeepJetC_jerDown_weight": ak.to_numpy(events.DeepJetC.jerDown_weight),
-			   "DeepJetC_jesTotalDown_weight": ak.to_numpy(events.DeepJetC.jesTotalDown_weight),
-
-			   "DeepJetB_hfDown_weight": ak.to_numpy(events.DeepJetB.hfDown_weight),
-			   "DeepJetB_lfDown_weight": ak.to_numpy(events.DeepJetB.lfDown_weight),
-			   "DeepJetB_cferr1Down_weight": ak.to_numpy(events.DeepJetB.cferr1Down_weight),
-			   "DeepJetB_cferr2Down_weight": ak.to_numpy(events.DeepJetB.cferr2Down_weight),
-			   "DeepJetB_hfstats1Down_weight": ak.to_numpy(events.DeepJetB.hfstats1Down_weight),
-			   "DeepJetB_hfstats2Down_weight": ak.to_numpy(events.DeepJetB.hfstats2Down_weight),
-			   "DeepJetB_lfstats1Down_weight": ak.to_numpy(events.DeepJetB.lfstats1Down_weight),
-			   "DeepJetB_lfstats2Down_weight": ak.to_numpy(events.DeepJetB.lfstats2Down_weight),
-
+			   "puweightDown_weight": ak.to_numpy(events.puweightDown.weight),
+			   "HLTDown_weight": ak.to_numpy(events.HLTDown.weight),
+			   "mu_RecoDown_weight": ak.to_numpy(events.mu.RecoDown_weight),
+			   "mu_IDDown_weight": ak.to_numpy(events.mu.IDDown_weight),
+			   "mu_IsoDown_weight": ak.to_numpy(events.mu.IsoDown_weight),
+			   "ele_RecoDown_weight": ak.to_numpy(events.ele.RecoDown_weight),
+			   "ele_IDDown_weight": ak.to_numpy(events.ele.IDDown_weight),
+			   "DeepJetC_TotDown_weight": DeepJetC_totDown_weight,
+			   "DeepJetB_TotDown_weight": DeepJetB_totDown_weight,
+#			   "DeepJetC_TotDown_weight": ak.to_numpy(DeepJetC_totDown_weight),
+#			   "DeepJetB_TotDown_weight": ak.to_numpy(DeepJetB_totDown_weight),
 			   # need to check
 			   "L1PreFiringWeight_Down": ak.to_numpy(events.L1PreFiringWeight.Up),
+
+#			   "DeepJetC_ExtrapDown_weight": ak.to_numpy(events.DeepJetC.ExtrapDown_weight),
+#			   "DeepJetC_InterpDown_weight": ak.to_numpy(events.DeepJetC.InterpDown_weight),
+#			   "DeepJetC_LHEScaleWeight_muFDown_weight": ak.to_numpy(events.DeepJetC.LHEScaleWeight_muFDown_weight),
+#			   "DeepJetC_LHEScaleWeight_muRDown_weight": ak.to_numpy(events.DeepJetC.LHEScaleWeight_muRDown_weight),
+#			   "DeepJetC_PSWeightFSRDown_weight": ak.to_numpy(events.DeepJetC.PSWeightFSRDown_weight),
+#			   "DeepJetC_PSWeightISRDown_weight": ak.to_numpy(events.DeepJetC.PSWeightISRDown_weight),
+#			   "DeepJetC_PUWeightDown_weight": ak.to_numpy(events.DeepJetC.PUWeightDown_weight),
+#			   "DeepJetC_StatDown_weight": ak.to_numpy(events.DeepJetC.StatDown_weight),
+#			   "DeepJetC_XSec_BRUnc_DYJets_bDown_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_DYJets_bDown_weight),
+#			   "DeepJetC_XSec_BRUnc_DYJets_cDown_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_DYJets_cDown_weight),
+#			   "DeepJetC_XSec_BRUnc_WJets_cDown_weight": ak.to_numpy(events.DeepJetC.XSec_BRUnc_WJets_cDown_weight),
+#			   "DeepJetC_jerDown_weight": ak.to_numpy(events.DeepJetC.jerDown_weight),
+#			   "DeepJetC_jesTotalDown_weight": ak.to_numpy(events.DeepJetC.jesTotalDown_weight),
+#
+#			   "DeepJetB_hfDown_weight": ak.to_numpy(events.DeepJetB.hfDown_weight),
+#			   "DeepJetB_lfDown_weight": ak.to_numpy(events.DeepJetB.lfDown_weight),
+#			   "DeepJetB_cferr1Down_weight": ak.to_numpy(events.DeepJetB.cferr1Down_weight),
+#			   "DeepJetB_cferr2Down_weight": ak.to_numpy(events.DeepJetB.cferr2Down_weight),
+#			   "DeepJetB_hfstats1Down_weight": ak.to_numpy(events.DeepJetB.hfstats1Down_weight),
+#			   "DeepJetB_hfstats2Down_weight": ak.to_numpy(events.DeepJetB.hfstats2Down_weight),
+#			   "DeepJetB_lfstats1Down_weight": ak.to_numpy(events.DeepJetB.lfstats1Down_weight),
+#			   "DeepJetB_lfstats2Down_weight": ak.to_numpy(events.DeepJetB.lfstats2Down_weight),
 			})
 		
 		out_branch = list(pruned_ev.keys())
