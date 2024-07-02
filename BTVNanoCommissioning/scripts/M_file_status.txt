@@ -1,6 +1,0 @@
-DoubleMuonRun2017B-UL2017_MiniAODv2_NanoAODv Events: 14501767
-DoubleMuonRun2017C-UL2017_MiniAODv2_NanoAODv Events: 49636525
-DoubleMuonRun2017D-UL2017_MiniAODv2_NanoAODv Events: 23075733
-DoubleMuonRun2017E-UL2017_MiniAODv2_NanoAODv Events: 51531477
-DoubleMuonRun2017F-UL2017_MiniAODv2_NanoAODv Events: 79756560
-No bad files found!

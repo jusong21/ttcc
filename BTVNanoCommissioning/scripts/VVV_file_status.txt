@@ -1,8 +1,0 @@
-WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8 Events: 171000
-WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8 Events: 178000
-WW_TuneCP5_13TeV-pythia8 Events: 15634000
-WZZ_TuneCP5_13TeV-amcatnlo-pythia8 Events: 298000
-WZ_TuneCP5_13TeV-pythia8 Events: 7889000
-ZZZ_TuneCP5_13TeV-amcatnlo-pythia8 Events: 178000
-ZZ_TuneCP5_13TeV-pythia8 Events: 2706000
-No bad files found!

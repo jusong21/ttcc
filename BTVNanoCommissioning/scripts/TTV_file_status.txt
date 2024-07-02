@@ -1,5 +1,0 @@
-TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8 Events: 7140411
-TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8 Events: 655018
-TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8 Events: 14036000
-TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8 Events: 13822000
-No bad files found!
