@@ -880,6 +880,7 @@ def btagSFs(jet, correct_map, weights, weightsup, weightsdown, SFtype, syst=Fals
     sfs_up_all, sfs_down_all = {}, {}
     alljet = jet if jet.ndim > 1 else ak.singletons(jet)
 
+
     for i, sys in enumerate(systlist):
         sfs, sfs_down, sfs_up = (
             np.ones_like(alljet[:, 0].pt),

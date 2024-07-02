@@ -146,15 +146,19 @@ uncs = {
 def calc_tot_unc(events, DeepJet):
 	sq_up_sum = 0
 	sq_down_sum = 0
+	nom = ak.to_numpy(events[DeepJet]["weight"])
 	for unc in uncs[DeepJet]["Up"]["list"]:
+		#nom = ak.to_numpy(events[DeepJet]["weight"])
 		val = ak.to_numpy(events[DeepJet][unc])
-		sq_up_sum += val**2
+		sq_up_sum += (val-nom)**2
 	for unc in uncs[DeepJet]["Down"]["list"]:
 		val = ak.to_numpy(events[DeepJet][unc])
-		sq_down_sum += val**2
+		sq_down_sum += (nom-val)**2
 	tot_up = np.sqrt(sq_up_sum)
+	up_val = nom+tot_up
 	tot_down = np.sqrt(sq_down_sum)
-	return tot_down, tot_up
+	down_val = nom-tot_down
+	return down_val, up_val
 
 def is_from_GSP(GenPart):
     QGP = ak.zeros_like(GenPart.genPartIdxMother)
