@@ -14,6 +14,7 @@ from BTVNanoCommissioning.utils.correction import (
     muSFs,
     puwei,
     btagSFs,
+    btagSFs_JetByJet,
     JME_shifts,
     Roccor_shifts,
 )
@@ -485,8 +486,8 @@ class NanoProcessor(processor.ProcessorABC):
         #####################
         #  Event selections  #
         #####################
-        req_event = req_trig & req_lumi & req_lep & req_jet & req_bjet & req_mll & req_mz & req_met & req_flag
-        #req_event = req_trig & req_lumi & req_lep & req_jet & req_bjet & req_mll & req_mz & req_flag
+        #req_event = req_trig & req_lumi & req_lep & req_jet & req_bjet & req_mll & req_mz & req_met & req_flag
+        req_event = req_trig & req_lumi & req_lep & req_jet & req_mll & req_mz & req_met & req_flag
 
         if isTTbar: req_event = req_event & req_Genjet
         
@@ -502,7 +503,9 @@ class NanoProcessor(processor.ProcessorABC):
         pad_muons = ak.pad_none(muons, 2, axis=1)[req_event]
         #pad_jets = ak.pad_none(jets, 6, axis=1)[req_event]
         pad_jets = ak.pad_none(jets, 4, axis=1)[req_event]
-        pad_jets = pad_jets[:, :4]
+        print('pad jets pt:', pad_jets.pt)
+        print('pad jets pt:', pad_jets.pt)
+        #pad_jets = pad_jets[:, :4]
         pad_lep1 = lep1[req_event]
         pad_lep2 = lep2[req_event]
 
@@ -521,11 +524,13 @@ class NanoProcessor(processor.ProcessorABC):
         weightsup = Weights(len(events[req_event]), storeIndividual=True)
         weightsdown = Weights(len(events[req_event]), storeIndividual=True)
 
+        weights_btagJet = Weights(len(ak.flatten(pad_jets)), storeIndividual=True)
+        weightsup_btagJet = Weights(len(ak.flatten(pad_jets)), storeIndividual=True)
+        weightsdown_btagJet = Weights(len(ak.flatten(pad_jets)), storeIndividual=True)
+
         if not isRealData:
             weights.add("genweight", events[req_event].genWeight)
 
-            par_flav = (pad_jets.partonFlavour == 0) & (pad_jets.hadronFlavour == 0)
-            genflavor = pad_jets.hadronFlavour + 1 * par_flav
             if len(self.SF_map.keys()) > 0:
                 syst_wei = True if self.isSyst != False else False
                 if "PU" in self.SF_map.keys():
@@ -548,10 +553,8 @@ class NanoProcessor(processor.ProcessorABC):
                     btagSFs(pad_jets, self.SF_map, weights, weightsup, weightsdown, "DeepJetC", syst_wei)
                     btagSFs(pad_jets, self.SF_map, weights, weightsup, weightsdown, "DeepJetB", syst_wei)
 
-				# for plot
-                #btagSFs(pad_jets[0], self.SF_map, weights, weightsup, weightsdown, "DeepJetC", syst_wei)
-        else:
-            genflavor = ak.zeros_like(pad_jets.pt, dtype=int)
+                    btagSFs_JetByJet(pad_jets, self.SF_map, weights_btagJet, weightsup_btagJet, weightsdown_btagJet, "DeepJetC", syst_wei)
+                    btagSFs_JetByJet(pad_jets, self.SF_map, weights_btagJet, weightsup_btagJet, weightsdown_btagJet, "DeepJetB", syst_wei)
 
         # Systematics information
         if shift_name is None:
@@ -571,14 +574,13 @@ class NanoProcessor(processor.ProcessorABC):
             pruned_ev['Channel'] = channel[req_event]
             pruned_ev['nJets'] = ak.to_numpy(njets[req_event])
             pruned_ev['nbJets'] = ak.to_numpy(nbjets[req_event])
-            pruned_ev['nbJets_T'] = ak.to_numpy(nbjets_t[req_event])
+            pruned_ev['nbJetsT'] = ak.to_numpy(nbjets_t[req_event])
             pruned_ev['ncJets'] = ak.to_numpy(ncjets[req_event])
-            pruned_ev['ncJets_T'] = ak.to_numpy(ncjets_t[req_event])
+            pruned_ev['ncJetsT'] = ak.to_numpy(ncjets_t[req_event])
             pruned_ev['mll'] = ak.to_numpy(mll[req_event])
 
             # Create a list of variables want to store. For objects from the PFNano file, specify as {object}_{variable}, wildcard option only accepted at the end of the string
-            # out_branch = ["events", "run", "luminosityBlock", "Channel", "trig_bit", "nbJet"]
-            out_branch = ["events", "run", "luminosityBlock", 'PV_npvs', 'PV_npvsGood', "Channel", "nJets", "nbJets", "nbJets_T", "ncJets", "ncJets_T"]
+            out_branch = ["events", "run", "luminosityBlock", 'PV_npvs', 'PV_npvsGood', "Channel", "nJets", "nbJets", "nbJetsT", "ncJets", "ncJetsT"]
             if not isRealData:
                 pruned_ev["weight"] = weights.weight()
                 pruned_ev["L1PreFiringWeight_Nom"] = ak.to_numpy(events.L1PreFiringWeight.Nom[req_event])
@@ -591,10 +593,6 @@ class NanoProcessor(processor.ProcessorABC):
                         include=[ind_wei]
                     )   
                     out_branch = np.append(out_branch, f"{ind_wei}_weight")
-#                for vari_wei in weights.variations:
-#                    print('vari_wei', vari_wei)
-#                    pruned_ev[f"{vari_wei}_weight"] = weights.weight(vari_wei)
-#                    out_branch = np.append(out_branch, f"{vari_wei}_weight")
 
                 for ind_wei in weightsup.weightStatistics.keys():
                     pruned_ev[f"{ind_wei}Up_weight"] = weightsup.partial_weight(
@@ -608,9 +606,35 @@ class NanoProcessor(processor.ProcessorABC):
                     )   
                     out_branch = np.append(out_branch, f"{ind_wei}Down_weight")
 
+                for ind_wei in weights_btagJet.weightStatistics.keys():
+                    pruned_ev[f"{ind_wei}_weight"] = ak.unflatten(
+                        weights_btagJet.partial_weight(
+                            include=[ind_wei]
+                        ),
+                        counts = ak.num(pad_jets)
+                    )
+                    out_branch = np.append(out_branch, f"{ind_wei}_weight")
+
+                for ind_wei in weightsup_btagJet.weightStatistics.keys():
+                    pruned_ev[f"{ind_wei}Up_weight"] = ak.unflatten(
+                        weightsup_btagJet.partial_weight(
+                            include=[ind_wei]
+                        ),
+                        counts = ak.num(pad_jets)
+                    )
+                    out_branch = np.append(out_branch, f"{ind_wei}Up_weight")
+
+                for ind_wei in weightsdown_btagJet.weightStatistics.keys():
+                    pruned_ev[f"{ind_wei}Down_weight"] = ak.unflatten(
+                        weightsdown_btagJet.partial_weight(
+                            include=[ind_wei]
+                        ),
+                        counts = ak.num(pad_jets)
+                    )
+                    out_branch = np.append(out_branch, f"{ind_wei}Down_weight")
+                
             for kin in ["pt", "eta", "phi", "mass", "dz", "dxy"]:
                 for obj in ["Jet", "Electron", "Muon", "Lepton"]:
-                #for obj in ["Jet", "Muon"]:
                     if ((obj == "Jet") or (obj == "Lepton")) and "d" in kin:
                         continue
                     out_branch = np.append(out_branch, [f"{obj}_{kin}"])
@@ -659,10 +683,6 @@ class NanoProcessor(processor.ProcessorABC):
                             continue
                         out_branch = np.append(out_branch, [f"{obj}_{kin}"])
 
-                print('out: ', out_branch)
-                print('out: ', out_branch)
-                print('out: ', out_branch)
-#
             # write to root files
             os.system(f"mkdir -p {self.name}/{dataset}")
 
@@ -670,12 +690,13 @@ class NanoProcessor(processor.ProcessorABC):
             else: outname = f"{self.name}/{dataset}/f{events.metadata['filename'].split('/')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root"
             #else: outname = f"{self.name}/{dataset}/f{events.metadata['filename'].split('/')[-1].replace('.root','')}_{int(events.metadata['entrystop']/self.chunksize)}.root"
 
-            print('outname:', outname)
-            print('outname:', outname)
+            #print('outname:', outname)
             with uproot.recreate(
                 outname
             ) as fout:
                 fout["Events"] = uproot_writeable(pruned_ev, include=out_branch)
+            print("This array has been saved in this path:")
+            print('outname:', outname)
         return {dataset: output}
 
     def postprocess(self, accumulator):

@@ -71,7 +71,6 @@ def uproot_writeable(events, include=["events", "run", "luminosityBlock"]):
     if len(include) == 1 and include[0] == "*":
         no_filter = False
     for bname in events.keys():
-        #print('bname', bname)
         try: 
             events[bname].fields
         except:
@@ -82,6 +81,12 @@ def uproot_writeable(events, include=["events", "run", "luminosityBlock"]):
                 ak.packed(ak.without_parameters(events[bname])), -99
             )
             continue
+        if not events[bname].fields:
+            ev[bname] = ak.fill_none(
+                ak.packed(ak.without_parameters(events[bname])), -99
+            )
+            continue
+
         b_nest = {}
         no_filter_nest = False
         if all(np.char.startswith(include, bname) == False):
