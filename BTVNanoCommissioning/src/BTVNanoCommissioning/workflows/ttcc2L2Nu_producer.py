@@ -550,8 +550,8 @@ class NanoProcessor(processor.ProcessorABC):
                     eleSFs(pad_electrons, self.SF_map, weights, weightsup, weightsdown, syst_wei, False)
                 #if "BTV" in self.SF_map.keys():
                 if "btag" in self.SF_map.keys():
-                    btagSFs(pad_jets, self.SF_map, weights, weightsup, weightsdown, "DeepJetC", syst_wei)
-                    btagSFs(pad_jets, self.SF_map, weights, weightsup, weightsdown, "DeepJetB", syst_wei)
+                    #btagSFs(pad_jets, self.SF_map, weights, weightsup, weightsdown, "DeepJetC", syst_wei)
+                    #btagSFs(pad_jets, self.SF_map, weights, weightsup, weightsdown, "DeepJetB", syst_wei)
 
                     btagSFs_JetByJet(pad_jets, self.SF_map, weights_btagJet, weightsup_btagJet, weightsdown_btagJet, "DeepJetC", syst_wei)
                     btagSFs_JetByJet(pad_jets, self.SF_map, weights_btagJet, weightsup_btagJet, weightsdown_btagJet, "DeepJetB", syst_wei)
@@ -588,23 +588,23 @@ class NanoProcessor(processor.ProcessorABC):
                 pruned_ev["L1PreFiringWeight_Up"] = ak.to_numpy(events.L1PreFiringWeight.Up[req_event])
 
                 out_branch = np.append(out_branch, ["weight", "L1PreFiringWeight_Nom", "L1PreFiringWeight_Dn", "L1PreFiringWeight_Up"])
-                for ind_wei in weights.weightStatistics.keys():
-                    pruned_ev[f"{ind_wei}_weight"] = weights.partial_weight(
-                        include=[ind_wei]
-                    )   
-                    out_branch = np.append(out_branch, f"{ind_wei}_weight")
-
-                for ind_wei in weightsup.weightStatistics.keys():
-                    pruned_ev[f"{ind_wei}Up_weight"] = weightsup.partial_weight(
-                        include=[ind_wei]
-                    )   
-                    out_branch = np.append(out_branch, f"{ind_wei}Up_weight")
-
-                for ind_wei in weightsdown.weightStatistics.keys():
-                    pruned_ev[f"{ind_wei}Down_weight"] = weightsdown.partial_weight(
-                        include=[ind_wei]
-                    )   
-                    out_branch = np.append(out_branch, f"{ind_wei}Down_weight")
+#                for ind_wei in weights.weightStatistics.keys():
+#                    pruned_ev[f"{ind_wei}_weight"] = weights.partial_weight(
+#                        include=[ind_wei]
+#                    )   
+#                    out_branch = np.append(out_branch, f"{ind_wei}_weight")
+#
+#                for ind_wei in weightsup.weightStatistics.keys():
+#                    pruned_ev[f"{ind_wei}Up_weight"] = weightsup.partial_weight(
+#                        include=[ind_wei]
+#                    )   
+#                    out_branch = np.append(out_branch, f"{ind_wei}Up_weight")
+#
+#                for ind_wei in weightsdown.weightStatistics.keys():
+#                    pruned_ev[f"{ind_wei}Down_weight"] = weightsdown.partial_weight(
+#                        include=[ind_wei]
+#                    )   
+#                    out_branch = np.append(out_branch, f"{ind_wei}Down_weight")
 
                 for ind_wei in weights_btagJet.weightStatistics.keys():
                     pruned_ev[f"{ind_wei}_weight"] = ak.unflatten(
