@@ -550,8 +550,8 @@ class NanoProcessor(processor.ProcessorABC):
                     eleSFs(pad_electrons, self.SF_map, weights, weightsup, weightsdown, syst_wei, False)
                 #if "BTV" in self.SF_map.keys():
                 if "btag" in self.SF_map.keys():
-                    #btagSFs(pad_jets, self.SF_map, weights, weightsup, weightsdown, "DeepJetC", syst_wei)
-                    #btagSFs(pad_jets, self.SF_map, weights, weightsup, weightsdown, "DeepJetB", syst_wei)
+#                    btagSFs(pad_jets, self.SF_map, weights, weightsup, weightsdown, "DeepJetC", syst_wei)
+#                    btagSFs(pad_jets, self.SF_map, weights, weightsup, weightsdown, "DeepJetB", syst_wei)
 
                     btagSFs_JetByJet(pad_jets, self.SF_map, weights_btagJet, weightsup_btagJet, weightsdown_btagJet, "DeepJetC", syst_wei)
                     btagSFs_JetByJet(pad_jets, self.SF_map, weights_btagJet, weightsup_btagJet, weightsdown_btagJet, "DeepJetB", syst_wei)
