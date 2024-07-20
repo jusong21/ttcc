@@ -588,11 +588,11 @@ class NanoProcessor(processor.ProcessorABC):
                 pruned_ev["L1PreFiringWeight_Up"] = ak.to_numpy(events.L1PreFiringWeight.Up[req_event])
 
                 out_branch = np.append(out_branch, ["weight", "L1PreFiringWeight_Nom", "L1PreFiringWeight_Dn", "L1PreFiringWeight_Up"])
-#                for ind_wei in weights.weightStatistics.keys():
-#                    pruned_ev[f"{ind_wei}_weight"] = weights.partial_weight(
-#                        include=[ind_wei]
-#                    )   
-#                    out_branch = np.append(out_branch, f"{ind_wei}_weight")
+                for ind_wei in weights.weightStatistics.keys():
+                    pruned_ev[f"{ind_wei}_weight"] = weights.partial_weight(
+                        include=[ind_wei]
+                    )   
+                    out_branch = np.append(out_branch, f"{ind_wei}_weight")
 #
 #                for ind_wei in weightsup.weightStatistics.keys():
 #                    pruned_ev[f"{ind_wei}Up_weight"] = weightsup.partial_weight(
