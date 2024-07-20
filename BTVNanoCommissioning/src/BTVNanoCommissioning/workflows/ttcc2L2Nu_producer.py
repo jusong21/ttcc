@@ -593,19 +593,20 @@ class NanoProcessor(processor.ProcessorABC):
                         include=[ind_wei]
                     )   
                     out_branch = np.append(out_branch, f"{ind_wei}_weight")
-#
-#                for ind_wei in weightsup.weightStatistics.keys():
-#                    pruned_ev[f"{ind_wei}Up_weight"] = weightsup.partial_weight(
-#                        include=[ind_wei]
-#                    )   
-#                    out_branch = np.append(out_branch, f"{ind_wei}Up_weight")
-#
-#                for ind_wei in weightsdown.weightStatistics.keys():
-#                    pruned_ev[f"{ind_wei}Down_weight"] = weightsdown.partial_weight(
-#                        include=[ind_wei]
-#                    )   
-#                    out_branch = np.append(out_branch, f"{ind_wei}Down_weight")
 
+                for ind_wei in weightsup.weightStatistics.keys():
+                    pruned_ev[f"{ind_wei}Up_weight"] = weightsup.partial_weight(
+                        include=[ind_wei]
+                    )   
+                    out_branch = np.append(out_branch, f"{ind_wei}Up_weight")
+
+                for ind_wei in weightsdown.weightStatistics.keys():
+                    pruned_ev[f"{ind_wei}Down_weight"] = weightsdown.partial_weight(
+                        include=[ind_wei]
+                    )   
+                    out_branch = np.append(out_branch, f"{ind_wei}Down_weight")
+
+                # b/c tagging SF
                 for ind_wei in weights_btagJet.weightStatistics.keys():
                     pruned_ev[f"{ind_wei}_weight"] = ak.unflatten(
                         weights_btagJet.partial_weight(

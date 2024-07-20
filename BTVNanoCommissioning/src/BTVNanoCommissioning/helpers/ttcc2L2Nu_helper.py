@@ -122,7 +122,7 @@ hadron_mass_table = {**main, **{k: v for k, v in backup.items() if k not in main
 #  Functions  #
 ###############
 uncs = {
-	"DeepJetC": {
+	"DeepJetCJet": {
 		"Up": {
 			"br": "DeepJetC_Up_tot",
 		 	"list": ["ExtrapUp_weight", "InterpUp_weight", "LHEScaleWeight_muFUp_weight", "LHEScaleWeight_muRUp_weight", "PSWeightFSRUp_weight", "PSWeightISRUp_weight", "PUWeightUp_weight", "StatUp_weight", "XSec_BRUnc_DYJets_bUp_weight", "XSec_BRUnc_DYJets_cUp_weight", "XSec_BRUnc_WJets_cUp_weight", "jerUp_weight", "jesTotalUp_weight"],
@@ -132,7 +132,7 @@ uncs = {
 		 	"list": ["ExtrapDown_weight", "InterpDown_weight", "LHEScaleWeight_muFDown_weight", "LHEScaleWeight_muRDown_weight", "PSWeightFSRDown_weight", "PSWeightISRDown_weight", "PUWeightDown_weight", "StatDown_weight", "XSec_BRUnc_DYJets_bDown_weight", "XSec_BRUnc_DYJets_cDown_weight", "XSec_BRUnc_WJets_cDown_weight", "jerDown_weight", "jesTotalDown_weight"],
 		}
 	},
-	"DeepJetB": {
+	"DeepJetBJet": {
 		"Up": {
 			"br": "Up_tot",
 			"list": ["hfUp_weight", "lfUp_weight", "cferr1Up_weight", "cferr2Up_weight", "hfstats1Up_weight", "hfstats2Up_weight", "lfstats1Up_weight", "lfstats2Up_weight"],

@@ -234,8 +234,8 @@ class NanoProcessor(processor.ProcessorABC):
 
 		if not isRealData:
 			print("is not RealData")
-			DeepJetC_totDown_weight, DeepJetC_totUp_weight = calc_tot_unc(events, "DeepJetC")
-			DeepJetB_totDown_weight, DeepJetB_totUp_weight = calc_tot_unc(events, "DeepJetB")
+			DeepJetC_totDown_weight, DeepJetC_totUp_weight = calc_tot_unc(events, "DeepJetCJet")
+			DeepJetB_totDown_weight, DeepJetB_totUp_weight = calc_tot_unc(events, "DeepJetBJet")
 
 			pruned_ev.update({
 			   "weight": ak.to_numpy(events.weight),
@@ -248,8 +248,8 @@ class NanoProcessor(processor.ProcessorABC):
 			   "ele_Reco_weight": ak.to_numpy(events.ele.Reco_weight),
 			   "ele_ID_weight": ak.to_numpy(events.ele.ID_weight),
 			   "L1PreFiringWeight_Nom": ak.to_numpy(events.L1PreFiringWeight.Nom),
-			   "DeepJetC_weight": ak.to_numpy(events.DeepJetC.weight),
-			   "DeepJetB_weight": ak.to_numpy(events.DeepJetB.weight),
+			   "DeepJetC_weight": ak.to_numpy(events.DeepJetCJet.weight),
+			   "DeepJetB_weight": ak.to_numpy(events.DeepJetBJet.weight),
 
 			   # up
 			   "puweightUp_weight": ak.to_numpy(events.puweightUp.weight),
