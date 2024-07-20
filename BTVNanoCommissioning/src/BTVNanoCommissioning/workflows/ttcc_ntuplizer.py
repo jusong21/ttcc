@@ -56,7 +56,7 @@ class NanoProcessor(processor.ProcessorABC):
 
 	def process_shift(self, events):
 		dataset = events.metadata["dataset"]
-		isRealData = not hasattr(events, "genweight")
+		isRealData = not hasattr(events, "weight")
 		#isTTbar = 'TTTo' in dataset
 		isTTbar = ("TTTo" in dataset) or ("TTbb" in dataset)
 
@@ -73,7 +73,7 @@ class NanoProcessor(processor.ProcessorABC):
 		if isRealData:
 			output["sumw"] = len(events)
 		else:
-			output["sumw"] = ak.sum(events.genweight)
+			output["sumw"] = ak.sum(events.weight)
 		njets = ak.num(events.Jet)
 		jets = events.Jet[:,:4] # use only 4 jets
 		jets_bsort = jets[ak.argsort(jets.btagDeepFlavB, ascending=False)]
@@ -233,6 +233,7 @@ class NanoProcessor(processor.ProcessorABC):
 
 
 		if not isRealData:
+			print("is not RealData")
 			DeepJetC_totDown_weight, DeepJetC_totUp_weight = calc_tot_unc(events, "DeepJetC")
 			DeepJetB_totDown_weight, DeepJetB_totUp_weight = calc_tot_unc(events, "DeepJetB")
 
