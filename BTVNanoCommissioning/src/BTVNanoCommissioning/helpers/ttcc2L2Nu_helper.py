@@ -122,69 +122,93 @@ hadron_mass_table = {**main, **{k: v for k, v in backup.items() if k not in main
 #  Functions  #
 ###############
 uncs = {
-	"DeepJetCJet": {
-		"Up": {
-			"br": "DeepJetC_Up_tot",
-		 	"list": ["ExtrapUp_weight", "InterpUp_weight", "LHEScaleWeight_muFUp_weight", "LHEScaleWeight_muRUp_weight", "PSWeightFSRUp_weight", "PSWeightISRUp_weight", "PUWeightUp_weight", "StatUp_weight", "XSec_BRUnc_DYJets_bUp_weight", "XSec_BRUnc_DYJets_cUp_weight", "XSec_BRUnc_WJets_cUp_weight", "jerUp_weight", "jesTotalUp_weight"],
-		},
-		"Down": {
-			"br": "Down_tot",
-		 	"list": ["ExtrapDown_weight", "InterpDown_weight", "LHEScaleWeight_muFDown_weight", "LHEScaleWeight_muRDown_weight", "PSWeightFSRDown_weight", "PSWeightISRDown_weight", "PUWeightDown_weight", "StatDown_weight", "XSec_BRUnc_DYJets_bDown_weight", "XSec_BRUnc_DYJets_cDown_weight", "XSec_BRUnc_WJets_cDown_weight", "jerDown_weight", "jesTotalDown_weight"],
-		}
-	},
-	"DeepJetBJet": {
-		"Up": {
-			"br": "Up_tot",
-			"list": ["hfUp_weight", "lfUp_weight", "cferr1Up_weight", "cferr2Up_weight", "hfstats1Up_weight", "hfstats2Up_weight", "lfstats1Up_weight", "lfstats2Up_weight"],
-		},
-		"Down": {
-			"br": "Down_tot",
-			"list": ["hfDown_weight", "lfDown_weight", "cferr1Down_weight", "cferr2Down_weight", "hfstats1Down_weight", "hfstats2Down_weight", "lfstats1Down_weight", "lfstats2Down_weight"],
-		}
-	}
+    "DeepJetCJet": {
+        "Up": {
+            "br": "DeepJetC_Up_tot",
+             "list": ["ExtrapUp_weight", "InterpUp_weight", "LHEScaleWeight_muFUp_weight", "LHEScaleWeight_muRUp_weight", "PSWeightFSRUp_weight", "PSWeightISRUp_weight", "PUWeightUp_weight", "StatUp_weight", "XSec_BRUnc_DYJets_bUp_weight", "XSec_BRUnc_DYJets_cUp_weight", "XSec_BRUnc_WJets_cUp_weight", "jerUp_weight", "jesTotalUp_weight"],
+        },
+        "Down": {
+            "br": "Down_tot",
+             "list": ["ExtrapDown_weight", "InterpDown_weight", "LHEScaleWeight_muFDown_weight", "LHEScaleWeight_muRDown_weight", "PSWeightFSRDown_weight", "PSWeightISRDown_weight", "PUWeightDown_weight", "StatDown_weight", "XSec_BRUnc_DYJets_bDown_weight", "XSec_BRUnc_DYJets_cDown_weight", "XSec_BRUnc_WJets_cDown_weight", "jerDown_weight", "jesTotalDown_weight"],
+        }
+    },
+    "DeepJetBJet": {
+        "Up": {
+            "br": "Up_tot",
+            "list": ["hfUp_weight", "lfUp_weight", "cferr1Up_weight", "cferr2Up_weight", "hfstats1Up_weight", "hfstats2Up_weight", "lfstats1Up_weight", "lfstats2Up_weight"],
+        },
+        "Down": {
+            "br": "Down_tot",
+            "list": ["hfDown_weight", "lfDown_weight", "cferr1Down_weight", "cferr2Down_weight", "hfstats1Down_weight", "hfstats2Down_weight", "lfstats1Down_weight", "lfstats2Down_weight"],
+        }
+    }
 }
-def calc_tot_unc(events, DeepJet):
-	sq_up_tot = 0
-	sq_down_tot = 0
-
-	nom = ak.to_numpy(events[DeepJet]["weight"])
-	for unc in uncs[DeepJet]["Up"]["list"]:
-		up = ak.to_numpy(events[DeepJet][unc])
-		sig = up-nom
-		sq_sig = np.square(sig)
-		sum_sq_sig = np.sum(sq_sig, axis=1)
-		sq_up_tot += sum_sq_sig
-	
-	for unc in uncs[DeepJet]["Down"]["list"]:
-		down = ak.to_numpy(events[DeepJet][unc])
-		sig = nom-down
-		sq_sig = np.square(sig)
-		sum_sq_sig = np.sum(sq_sig, axis=1)
-		sq_down_tot += sum_sq_sig
-	
-	nom_tot = np.prod(nom, axis=1)
-	up_tot = np.sqrt(sq_up_tot)
-	up_val = nom_tot+up_tot
-	down_tot = np.sqrt(sq_down_tot)
-	down_val = nom_tot-down_tot
-	return down_val, up_val
 
 def calc_tot_unc(events, DeepJet):
-	sq_up_sum = 0
-	sq_down_sum = 0
-	nom = ak.to_numpy(events[DeepJet]["weight"])
-	for unc in uncs[DeepJet]["Up"]["list"]:
-		#nom = ak.to_numpy(events[DeepJet]["weight"])
-		val = ak.to_numpy(events[DeepJet][unc])
-		sq_up_sum += (val-nom)**2
-	for unc in uncs[DeepJet]["Down"]["list"]:
-		val = ak.to_numpy(events[DeepJet][unc])
-		sq_down_sum += (nom-val)**2
-	tot_up = np.sqrt(sq_up_sum)
-	up_val = nom+tot_up
-	tot_down = np.sqrt(sq_down_sum)
-	down_val = nom-tot_down
-	return down_val, up_val
+    sum_sq_sig_up = 0
+    sum_sq_sig_dn = 0
+
+    event_weight = ak.prod(events[DeepJet]["weight"], axis=-1)
+    for unc in uncs[DeepJet]["Up"]["list"]:
+        event_weight_up = ak.prod(events[DeepJet][unc], axis=-1)
+        sigma = ak.to_numpy( event_weight_up-event_weight )
+        sum_sq_sig_up += sigma**2
+
+    for unc in uncs[DeepJet]["Down"]["list"]:
+        event_weight_dn = ak.prod(events[DeepJet][unc], axis=-1)
+        sigma = ak.to_numpy( event_weight_dn-event_weight )
+        sum_sq_sig_dn += sigma**2
+
+    tot_up_unc = np.sqrt(sum_sq_sig_up)
+    tot_dn_unc = np.sqrt(sum_sq_sig_dn)
+
+    event_up = ak.to_numpy(event_weight) + tot_up_unc
+    event_dn = ak.to_numpy(event_weight) - tot_dn_unc
+
+    return event_dn, event_up
+
+#def calc_tot_unc(events, DeepJet):
+#    sq_up_tot = 0
+#    sq_down_tot = 0
+#
+#    nom = ak.to_numpy(events[DeepJet]["weight"])
+#    for unc in uncs[DeepJet]["Up"]["list"]:
+#        up = ak.to_numpy(events[DeepJet][unc])
+#        sig = up-nom
+#        sq_sig = np.square(sig)
+#        sum_sq_sig = np.sum(sq_sig, axis=1)
+#        sq_up_tot += sum_sq_sig
+#    
+#    for unc in uncs[DeepJet]["Down"]["list"]:
+#        down = ak.to_numpy(events[DeepJet][unc])
+#        sig = nom-down
+#        sq_sig = np.square(sig)
+#        sum_sq_sig = np.sum(sq_sig, axis=1)
+#        sq_down_tot += sum_sq_sig
+#    
+#    nom_tot = np.prod(nom, axis=1)
+#    up_tot = np.sqrt(sq_up_tot)
+#    up_val = nom_tot+up_tot
+#    down_tot = np.sqrt(sq_down_tot)
+#    down_val = nom_tot-down_tot
+#    return down_val, up_val
+#
+#def calc_tot_unc(events, DeepJet):
+#    sq_up_sum = 0
+#    sq_down_sum = 0
+#    nom = ak.to_numpy(events[DeepJet]["weight"])
+#    for unc in uncs[DeepJet]["Up"]["list"]:
+#        #nom = ak.to_numpy(events[DeepJet]["weight"])
+#        val = ak.to_numpy(events[DeepJet][unc])
+#        sq_up_sum += (val-nom)**2
+#    for unc in uncs[DeepJet]["Down"]["list"]:
+#        val = ak.to_numpy(events[DeepJet][unc])
+#        sq_down_sum += (nom-val)**2
+#    tot_up = np.sqrt(sq_up_sum)
+#    up_val = nom+tot_up
+#    tot_down = np.sqrt(sq_down_sum)
+#    down_val = nom-tot_down
+#    return down_val, up_val
 
 def is_from_GSP(GenPart):
     QGP = ak.zeros_like(GenPart.genPartIdxMother)
