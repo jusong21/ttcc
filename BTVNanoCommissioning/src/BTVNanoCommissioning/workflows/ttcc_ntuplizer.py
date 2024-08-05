@@ -248,8 +248,8 @@ class NanoProcessor(processor.ProcessorABC):
 			   "ele_Reco_weight": ak.to_numpy(events.ele.Reco_weight),
 			   "ele_ID_weight": ak.to_numpy(events.ele.ID_weight),
 			   "L1PreFiringWeight_Nom": ak.to_numpy(events.L1PreFiringWeight.Nom),
-			   "DeepJetC_weight": ak.to_numpy(events.DeepJetCJet.weight),
-			   "DeepJetB_weight": ak.to_numpy(events.DeepJetBJet.weight),
+			   "DeepJetC_weight": ak.to_numpy(ak.prod(events.DeepJetCJet.weight, axis=-1)),
+			   "DeepJetB_weight": ak.to_numpy(ak.prod(events.DeepJetBJet.weight, axis=-1)),
 
 			   # up
 			   "puweightUp_weight": ak.to_numpy(events.puweightUp.weight),
