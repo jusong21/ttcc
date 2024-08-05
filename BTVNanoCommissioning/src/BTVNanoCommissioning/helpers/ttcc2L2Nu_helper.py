@@ -147,44 +147,60 @@ def calc_tot_unc(events, DeepJet):
 	sq_up_tot = 0
 	sq_down_tot = 0
 
-	nom = ak.to_numpy(events[DeepJet]["weight"])
+	#nom = ak.to_numpy(events[DeepJet]["weight"])
+	nom_ak = events[DeepJet]["weight"]
+	nom = ak.to_numpy(ak.flatten(events[DeepJet]["weight"]))
 	for unc in uncs[DeepJet]["Up"]["list"]:
-		up = ak.to_numpy(events[DeepJet][unc])
+		#up = ak.to_numpy(events[DeepJet][unc])
+		up = ak.to_numpy(ak.flatten(events[DeepJet][unc]))
+		counts = ak.num(events[DeepJet][unc])
 		sig = up-nom
 		sq_sig = np.square(sig)
-		sum_sq_sig = np.sum(sq_sig, axis=1)
+		sq_sig_ak = ak.unflatten(sq_sig, counts)
+		sum_sq_sig = ak.to_numpy(ak.sum(sq_sig_ak, axis=-1))
 		sq_up_tot += sum_sq_sig
 	
 	for unc in uncs[DeepJet]["Down"]["list"]:
-		down = ak.to_numpy(events[DeepJet][unc])
+		#down = ak.to_numpy(events[DeepJet][unc])
+		down = ak.to_numpy(ak.flatten(events[DeepJet][unc]))
+		counts = ak.num(events[DeepJet][unc])
 		sig = nom-down
 		sq_sig = np.square(sig)
-		sum_sq_sig = np.sum(sq_sig, axis=1)
+		sq_sig_ak = ak.unflatten(sq_sig, counts)
+		sum_sq_sig = ak.to_numpy(ak.sum(sq_sig_ak, axis=-1))
 		sq_down_tot += sum_sq_sig
 	
-	nom_tot = np.prod(nom, axis=1)
+#	for unc in uncs[DeepJet]["Down"]["list"]:
+#		down = ak.to_numpy(events[DeepJet][unc])
+#		sig = nom-down
+#		sq_sig = np.square(sig)
+#		sum_sq_sig = np.sum(sq_sig, axis=1)
+#		sq_down_tot += sum_sq_sig
+	
+	nom_tot = ak.to_numpy(ak.prod(nom_ak, axis=-1))
+	#nom_tot = np.prod(nom, axis=1)
 	up_tot = np.sqrt(sq_up_tot)
 	up_val = nom_tot+up_tot
 	down_tot = np.sqrt(sq_down_tot)
 	down_val = nom_tot-down_tot
 	return down_val, up_val
 
-def calc_tot_unc(events, DeepJet):
-	sq_up_sum = 0
-	sq_down_sum = 0
-	nom = ak.to_numpy(events[DeepJet]["weight"])
-	for unc in uncs[DeepJet]["Up"]["list"]:
-		#nom = ak.to_numpy(events[DeepJet]["weight"])
-		val = ak.to_numpy(events[DeepJet][unc])
-		sq_up_sum += (val-nom)**2
-	for unc in uncs[DeepJet]["Down"]["list"]:
-		val = ak.to_numpy(events[DeepJet][unc])
-		sq_down_sum += (nom-val)**2
-	tot_up = np.sqrt(sq_up_sum)
-	up_val = nom+tot_up
-	tot_down = np.sqrt(sq_down_sum)
-	down_val = nom-tot_down
-	return down_val, up_val
+#def calc_tot_unc(events, DeepJet):
+#	sq_up_sum = 0
+#	sq_down_sum = 0
+#	nom = ak.to_numpy(events[DeepJet]["weight"])
+#	for unc in uncs[DeepJet]["Up"]["list"]:
+#		#nom = ak.to_numpy(events[DeepJet]["weight"])
+#		val = ak.to_numpy(events[DeepJet][unc])
+#		sq_up_sum += (val-nom)**2
+#	for unc in uncs[DeepJet]["Down"]["list"]:
+#		val = ak.to_numpy(events[DeepJet][unc])
+#		sq_down_sum += (nom-val)**2
+#	tot_up = np.sqrt(sq_up_sum)
+#	up_val = nom+tot_up
+#	tot_down = np.sqrt(sq_down_sum)
+#	down_val = nom-tot_down
+#	return down_val, up_val
 
 def is_from_GSP(GenPart):
     QGP = ak.zeros_like(GenPart.genPartIdxMother)
