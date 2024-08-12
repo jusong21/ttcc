@@ -222,7 +222,6 @@ Executable = {executable}
 
 Arguments = $(JOBNUM)
 
-requirements = (OpSysAndVer =?= "CentOS7")
 request_cpus = 1
 request_memory = 2000
 use_x509userproxy = true

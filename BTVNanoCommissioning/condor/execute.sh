@@ -2,9 +2,6 @@
 
 JOBID=$1
 
-#export XRD_LOGLEVEL=Debug
-
-
 export HOME=`pwd`
 if [ -d /afs/cern.ch/user/${USER:0:1}/$USER ]; then
   export HOME=/afs/cern.ch/user/${USER:0:1}/$USER  # crucial on lxplus condor but cannot set on cmsconnect
@@ -13,17 +10,9 @@ env
 
 WORKDIR=`pwd`
 
-# Load a base cmssw env
-export SCRAM_ARCH=slc7_amd64_gcc820
-source /cvmfs/cms.cern.ch/cmsset_default.sh
-scram p CMSSW CMSSW_11_1_0_pre5_PY3
-cd CMSSW_11_1_0_pre5_PY3/src
-eval `scram runtime -sh`
-cd ../..
-
 # Set up conda environment
-wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.0-3-Linux-x86_64.sh
-bash Miniconda3-py310_23.5.0-3-Linux-x86_64.sh -b -p $WORKDIR/miniconda
+wget https://repo.anaconda.com/miniconda/Miniconda3-py310_24.5.0-0-Linux-x86_64.sh
+bash Miniconda3-py310_24.5.0-0-Linux-x86_64.sh -b -p $WORKDIR/miniconda
 
 export PATH=$WORKDIR/miniconda/bin:$PATH
 export PYTHONPATH=$WORKDIR/miniconda/lib/python3.10/site-packages
@@ -48,8 +37,6 @@ if [ ! -f $WORKDIR/BTVNanoCommissioning.tar.gz ]; then
 else
     tar xaf $WORKDIR/BTVNanoCommissioning.tar.gz
 fi
-#rm -rf src/BTVNanoCommissioning/jsonpog-integration
-#ln -s /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration src/BTVNanoCommissioning/jsonpog-integration  # link jsonpog-integration
 cd BTVNanoCommissioning
 rm -rf src/BTVNanoCommissioning/jsonpog-integration
 ln -s /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration src/BTVNanoCommissioning/jsonpog-integration  # link jsonpog-integration
@@ -68,7 +55,7 @@ OPTS="--wf ${ARGS[workflow]} --year ${ARGS[year]} --campaign ${ARGS[campaign]} -
 if [ "${ARGS[voms]}" != "null" ]; then
     OPTS="$OPTS --voms ${ARGS[voms]}"
 fi
-if [ "${ARGS[isSyst]}" != "null" ]; then
+if [ "${ARGS[isSyst]}" != "false" ]; then
     OPTS="$OPTS --isSyst ${ARGS[isSyst]}"
 fi
 for key in  isArray noHist overwrite skipbadfiles; do
@@ -90,14 +77,12 @@ if [[ ${ARGS[outputXrootdDir]} == root://* ]]; then
 
     xrdcp --silent -p -f -r hists_* ${ARGS[outputXrootdDir]}/
     if [[ "$OPTS" == *"isArray"* ]]; then
-	#xrdcp --silent -p -f -r arrays_ttcc* ${ARGS[outputXrootdDir]}/
 	xrdcp --silent -p -f -r arrays_* ${ARGS[outputXrootdDir]}/
     fi
 else
     mkdir -p ${ARGS[outputXrootdDir]}
     cp -p -f -r hists_* ${ARGS[outputXrootdDir]}/
     if [[ "$OPTS" == *"isArray"* ]]; then
-	#cp -p -f -r arrays_ttcc* ${ARGS[outputXrootdDir]}/
 	cp -p -f -r arrays_* ${ARGS[outputXrootdDir]}/
     fi
 fi
@@ -108,6 +93,5 @@ fi
 #     # SAMPLENAME=$(echo "$filename" | sed -E 's/(.*)_[0-9a-z]{9}-[0-9a-z]{4}-.*\.root/\1/')
 #     xrdcp --silent -p -f $filename ${ARGS[outputXrootdDir]}/$SAMPLENAME/
 # done
-
 
 touch $WORKDIR/.success
