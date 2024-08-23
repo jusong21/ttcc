@@ -1,8 +1,0 @@
-/user/jusong/analysis/ttcc/b-hive/output/DatasetConstructorTask/ttcc/tutorial_03/file_0.npz
-/user/jusong/analysis/ttcc/b-hive/output/DatasetConstructorTask/ttcc/tutorial_03/file_1.npz
-/user/jusong/analysis/ttcc/b-hive/output/DatasetConstructorTask/ttcc/tutorial_03/file_2.npz
-/user/jusong/analysis/ttcc/b-hive/output/DatasetConstructorTask/ttcc/tutorial_03/file_3.npz
-/user/jusong/analysis/ttcc/b-hive/output/DatasetConstructorTask/ttcc/tutorial_03/file_4.npz
-/user/jusong/analysis/ttcc/b-hive/output/DatasetConstructorTask/ttcc/tutorial_03/file_5.npz
-/user/jusong/analysis/ttcc/b-hive/output/DatasetConstructorTask/ttcc/tutorial_03/file_6.npz
-/user/jusong/analysis/ttcc/b-hive/output/DatasetConstructorTask/ttcc/tutorial_03/file_7.npz
