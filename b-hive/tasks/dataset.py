@@ -2,7 +2,7 @@ import os
 import random
 from typing import Dict
 from collections import defaultdict
-
+import uuid
 import hist
 import luigi
 import numpy as np
@@ -27,7 +27,7 @@ def read_in_samples_match_processes(file_path, processes):
         while line := input_txt.readline().rstrip("\n"):
             if line:
                 if processes == ["default"]:
-                    samples_dict["default"].append(line)
+                    samples_dict[uuid.uuid4().hex].append(line)
                 else:
                     for process in processes:
                         if process in line:
@@ -44,7 +44,7 @@ class DatasetConstructorTask(DatasetDependency, BaseTask):
     )
 
     chunk_size = luigi.IntParameter(
-        default=1000000, description="Number of events for outgoing files"
+        default=100000, description="Number of events for outgoing files"
     )
 
     def output(self):
@@ -84,30 +84,16 @@ Either you forgot to specify the path to the file or are using a wrong dataset-v
             maxchunks=None if not (self.debug) else 10,
         )
         #processorClass = ProcessorLoader(config.get("processor", "PFCandidateAndVertexProcessing"),  
-<<<<<<< HEAD
-        processorClass = ProcessorLoader(config.get("processor", "JetFeatureProcessing"),  
-=======
-        processorClass = ProcessorLoader(config.get("processor", "TTCCProcessing"),  
->>>>>>> develop
+        processorClass = ProcessorLoader(config.get("processor", "TTCCLZ4Processing"),  
                 output_directory=self.local_path(),
                 bins_pt=config.get("bins_pt", None),
                 bins_eta=config.get("bins_eta", None),
                 processes=config.get("processes", None),
                 global_features=config.get("global_features", []),
                 jet_features=config.get("jet_features", []),
-<<<<<<< HEAD
-				n_jet_candidates=config.get("n_jet_candidates", 4),
-#                cpf_candidates=config.get("cpf_candidates", []),
-#                npf_candidates=config.get("npf_candidates", []),
-#                vtx_features=config.get("vtx_features", []),
-#                n_cpf_candidates=config.get("n_cpf_candidates", 50),
-#                n_npf_candidates=config.get("n_npf_candidates", 50),
-#                n_vtx_features=config.get("n_vtx_features", 5),
-=======
                 lepton_features=config.get("lepton_features", []),
-				n_jet_candidates=config.get("n_jet_candidates", 4),
-				n_lepton_candidates=config.get("n_lepton_candidates", 2),
->>>>>>> develop
+                n_jet_candidates=config.get("n_jet_candidates", 4),
+                n_lepton_candidates=config.get("n_lepton_candidates", 2),
                 truths=config.get("truths", None),
                 )
         print("Processor:")
@@ -144,21 +130,28 @@ Either you forgot to specify the path to the file or are using a wrong dataset-v
             file_list,
             self.local_path(),
             label="file",
+            #processor=config.get("processor", "PFCandidateAndVertexProcessing"),
+            processor=config.get("processor", "TTCCLZ4Processing"),
             chunk_size=self.chunk_size,
             shuffle=True,
-        )
-        # delete unmerged files
-        for file in file_list:
-            os.remove(file)
-
-        # add weights to all files
-        # this should be done on the fly - please implement!
-        all_files = weight_all_files_histrogram_weighting(
-            all_files,
-            histograms=training_histograms,
+            histograms=np.array(histograms, dtype=np.float32),
+            reference_key=0,
             bins_pt=config["bins_pt"],
             bins_eta=config["bins_eta"],
-            reference_key=config["reference_flavour"],
         )
+        if "LZ4" not in config.get("processor", "TTCCLZ4Processing"):
+            # delete unmerged files
+            for file in file_list:
+                os.remove(file)
+
+            # add weights to all files
+            # this should be done on the fly - please implement!
+            all_files = weight_all_files_histrogram_weighting(
+                all_files,
+                histograms=training_histograms,
+                bins_pt=config["bins_pt"],
+                bins_eta=config["bins_eta"],
+                reference_key=config["reference_flavour"],
+            )
 
         self.output()["file_list"].dump("\n".join(all_files), formatter="text")

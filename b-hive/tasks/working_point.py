@@ -10,8 +10,10 @@ from scipy.special import softmax
 from tasks.base import BaseTask
 from tasks.dataset import DatasetConstructorTask
 from tasks.parameter_mixins import (
+    AttackDependency,
     DatasetDependency,
     TrainingDependency,
+    TestAttackDependency,
     TestDatasetDependency,
 )
 from tasks.inference import InferenceTask
@@ -24,7 +26,7 @@ from utils.evaluation.working_point import (
 
 
 class WorkingPointTask(
-    TrainingDependency, TestDatasetDependency, DatasetDependency, BaseTask
+    TestAttackDependency, AttackDependency, TrainingDependency, TestDatasetDependency, DatasetDependency, BaseTask
 ):
     def requires(self):
         return {
@@ -38,8 +40,8 @@ class WorkingPointTask(
 
     def output(self):
         return {
-            "TT": self.local_target("working_point_TT.jpg"),
-            "QCD": self.local_target("working_point_QCD.jpg"),
+            "TT": self.local_target("working_point_TT.pdf"),
+            "QCD": self.local_target("working_point_QCD.pdf"),
         }
 
     def run(self):
@@ -53,6 +55,7 @@ class WorkingPointTask(
             self.input()["inference"]["kinematics"].path, allow_pickle=True
         )
         truth = np.load(self.input()["inference"]["truth"].path, allow_pickle=True)
+        process = np.load(self.input()["inference"]["process"].path, allow_pickle=True)
         jet_pt = kinematics[..., 0]
 
         sample_files = [
@@ -79,7 +82,7 @@ class WorkingPointTask(
         predictions = softmax(predictions, axis=-1)
 
         for i, (key, label) in enumerate(zip(["TT", "QCD"], labels)):
-            sample_mask_ = sample_mask == i
+            sample_mask_ = process == i
 
             truth_ = truth[sample_mask_].copy()
             output_data_ = predictions[sample_mask_].copy()
@@ -129,6 +132,9 @@ class WorkingPointTask(
                 working_points,
                 label,
                 out_path=self.output()[key].path,
+                x_label="Selection threshold on b-tagger score",
+                y_label="Light-flavour misidentification",
+                r_label="(13.6 TeV)",
                 color="darkorange",
             )
 
