@@ -25,6 +25,7 @@ BTVNanoCommissioning/array*
 BTVNanoCommissioning/hist*
 BTVNanoCommissioning/local_submit
 
+b-hive/output/*
 b-hive/__pycache__
 b-hive/tasks/__pycache__
 b-hive/workflows/__pycache__
