@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import torch.nn as nn
+import time
 
 from utils.models.abstract_base_models import Classifier
 from utils.torch import DeepJetDataset
@@ -18,8 +19,8 @@ from rich.progress import (
 )
 
 
-class DeepJet(Classifier, nn.Module):
-    n_cpf = 25
+class DeepSpeed(Classifier, nn.Module):
+    n_cpf = 26
     n_npf = 25
     n_vtx = 5
     datasetClass = DeepJetDataset
@@ -96,36 +97,13 @@ class DeepJet(Classifier, nn.Module):
     ]
 
     def __init__(self, feature_edges=[15, 415, 565, 613], **kwargs):
-        super(DeepJet, self).__init__(**kwargs)
+        super(DeepSpeed, self).__init__(**kwargs)
 
         self.feature_edges = np.array(feature_edges)
 
         self.loss_fn = nn.CrossEntropyLoss(reduction="none")
-
-        self.InputProcess = InputProcess()
-        self.DenseClassifier = DenseClassifier()
-
-        self.global_bn = torch.nn.BatchNorm1d(15, eps=0.001, momentum=0.6)
-        self.cpf_lstm = torch.nn.LSTM(
-            input_size=8, hidden_size=150, num_layers=1, batch_first=True
-        )
-        self.npf_lstm = torch.nn.LSTM(
-            input_size=4, hidden_size=50, num_layers=1, batch_first=True
-        )
-        self.vtx_lstm = torch.nn.LSTM(
-            input_size=8, hidden_size=50, num_layers=1, batch_first=True
-        )
-
-        self.cpf_bn = torch.nn.BatchNorm1d(150, eps=0.001, momentum=0.6)
-        self.npf_bn = torch.nn.BatchNorm1d(50, eps=0.001, momentum=0.6)
-        self.vtx_bn = torch.nn.BatchNorm1d(50, eps=0.001, momentum=0.6)
-
-        self.cpf_dropout = nn.Dropout(0.1)
-        self.npf_dropout = nn.Dropout(0.1)
-        self.vtx_dropout = nn.Dropout(0.1)
-
-        self.Linear = nn.Linear(100, len(self.classes))
-
+        self.lin = nn.Linear(1,1)
+        
         # integer positions and default values still have to be checked
         self.glob_integers = torch.tensor([2, 3, 4, 5, 8, 13, 14])
         self.cpf_integers = torch.tensor([12, 13, 14, 15])
@@ -149,27 +127,8 @@ class DeepJet(Classifier, nn.Module):
         ]
 
     def forward(self, global_features, cpf_features, npf_features, vtx_features):
-        global_features = self.global_bn(global_features)
-        # cpf = cpf_features.reshape(cpf_features.shape[0], 25, 16)
-        # npf = npf_features.reshape(npf_features.shape[0], 25, 6)
-        # vtx = vtx_features.reshape(vtx_features.shape[0], 4, 12)
 
-        cpf, npf, vtx = self.InputProcess(cpf_features, npf_features, vtx_features)
-        cpf = self.cpf_lstm(torch.flip(cpf, dims=[1]))[0][:, -1]
-        cpf = self.cpf_dropout(self.cpf_bn(cpf))
-
-        npf = self.npf_lstm(torch.flip(npf, dims=[1]))[0][:, -1]
-        npf = self.npf_dropout(self.npf_bn(npf))
-
-        vtx = self.vtx_lstm(torch.flip(vtx, dims=[1]))[0][:, -1]
-        vtx = self.vtx_dropout(self.vtx_bn(vtx))
-
-        fts = torch.cat((global_features, cpf, npf, vtx), dim=1)
-        fts = self.DenseClassifier(fts)
-
-        output = self.Linear(fts)
-
-        return output
+        return (global_features, cpf_features, npf_features, vtx_features)
 
     def train_model(
         self,
@@ -191,12 +150,13 @@ class DeepJet(Classifier, nn.Module):
 
         scaler = torch.cuda.amp.GradScaler() if device == "cuda" else None
         best_loss_val = np.inf
-        # print("Initial ROC")
 
-        # _, _ = self.validate_model(validation_data, loss_fn, device)
         for t in range(resume_epochs, nepochs):
             print("Epoch", t + 1, "of", nepochs)
             training_data.dataset.shuffleFileList()  # Shuffle the file list as mini-batch training requires it for regularisation of a non-convex problem
+            timer = 0
+            start = time.time()
+
             loss_trainining, acc_training = self.update(
                 training_data,
                 attack=attack,
@@ -204,6 +164,10 @@ class DeepJet(Classifier, nn.Module):
                 scaler=scaler,
                 device=device,
             )
+
+            start2 = time.time()
+            print("Time elapsed : ", start2-start)
+            
             loss_train += loss_trainining 
             acc_train.append(acc_training)
 
@@ -282,7 +246,7 @@ class DeepJet(Classifier, nn.Module):
 
             torch.backends.cudnn.enabled = True
             with torch.no_grad():
-                pred = self(
+                _ = self(
                     *[
                         feature.float().to(device)
                         for feature in [
@@ -293,6 +257,7 @@ class DeepJet(Classifier, nn.Module):
                         ]
                     ]
                 )
+                pred = torch.zeros((truth.shape[0],6)).float()
             kinematics.append(global_features[..., :2].cpu().numpy())
             truths.append(truth.cpu().numpy().astype(int))
             processes.append(process.cpu().numpy())
@@ -342,58 +307,13 @@ class DeepJet(Classifier, nn.Module):
                 with torch.autocast(
                     device_type=device, enabled=True if device == "cuda" else False
                 ):
-                    (
-                        global_features,
-                        cpf_features,
-                        npf_features,
-                        vtx_features,
-                        truth,
-                    ) = attack(
-                        [
-                            feature.float().to(device)
-                            for feature in [
-                                global_features,
-                                cpf_features,
-                                npf_features,
-                                vtx_features,
-                            ]
-                        ],
-                        truth.type(torch.LongTensor).to(device),
-                        self.loss_fn,
-                        self,
-                    )
-                    pred = self.forward(
-                        *[
-                            feature.float().to(device)
-                            for feature in [
-                                global_features,
-                                cpf_features,
-                                npf_features,
-                                vtx_features,
-                                ]
-                            ]
-                        )
-                    loss = self.loss_fn(pred, truth.type(torch.LongTensor).to(device)).mean()
-
-                    if scaler != None:
-                        optimizer.zero_grad(set_to_none=True)
-                        scaler.scale(loss).backward()
-                        scaler.unscale_(optimizer)
-                        torch.nn.utils.clip_grad_norm_(self.parameters(), 1.0)
-                        scaler.step(optimizer)
-                        scaler.update()
-                    else:
-                        optimizer.zero_grad(set_to_none=True)
-                        loss.backward()
-                        optimizer.step()
+                    loss = torch.tensor([0]) #self.loss_fn(pred, truth.type(torch.LongTensor).to(device)).mean()
 
                     losses.append(loss.item())
-                    accuracy += (
-                        (pred.argmax(1) == truth.to(device)).type(torch.float).sum().item()
-                    )
-                    N += len(pred)
+                    accuracy += 0
+                    N += 1
                     progress.update(
-                        task, advance=1, description=f"Training...   | Loss: {loss:.2f}"
+                        task, advance=1, description=f"Training...   | Loss: {loss.item():.2f}"
                     )
                     progress.columns[-1].text_format = "{}/{} its".format(
                         N // dataloader.batch_size,
@@ -406,6 +326,7 @@ class DeepJet(Classifier, nn.Module):
                 progress.update(task, completed=dataloader.nits_expected)
         dataloader.nits_expected = N // dataloader.batch_size
         accuracy /= N
+        print(N)
         print("  ", f"Average loss: {np.array(losses).mean():.4f}")
         print("  ", f"Average accuracy: {float(100*accuracy):.4f}")
         return losses, accuracy
@@ -440,32 +361,16 @@ class DeepJet(Classifier, nn.Module):
                 process,
             ) in dataloader:
                 with torch.no_grad():
-                    pred = self.forward(
-                        *[
-                            feature.float().to(device)
-                            for feature in [
-                                global_features,
-                                cpf_features,
-                                npf_features,
-                                vtx_features,
-                            ]
-                        ]
-                    )
-                    loss = self.loss_fn(pred, truth.type(torch.LongTensor).to(device)).mean()
+                    loss = torch.tensor([0]) #self.loss_fn(pred, truth.type(torch.LongTensor).to(device)).mean()
                     losses.append(loss.item())
 
-                    accuracy += (
-                        (pred.argmax(1) == truth.to(device))
-                        .type(torch.float)
-                        .sum()
-                        .item()
-                    )
-                    predictions = np.append(predictions, pred.to("cpu").numpy(), axis=0)
-                    truths = np.append(truths, truth.to("cpu").numpy(), axis=0)
-                    processes = np.append(processes, process.to("cpu").numpy(), axis=0)
-                N += global_features.size(dim=0)
+                    accuracy += 0
+                    predictions = 0# np.append(predictions, pred.to("cpu").numpy(), axis=0)
+                    truths = 0 #np.append(truths, truth.to("cpu").numpy(), axis=0)
+                    processes = 0 #np.append(processes, process.to("cpu").numpy(), axis=0)
+                N += 1 #global_features.size(dim=0)
                 progress.update(
-                    task, advance=1, description=f"Validation... | Loss: {loss:.2f}"
+                    task, advance=1, description=f"Validation... | Loss: {loss.item():.2f}"
                 )
                 progress.columns[-1].text_format = "{}/{} its".format(
                     N // dataloader.batch_size,
@@ -480,10 +385,6 @@ class DeepJet(Classifier, nn.Module):
         accuracy /= N
         print("  ", f"Validation loss: {np.array(losses).mean():.4f}")
         print("  ", f"Validation accuracy: {float(accuracy):.4f}")
-
-        if verbose:
-            print("Printing terminal ROC")
-            terminal_roc(predictions, truths, title="Validation ROC")
 
         return losses, float(accuracy)
 
@@ -531,79 +432,3 @@ class DeepJet(Classifier, nn.Module):
         ylabels = ["light mis-id.", "c mis-id", "b mis-id.", "light mis-id.", "mis-id."]
 
         return discs, truths, vetos, labels, xlabels, ylabels
-
-
-class DeepJetHLT(DeepJet):
-    n_cpf = 25
-    n_npf = 25
-    n_vtx = 5
-
-    classes = {
-        "b": ["isB"],
-        "bb": ["isBB", "isGBB"],
-        "leptonicB": ["isLeptonicB", "isLeptonicB_C"],
-        "c": ["isC", "isCC", "isGCC"],
-        "uds": ["isUD", "isS"],
-        "g": ["isG"],
-    }
-
-    cpf_candidates = [
-        "Cpfcan_BtagPf_trackEtaRel",
-        "Cpfcan_BtagPf_trackPtRel",
-        "Cpfcan_BtagPf_trackPPar",
-        "Cpfcan_BtagPf_trackDeltaR",
-        "Cpfcan_BtagPf_trackPParRatio",
-        "Cpfcan_BtagPf_trackSip2dVal",
-        "Cpfcan_BtagPf_trackSip2dSig",
-        "Cpfcan_BtagPf_trackSip3dVal",
-        "Cpfcan_BtagPf_trackSip3dSig",
-        "Cpfcan_BtagPf_trackJetDistVal",
-        "Cpfcan_ptrel",
-        "Cpfcan_drminsv",
-        "Cpfcan_VTX_ass",
-        "Cpfcan_puppiw",
-        "Cpfcan_chi2",
-        "Cpfcan_quality",
-    ]
-
-    npf_candidates = [
-        "Npfcan_ptrel",
-        "Npfcan_deltaR",
-        "Npfcan_isGamma",
-        "Npfcan_HadFrac",
-        "Npfcan_drminsv",
-        "Npfcan_puppiw",
-    ]
-
-    vtx_features = [
-        "sv_pt",
-        "sv_deltaR",
-        "sv_mass",
-        "sv_ntracks",
-        "sv_chi2",
-        "sv_normchi2",
-        "sv_dxy",
-        "sv_dxysig",
-        "sv_d3d",
-        "sv_d3dsig",
-        "sv_costhetasvpv",
-        "sv_enratio",
-    ]
-
-    global_features = [
-        "jet_pt",
-        "jet_eta",
-        "nCpfcan",
-        "nNpfcan",
-        "nsv",
-        "npv",
-        "TagVarCSV_trackSumJetEtRatio",
-        "TagVarCSV_trackSumJetDeltaR",
-        "TagVarCSV_vertexCategory",
-        "TagVarCSV_trackSip2dValAboveCharm",
-        "TagVarCSV_trackSip2dSigAboveCharm",
-        "TagVarCSV_trackSip3dValAboveCharm",
-        "TagVarCSV_trackSip3dSigAboveCharm",
-        "TagVarCSV_jetNSelectedTracks",
-        "TagVarCSV_jetNTracksEtaRel",
-    ]
