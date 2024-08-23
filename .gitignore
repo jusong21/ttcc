@@ -36,5 +36,6 @@ b-hive/utils/models/__pycache__
 b-hive/utils/plotting/__pycache__
 b-hive/utils/torch/__pycache__
 b-hive/utils/weighting/__pycache__
+b-hive/filelists/*root
 
 plotting/plots/
