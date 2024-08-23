@@ -1,0 +1,3 @@
+/afs/cern.ch/user/j/jusong/analysis/ttcc/b-hive/filelists/nominal_1.root
+/afs/cern.ch/user/j/jusong/analysis/ttcc/b-hive/filelists/nominal_10.root
+/afs/cern.ch/user/j/jusong/analysis/ttcc/b-hive/filelists/nominal_11.root
