@@ -87,8 +87,18 @@ class NanoProcessor(processor.ProcessorABC):
         met = events.MET[req_nbjet]
 
 
-        jet_drLep1 = jets_bsort.delta_r(leptons[:,0])
-        jet_drLep2 = jets_bsort.delta_r(leptons[:,1])
+        jet_drLep1 = ak.to_numpy(jets_bsort.delta_r(leptons[:,0]))
+        jet_drLep2 = ak.to_numpy(jets_bsort.delta_r(leptons[:,1]))
+        
+        lep_drJet1 = np.column_stack((jet_drLep1[:, 0], jet_drLep2[:, 0]))
+        lep_drJet2 = np.column_stack((jet_drLep1[:, 1], jet_drLep2[:, 1]))
+        lep_drJet3 = np.column_stack((jet_drLep1[:, 2], jet_drLep2[:, 2]))
+        lep_drJet4 = np.column_stack((jet_drLep1[:, 3], jet_drLep2[:, 3]))
+
+        #lepton_drJet1 = transposed[:, 0]  # shape: (2,)
+        #lepton_drJet2 = transposed[:, 1]  # shape: (2,)
+        #lepton_drJet3 = transposed[:, 2]  # shape: (2,)
+        #lepton_drJet4 = transposed[:, 3]  # shape: (2,)
 
         #lep_drJet1 = leptons.delta_r(jets_bsort[:,0])
         #lep_drJet2 = leptons.delta_r(jets_bsort[:,1])
@@ -101,18 +111,18 @@ class NanoProcessor(processor.ProcessorABC):
         # leptons
 #        #pruned_ev['drLepton12'] = ak.to_numpy(dr_leptons)
         pruned_ev['massLepton12'] = ak.to_numpy(events.mll[req_nbjet])
-        #pruned_ev['Lepton_drJet1'] = ak.to_numpy(lep_drJet1)
-        #pruned_ev['Lepton_drJet2'] = ak.to_numpy(lep_drJet2)
-        #pruned_ev['Lepton_drJet3'] = ak.to_numpy(lep_drJet3)
-        #pruned_ev['Lepton_drJet4'] = ak.to_numpy(lep_drJet4)
+        pruned_ev['Lepton_drJet1'] = ak.to_numpy(lep_drJet1)
+        pruned_ev['Lepton_drJet2'] = ak.to_numpy(lep_drJet2)
+        pruned_ev['Lepton_drJet3'] = ak.to_numpy(lep_drJet3)
+        pruned_ev['Lepton_drJet4'] = ak.to_numpy(lep_drJet4)
 
         # MET
         pruned_ev['MET'] = ak.to_numpy(met.pt)
         pruned_ev['MET_phi'] = ak.to_numpy(met.phi)
 
         # jets
-        pruned_ev['sortJet_drLep1'] = ak.to_numpy(jet_drLep1)
-        pruned_ev['sortJet_drLep2'] = ak.to_numpy(jet_drLep2)
+        pruned_ev['sortJet_drLep1'] = jet_drLep1
+        pruned_ev['sortJet_drLep2'] = jet_drLep2
 
         # dijet
         pruned_ev['drJet12'] = ak.to_numpy(jets_bsort[:,0].delta_r(jets_bsort[:,1]))
@@ -177,7 +187,7 @@ class NanoProcessor(processor.ProcessorABC):
                "mu_Iso_weight": ak.to_numpy(events.mu.Iso_weight),
                "ele_Reco_weight": ak.to_numpy(events.ele.Reco_weight),
                "ele_ID_weight": ak.to_numpy(events.ele.ID_weight),
-               "L1PreFiringWeight_Nom": ak.to_numpy(events.L1PreFiringWeight.Nom),
+               "L1PreFiring_weight": ak.to_numpy(events.L1PreFiringWeight.Nom),
                "DeepJetC_weight": ak.to_numpy(ak.prod(events.DeepJetCJet.weight, axis=-1)),
                "DeepJetB_weight": ak.to_numpy(ak.prod(events.DeepJetBJet.weight, axis=-1)),
 
@@ -194,7 +204,7 @@ class NanoProcessor(processor.ProcessorABC):
 ##               "DeepJetC_TotUp_weight": ak.to_numpy(DeepJetC_totUp_weight),
 ##               "DeepJetB_TotUp_weight": ak.to_numpy(DeepJetB_totUp_weight),
                # need to check
-               "L1PreFiringWeight_Up": ak.to_numpy(events.L1PreFiringWeight.Dn),
+               "L1PreFiringUp_weight": ak.to_numpy(events.L1PreFiringWeight.Dn),
 #
 #
                # down
@@ -210,7 +220,7 @@ class NanoProcessor(processor.ProcessorABC):
 ##               "DeepJetC_TotDown_weight": ak.to_numpy(DeepJetC_totDown_weight),
 ##               "DeepJetB_TotDown_weight": ak.to_numpy(DeepJetB_totDown_weight),
                # need to check
-               "L1PreFiringWeight_Down": ak.to_numpy(events.L1PreFiringWeight.Up),
+               "L1PreFiringDown_weight": ak.to_numpy(events.L1PreFiringWeight.Up),
 #
             })
 #"""
