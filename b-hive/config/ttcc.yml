@@ -30,46 +30,32 @@ bins_eta:
 - 2.0
 - 2.51
 
-#processes:
-#- "TT"
-#- "QCD"
-#
-#process-weights:
-#  "TT": 1.0
-#  "QCD": 1.0
-
 treename:
   "Events"
 
 global_features:
-- "nJet"
-- "nbJet"
-- "ncJet"
-<<<<<<< HEAD
-#- "Lepton_pt"
-#- "Lepton_eta"
-=======
->>>>>>> develop
+- "nJets"
+- "nbJets"
+- "ncJets"
+- "MET"
+- "MET_phi"
 
 jet_features:
-- "Jet_pt"
-- "Jet_eta"
-- "Jet_phi"
-- "Jet_mass"
-- "Jet_drLep1"
-- "Jet_drLep2"
-<<<<<<< HEAD
-=======
-- "Jet_btagDeepFlavB"
-- "Jet_btagDeepFlavCvB"
-- "Jet_btagDeepFlavCvL"
+- "sortJet_drLep1"
+- "sortJet_drLep2"
+- "sortJet_btagDeepFlavB"
+- "sortJet_btagDeepFlavCvB"
+- "sortJet_btagDeepFlavCvL"
+- "sortJet_pt"
+- "sortJet_eta"
+- "sortJet_phi"
+- "sortJet_mass"
 
 lepton_features:
 - "Lepton_pt"
 - "Lepton_eta"
 - "Lepton_phi"
 - "Lepton_mass"
->>>>>>> develop
 
 truths:
 - "isttbb"
@@ -81,10 +67,3 @@ truths:
 reference_flavour:
   "isttcc"
 
-#TT:
-# pt_min: 30
-# pt_max: 1000 
-#
-#QCD:
-# pt_min: 30
-# pt_max: 1000
