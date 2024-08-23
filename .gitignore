@@ -23,6 +23,7 @@ BTVNanoCommissioning/jobs_*
 BTVNanoCommissioning/.success
 BTVNanoCommissioning/array*
 BTVNanoCommissioning/hist*
+BTVNanoCommissioning/local_submit
 
 b-hive/output/*
 b-hive/__pycache__
