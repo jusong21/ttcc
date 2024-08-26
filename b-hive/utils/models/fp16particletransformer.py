@@ -4,7 +4,7 @@ import random
 import warnings
 from functools import partial
 from typing import List
-from utils.torch import LZ4Dataset
+from utils.torch import LZ4FP16Dataset
 from utils.plotting.termplot import terminal_roc
 
 from rich.progress import (
@@ -300,29 +300,35 @@ class LinLayer(nn.Module):
 
 
 class InputProcess(nn.Module):
-    def __init__(self, jet_dim, lepton_dim, embed_dim, **kwargs):
+    def __init__(self, cpf_dim, npf_dim, vtx_dim, embed_dim, **kwargs):
         super(InputProcess, self).__init__(**kwargs)
 
+        self.cpf_bn0 = torch.nn.BatchNorm1d(cpf_dim, eps=0.001, momentum=0.1)
+        self.cpf_conv1 = InputConv(cpf_dim, embed_dim)
+        self.cpf_conv3 = InputConv(embed_dim * 1, embed_dim)
 
-        self.jet_bn0 = torch.nn.BatchNorm1d(jet_dim, eps=0.001, momentum=0.1)
-        self.jet_conv1 = InputConv(jet_dim, embed_dim)
-        self.jet_conv3 = InputConv(embed_dim * 1, embed_dim)
+        self.npf_bn0 = torch.nn.BatchNorm1d(npf_dim, eps=0.001, momentum=0.1)
+        self.npf_conv1 = InputConv(npf_dim, embed_dim)
+        self.npf_conv3 = InputConv(embed_dim * 1, embed_dim)
 
-        self.lepton_bn0 = torch.nn.BatchNorm1d(lepton_dim, eps=0.001, momentum=0.1)
-        self.lepton_conv1 = InputConv(lepton_dim, embed_dim)
-        self.lepton_conv3 = InputConv(embed_dim * 1, embed_dim)
+        self.vtx_bn0 = torch.nn.BatchNorm1d(vtx_dim, eps=0.001, momentum=0.1)
+        self.vtx_conv1 = InputConv(vtx_dim, embed_dim)
+        self.vtx_conv3 = InputConv(embed_dim * 1, embed_dim)
 
-    def forward(self, jet, lepton):
+    def forward(self, cpf, npf, vtx):
+        cpf = self.cpf_bn0(torch.transpose(cpf, 1, 2))
+        cpf = self.cpf_conv1(cpf, cpf, skip=False)
+        cpf = self.cpf_conv3(cpf, cpf, skip=False)
 
-        jet = self.jet_bn0(torch.transpose(jet, 1, 2))
-        jet = self.jet_conv1(jet, jet, skip=False)
-        jet = self.jet_conv3(jet, jet, skip=False)
+        npf = self.npf_bn0(torch.transpose(npf, 1, 2))
+        npf = self.npf_conv1(npf, npf, skip=False)
+        npf = self.npf_conv3(npf, npf, skip=False)
 
-        lepton = self.lepton_bn0(torch.transpose(lepton, 1, 2))
-        lepton = self.lepton_conv1(lepton, lepton, skip=False)
-        lepton = self.lepton_conv3(lepton, lepton, skip=False)
+        vtx = self.vtx_bn0(torch.transpose(vtx, 1, 2))
+        vtx = self.vtx_conv1(vtx, vtx, skip=False)
+        vtx = self.vtx_conv3(vtx, vtx, skip=False)
 
-        out = torch.cat((jet, lepton), dim=2)
+        out = torch.cat((cpf, npf, vtx), dim=2)
         out = torch.transpose(out, 1, 2)
 
         return out
@@ -575,12 +581,14 @@ def _get_activation_fn(activation):
     raise RuntimeError("activation should be relu/gelu, not {}".format(activation))
 
 
-def build_E_p(tensor):  # pt, eta, phi, mass (, coords)
+def build_E_p(tensor, is_cpf=False):  # pt, eta, phi, e (, coords)
     out = torch.zeros(tensor.shape[0], tensor.shape[1], 4, device=tensor.device)
     out[:, :, 0] = tensor[:, :, 0] * torch.cos(tensor[:, :, 2])  # Get px
     out[:, :, 1] = tensor[:, :, 0] * torch.sin(tensor[:, :, 2])  # Get py
     out[:, :, 2] = tensor[:, :, 0] * (0.5 * (torch.exp(tensor[:, :, 1]) - torch.exp(-tensor[:, :, 1])))  # torch.sinh(tensor[:,:,1]) #Get pz
-    out[:, :, 3] = torch.sqrt( tensor[:, :, 3].square() + out[:, :, 0].square() + out[:, :, 1].square() + out[:, :, 2].square() ) # Get E
+    out[:, :, 3] = tensor[:, :, 3]  # Get E
+    if is_cpf == True:
+        out[:, :, 4:] = tensor[:, :, 4:]
 
     return out
 
@@ -592,55 +600,13 @@ def get_mass(x, eps=1e-8):
     return torch.sqrt(m2)
 
 
-class ParticleTransformer(nn.Module):
-    n_jet = 4
-    n_lepton = 2
-
-    datasetClass = LZ4Dataset
+class FP16ParticleTransformer(nn.Module):
+    n_cpf = 26
+    n_npf = 25
+    n_vtx = 5
+    datasetClass = LZ4FP16Dataset
     optimizerClass = torch.optim.RAdam
-    #input_dims = [(1,15), (26, 20), (25, 10), (5, 15)]
-    #input_dims = [(1,5), (4, 9), (2, 4)]
-
-    classes = {
-        "ttbb": ["isttbb"],
-        "ttbj": ["isttbj"],
-        "ttcc": ["isttcc"],
-        "ttcj": ["isttcj"],
-        "ttother": ["isttother"]
-    }
-
-    global_features = [
-        "nJets",
-        "nbJets",
-        "ncJets",
-        "MET",
-        "MET_phi",
-    ]
-        
-    jet_features = [
-        "sortJet_drLep1",
-        "sortJet_drLep2",
-        "sortJet_btagDeepFlavB",
-        "sortJet_btagDeepFlavCvB",
-        "sortJet_btagDeepFlavCvL",
-        "sortJet_pt",
-        "sortJet_eta",
-        "sortJet_phi",
-        "sortJet_mass",
-    ]
-        
-    lepton_features = [
-        "Lepton_pt",
-        "Lepton_eta",
-        "Lepton_phi",
-        "Lepton_mass",
-    ]
-
-    n_global_features = len(global_features)
-    n_jet_features = len(jet_features)
-    n_lepton_features = len(lepton_features)
-
-    input_dims = [(1,n_global_features), (n_jet, n_jet_features), (n_lepton, n_lepton_features)]
+    input_dims = [(1,15), (26, 20), (25, 10), (5, 15)]
 
     feature_edges = []
     v = 0
@@ -648,32 +614,109 @@ class ParticleTransformer(nn.Module):
         v += dim[0]*dim[1]
         feature_edges.append(v)
 
+    classes = {
+        "b": ["isB"],
+        "bb": ["isBB", "isGBB"],
+        "leptonicB": ["isLeptonicB", "isLeptonicB_C"],
+        "c": ["isC", "isCC", "isGCC"],
+        "uds": ["isUD", "isS"],
+        "g": ["isG"],
+    }
 
+    cpf_candidates = [
+        "Cpfcan_BtagPf_trackEtaRel",
+        "Cpfcan_BtagPf_trackPtRel",
+        "Cpfcan_BtagPf_trackPPar",
+        "Cpfcan_BtagPf_trackDeltaR",
+        "Cpfcan_BtagPf_trackPParRatio",
+        "Cpfcan_BtagPf_trackSip2dVal",
+        "Cpfcan_BtagPf_trackSip2dSig",
+        "Cpfcan_BtagPf_trackSip3dVal",
+        "Cpfcan_BtagPf_trackSip3dSig",
+        "Cpfcan_BtagPf_trackJetDistVal",
+        "Cpfcan_ptrel",
+        "Cpfcan_drminsv",
+        "Cpfcan_VTX_ass",
+        "Cpfcan_puppiw",
+        "Cpfcan_chi2",
+        "Cpfcan_quality",
+        "Cpfcan_pt",
+        "Cpfcan_eta",
+        "Cpfcan_phi",
+        "Cpfcan_e",
+    ]
+
+    npf_candidates = [
+        "Npfcan_ptrel",
+        "Npfcan_deltaR",
+        "Npfcan_isGamma",
+        "Npfcan_HadFrac",
+        "Npfcan_drminsv",
+        "Npfcan_puppiw",
+        "Npfcan_pt",
+        "Npfcan_eta",
+        "Npfcan_phi",
+        "Npfcan_e",
+    ]
+
+    vtx_features = [
+        "sv_deltaR",
+        "sv_mass",
+        "sv_ntracks",
+        "sv_chi2",
+        "sv_normchi2",
+        "sv_dxy",
+        "sv_dxysig",
+        "sv_d3d",
+        "sv_d3dsig",
+        "sv_costhetasvpv",
+        "sv_enratio",
+        "sv_pt",
+        "sv_eta",
+        "sv_phi",
+        "sv_e",
+    ]
+
+    global_features = [
+        "jet_pt",
+        "jet_eta",
+        "n_Cpfcand",
+        "n_Npfcand",
+        "nsv",
+        "npv",
+        "TagVarCSV_trackSumJetEtRatio",
+        "TagVarCSV_trackSumJetDeltaR",
+        "TagVarCSV_vertexCategory",
+        "TagVarCSV_trackSip2dValAboveCharm",
+        "TagVarCSV_trackSip2dSigAboveCharm",
+        "TagVarCSV_trackSip3dValAboveCharm",
+        "TagVarCSV_trackSip3dSigAboveCharm",
+        "TagVarCSV_jetNSelectedTracks",
+        "TagVarCSV_jetNTracksEtaRel",
+    ]
     def __init__(
         self,
-        num_classes=len(classes),
+        num_classes=6,
         num_enc=3,
         num_head=8,
-        #embed_dim=128,
-        embed_dim=64, # FIXME which number should I use?
-        jet_dim = n_jet_features-4,
-        lepton_dim = n_lepton_features-3, 
+        embed_dim=128,
+        cpf_dim=16,
+        npf_dim=6,
+        vtx_dim=11,
         for_inference=False,
         build_4v=True,
         **kwargs
     ):
-        super(ParticleTransformer, self).__init__(**kwargs)
+        super(FP16ParticleTransformer, self).__init__(**kwargs)
 
         self.for_inference = for_inference
         self.build_4v = build_4v
         self.num_enc_layers = num_enc
-        self.jet_fts = jet_dim
-        self.lepton_fts = lepton_dim
-        self.num_classes = num_classes
-        self.InputProcess = InputProcess(jet_dim, lepton_dim, embed_dim)
+        self.cpf_fts = cpf_dim
+        self.npf_fts = npf_dim
+        self.vtx_fts = vtx_dim
+        self.InputProcess = InputProcess(cpf_dim, npf_dim, vtx_dim, embed_dim)
         self.Linear = nn.Linear(embed_dim, num_classes)
-
-        self.lin_glob = nn.Linear(5, embed_dim)
 
         self.pair_embed = PairEmbed(4, [48, 48] + [num_head], for_onnx=for_inference)
         self.cls_norm = torch.nn.LayerNorm(embed_dim)
@@ -696,48 +739,54 @@ class ParticleTransformer(nn.Module):
 
         # integer positions and default values still have to be checked
         self.glob_integers = torch.tensor([2, 3, 4, 5, 8, 13, 14])
-        self.jet_integers = torch.tensor([2])
-        self.lepton_integers = torch.tensor([2])
+        self.cpf_integers = torch.tensor([12, 13, 14, 15])
+        self.npf_integers = torch.tensor([2])
+        self.vtx_integers = torch.tensor([3])
         self.integers = [
             self.glob_integers,
-            self.jet_integers,
-            self.lepton_integers,
+            self.cpf_integers,
+            self.npf_integers,
+            self.vtx_integers,
         ]
         self.glob_defaults = torch.tensor([0])
-        self.jet_defaults = torch.tensor([0])
-        self.lepton_defaults = torch.tensor([0])
+        self.cpf_defaults = torch.tensor([0])
+        self.npf_defaults = torch.tensor([0])
+        self.vtx_defaults = torch.tensor([0])
         self.defaults = [
             self.glob_defaults,
-            self.jet_defaults,
-            self.lepton_defaults,
+            self.cpf_defaults,
+            self.npf_defaults,
+            self.vtx_defaults,
         ]
 
 
     def forward(self, inpt):
 
-        global_features, jet_features, lepton_features = inpt[0], inpt[1], inpt[2]
-        jet, lepton = jet_features[:, :, :-4], lepton_features[:, :, -1].unsqueeze(dim=2)
-        jet_4v, lepton_4v = jet_features[:, :, -4:], lepton_features[:, :, -4:]
+        global_features, cpf_features, npf_features, vtx_features = inpt[0], inpt[1], inpt[2], inpt[3]
+        cpf, npf, vtx = cpf_features[:, :, :-4], npf_features[:, :, :-4], vtx_features[:, :, :-4]
+        cpf_4v, npf_4v, vtx_4v = cpf_features[:, :, -4:], npf_features[:, :, -4:], vtx_features[:, :, -4:]
 
-        padding_mask = torch.cat((jet_4v[:, :, :1], lepton_4v[:, :, :1]), dim=1)
+        padding_mask = torch.cat((cpf_4v[:, :, :1], npf_4v[:, :, :1], vtx_4v[:, :, :1]), dim=1)
         padding_mask = torch.eq(padding_mask[:, :, 0], 0.0)
 
         if self.build_4v:
-            jet_4v = build_E_p(jet_4v)
-            lepton_4v = build_E_p(lepton_4v)
+            cpf_4v = build_E_p(cpf_4v)
+            npf_4v = build_E_p(npf_4v)
+            vtx_4v = build_E_p(vtx_4v)
 
-        jet = jet[:, :, : self.jet_fts]
-        lepton = lepton[:, :, : self.lepton_fts]
+        cpf = cpf[:, :, : self.cpf_fts]
+        npf = npf[:, :, : self.npf_fts]
+        vtx = vtx[:, :, : self.vtx_fts]
 
-        enc = self.InputProcess(jet, lepton)
+        enc = self.InputProcess(cpf, npf, vtx)
 
-        lorentz_vectors = torch.cat((jet_4v, lepton_4v), dim=1)
+        lorentz_vectors = torch.cat((cpf_4v, npf_4v, vtx_4v), dim=1)
         v = lorentz_vectors.transpose(1, 2)
         attn_mask = self.pair_embed(v).view(-1, v.size(-1), v.size(-1))
 
         enc = self.Encoder(enc, attn_mask, padding_mask)
 
-        cls_tokens = self.lin_glob(global_features.unsqueeze(dim=1))
+        cls_tokens = self.cls_token.expand(enc.size(0), 1, -1)
         cls_tokens = self.CLS_EncoderLayer1(cls_tokens, enc, padding_mask)
         if self.num_enc_layers > 3:
             cls_tokens = self.CLS_EncoderLayer2(cls_tokens, enc, padding_mask)
@@ -881,7 +930,7 @@ class ParticleTransformer(nn.Module):
         processes = np.concatenate(processes)
         return predictions, truths, kinematics, processes
     
-#    @torch.compile(mode='max-autotune')
+    @torch.compile(mode='max-autotune')
     def step(self, x, truth, loss_fn):
 
         inpt = self.get_inpt(x)
@@ -967,7 +1016,7 @@ class ParticleTransformer(nn.Module):
         accuracy = 0.0
         self.eval()
 
-        predictions = np.empty((0, self.num_classes))
+        predictions = np.empty((0, 6))
         truths = np.empty((0))
         processes = np.empty((0))
 
@@ -1034,13 +1083,14 @@ class ParticleTransformer(nn.Module):
         
         feature_lengths = feature_edges[1:] - feature_edges[:-1]
         feature_lengths = torch.cat((feature_edges[:1], feature_lengths))
-        glob, jet, lepton = x.split(feature_lengths.tolist(), dim=1)
-        
+        glob, cpf, npf, vtx = x.split(feature_lengths.tolist(), dim=1)
+
         glob = glob.reshape(glob.shape[0], self.input_dims[0][1])
-        jet = jet.reshape(jet.shape[0], self.input_dims[1][0], self.input_dims[1][1])
-        lepton = lepton.reshape(lepton.shape[0], self.input_dims[2][0], self.input_dims[2][1])
+        cpf = cpf.reshape(cpf.shape[0], self.input_dims[1][0], self.input_dims[1][1])
+        npf = npf.reshape(npf.shape[0], self.input_dims[2][0], self.input_dims[2][1])
+        vtx = vtx.reshape(vtx.shape[0], self.input_dims[3][0], self.input_dims[3][1])
         
-        return (glob.detach(), jet.detach(), lepton.detach())
+        return (glob.detach(), cpf.detach(), npf.detach(), vtx.detach())
 
     def calculate_roc_list(
         self,

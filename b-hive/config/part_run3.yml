@@ -1,4 +1,6 @@
 bins_pt:
+- 10
+- 25
 - 30
 - 35
 - 40
@@ -19,35 +21,26 @@ bins_pt:
 - 2001
 
 bins_eta:
-- -4.0
 - -2.5
 - -2.0
 - -1.5
 - -1.0
 - -0.5
+- 0.0
 - 0.5
 - 1
 - 1.5
 - 2.0
 - 2.51
-- 4.01
-
-processes:
-- "TT"
-- "QCD"
-
-process-weights:
-  "TT": 1.0
-  "QCD": 1.0
 
 treename:
-  "DeepJetNTupler/DeepJetvars"
+  "deepntuplizer/tree"
 
 global_features:
 - "jet_pt"
 - "jet_eta"
-- "nCpfcan"
-- "nNpfcan"
+- "n_Cpfcand"
+- "n_Npfcand"
 - "nsv"
 - "npv"
 - "TagVarCSV_trackSumJetEtRatio"
@@ -59,6 +52,7 @@ global_features:
 - "TagVarCSV_trackSip3dSigAboveCharm"
 - "TagVarCSV_jetNSelectedTracks"
 - "TagVarCSV_jetNTracksEtaRel"
+
 cpf_candidates:
 - "Cpfcan_BtagPf_trackEtaRel"
 - "Cpfcan_BtagPf_trackPtRel"
@@ -76,6 +70,11 @@ cpf_candidates:
 - "Cpfcan_puppiw"
 - "Cpfcan_chi2"
 - "Cpfcan_quality"
+- "Cpfcan_pt"
+- "Cpfcan_eta"
+- "Cpfcan_phi"
+- "Cpfcan_e"
+
 npf_candidates:
 - "Npfcan_ptrel"
 - "Npfcan_deltaR"
@@ -83,8 +82,12 @@ npf_candidates:
 - "Npfcan_HadFrac"
 - "Npfcan_drminsv"
 - "Npfcan_puppiw"
+- "Npfcan_pt"
+- "Npfcan_eta"
+- "Npfcan_phi"
+- "Npfcan_e"
+
 vtx_features:
-- "sv_pt"
 - "sv_deltaR"
 - "sv_mass"
 - "sv_ntracks"
@@ -96,6 +99,15 @@ vtx_features:
 - "sv_d3dsig"
 - "sv_costhetasvpv"
 - "sv_enratio"
+- "sv_pt"
+- "sv_eta"
+- "sv_phi"
+- "sv_e"
+
+n_cpf_candidates: 26
+n_npf_candidates: 25
+n_vtx_candidates: 5
+
 truths:
 - "isB"
 - "isBB"
@@ -112,10 +124,5 @@ truths:
 reference_flavour:
   "isB"
 
-TT:
- pt_min: 30
- pt_max: 1000 
-
-QCD:
- pt_min: 30
- pt_max: 1000
+processor:
+  "LZ4Processing"
