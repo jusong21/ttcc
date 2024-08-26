@@ -75,8 +75,8 @@ class NanoProcessor(processor.ProcessorABC):
         else:
             output["sumw"] = ak.sum(events.weight)
 
-        #req_nbjet = events.nbJets >= 2
-        req_nbjet = events.nbJets >= 0
+        req_nbjet = events.nbJets >= 2
+        #req_nbjet = events.nbJets >= 0
         #njets = ak.num(events.Jet)
         jets = events.Jet[:,:4] # use only 4 jets
         jets_bsort = jets[ak.argsort(jets.btagDeepFlavB, ascending=False)]
@@ -106,7 +106,7 @@ class NanoProcessor(processor.ProcessorABC):
         #lep_drJet4 = leptons.delta_r(jets_bsort[:,3])
 
         #pruned_ev = {'Channel': ak.to_numpy(events.Channel), 'nJets': ak.to_numpy(njets), 'nbJets': ak.to_numpy(events.nbJets), 'nbJets_T': ak.to_numpy(events.nbJets_T), 'ncJets': ak.to_numpy(events.ncJets), 'ncJets_T': ak.to_numpy(events.ncJets_T)}
-        pruned_ev = {'sortJet': jets_bsort, 'Jet': jets, 'Lepton': leptons, 'Channel': ak.to_numpy(events.Channel[req_nbjet]), 'nJets': ak.to_numpy(events.nJets[req_nbjet]), 'nbJets': ak.to_numpy(events.nbJets[req_nbjet]), 'nbJets_T': ak.to_numpy(events.nbJetsT[req_nbjet]), 'ncJets': ak.to_numpy(events.ncJets[req_nbjet]), 'ncJets_T': ak.to_numpy(events.ncJetsT[req_nbjet])}
+        pruned_ev = {'sortJet': jets_bsort, 'Jet': jets[req_nbjet], 'Lepton': leptons, 'Channel': ak.to_numpy(events.Channel[req_nbjet]), 'nJets': ak.to_numpy(events.nJets[req_nbjet]), 'nbJets': ak.to_numpy(events.nbJets[req_nbjet]), 'nbJets_T': ak.to_numpy(events.nbJetsT[req_nbjet]), 'ncJets': ak.to_numpy(events.ncJets[req_nbjet]), 'ncJets_T': ak.to_numpy(events.ncJetsT[req_nbjet])}
 
         # leptons
 #        #pruned_ev['drLepton12'] = ak.to_numpy(dr_leptons)
@@ -178,49 +178,49 @@ class NanoProcessor(processor.ProcessorABC):
             DeepJetB_totDown_weight, DeepJetB_totUp_weight = calc_tot_unc(events, "DeepJetBJet")
 
             pruned_ev.update({
-               "weight": ak.to_numpy(events.weight),
-               "genweight_weight": ak.to_numpy(events.genweight.weight),
-               "puweight_weight": ak.to_numpy(events.puweight.weight),
-               "HLT_weight": ak.to_numpy(events.HLT.weight),
-               "mu_Reco_weight": ak.to_numpy(events.mu.Reco_weight),
-               "mu_ID_weight": ak.to_numpy(events.mu.ID_weight),
-               "mu_Iso_weight": ak.to_numpy(events.mu.Iso_weight),
-               "ele_Reco_weight": ak.to_numpy(events.ele.Reco_weight),
-               "ele_ID_weight": ak.to_numpy(events.ele.ID_weight),
-               "L1PreFiring_weight": ak.to_numpy(events.L1PreFiringWeight.Nom),
-               "DeepJetC_weight": ak.to_numpy(ak.prod(events.DeepJetCJet.weight, axis=-1)),
-               "DeepJetB_weight": ak.to_numpy(ak.prod(events.DeepJetBJet.weight, axis=-1)),
+               "weight": ak.to_numpy(events.weight[req_nbjet]),
+               "genweight_weight": ak.to_numpy(events.genweight.weight[req_nbjet]),
+               "puweight_weight": ak.to_numpy(events.puweight.weight[req_nbjet]),
+               "HLT_weight": ak.to_numpy(events.HLT.weight[req_nbjet]),
+               "mu_Reco_weight": ak.to_numpy(events.mu.Reco_weight[req_nbjet]),
+               "mu_ID_weight": ak.to_numpy(events.mu.ID_weight[req_nbjet]),
+               "mu_Iso_weight": ak.to_numpy(events.mu.Iso_weight[req_nbjet]),
+               "ele_Reco_weight": ak.to_numpy(events.ele.Reco_weight[req_nbjet]),
+               "ele_ID_weight": ak.to_numpy(events.ele.ID_weight[req_nbjet]),
+               "L1PreFiring_weight": ak.to_numpy(events.L1PreFiringWeight.Nom[req_nbjet]),
+               "DeepJetC_weight": ak.to_numpy(ak.prod(events.DeepJetCJet.weight[req_nbjet], axis=-1)),
+               "DeepJetB_weight": ak.to_numpy(ak.prod(events.DeepJetBJet.weight[req_nbjet], axis=-1)),
 
                # up
-               "puweightUp_weight": ak.to_numpy(events.puweightUp.weight),
-               "HLTUp_weight": ak.to_numpy(events.HLTUp.weight),
-               "mu_RecoUp_weight": ak.to_numpy(events.mu.RecoUp_weight),
-               "mu_IDUp_weight": ak.to_numpy(events.mu.IDUp_weight),
-               "mu_IsoUp_weight": ak.to_numpy(events.mu.IsoUp_weight),
-               "ele_RecoUp_weight": ak.to_numpy(events.ele.RecoUp_weight),
-               "ele_IDUp_weight": ak.to_numpy(events.ele.IDUp_weight),
-               "DeepJetC_TotUp_weight": DeepJetC_totUp_weight,
-               "DeepJetB_TotUp_weight": DeepJetB_totUp_weight,
+               "puweightUp_weight": ak.to_numpy(events.puweightUp.weight[req_nbjet]),
+               "HLTUp_weight": ak.to_numpy(events.HLTUp.weight[req_nbjet]),
+               "mu_RecoUp_weight": ak.to_numpy(events.mu.RecoUp_weight[req_nbjet]),
+               "mu_IDUp_weight": ak.to_numpy(events.mu.IDUp_weight[req_nbjet]),
+               "mu_IsoUp_weight": ak.to_numpy(events.mu.IsoUp_weight[req_nbjet]),
+               "ele_RecoUp_weight": ak.to_numpy(events.ele.RecoUp_weight[req_nbjet]),
+               "ele_IDUp_weight": ak.to_numpy(events.ele.IDUp_weight[req_nbjet]),
+               "DeepJetC_TotUp_weight": DeepJetC_totUp_weight[req_nbjet],
+               "DeepJetB_TotUp_weight": DeepJetB_totUp_weight[req_nbjet],
 ##               "DeepJetC_TotUp_weight": ak.to_numpy(DeepJetC_totUp_weight),
 ##               "DeepJetB_TotUp_weight": ak.to_numpy(DeepJetB_totUp_weight),
                # need to check
-               "L1PreFiringUp_weight": ak.to_numpy(events.L1PreFiringWeight.Dn),
+               "L1PreFiringUp_weight": ak.to_numpy(events.L1PreFiringWeight.Dn[req_nbjet]),
 #
 #
                # down
-               "puweightDown_weight": ak.to_numpy(events.puweightDown.weight),
-               "HLTDown_weight": ak.to_numpy(events.HLTDown.weight),
-               "mu_RecoDown_weight": ak.to_numpy(events.mu.RecoDown_weight),
-               "mu_IDDown_weight": ak.to_numpy(events.mu.IDDown_weight),
-               "mu_IsoDown_weight": ak.to_numpy(events.mu.IsoDown_weight),
-               "ele_RecoDown_weight": ak.to_numpy(events.ele.RecoDown_weight),
-               "ele_IDDown_weight": ak.to_numpy(events.ele.IDDown_weight),
-               "DeepJetC_TotDown_weight": DeepJetC_totDown_weight,
-               "DeepJetB_TotDown_weight": DeepJetB_totDown_weight,
+               "puweightDown_weight": ak.to_numpy(events.puweightDown.weight[req_nbjet]),
+               "HLTDown_weight": ak.to_numpy(events.HLTDown.weight[req_nbjet]),
+               "mu_RecoDown_weight": ak.to_numpy(events.mu.RecoDown_weight[req_nbjet]),
+               "mu_IDDown_weight": ak.to_numpy(events.mu.IDDown_weight[req_nbjet]),
+               "mu_IsoDown_weight": ak.to_numpy(events.mu.IsoDown_weight[req_nbjet]),
+               "ele_RecoDown_weight": ak.to_numpy(events.ele.RecoDown_weight[req_nbjet]),
+               "ele_IDDown_weight": ak.to_numpy(events.ele.IDDown_weight[req_nbjet]),
+               "DeepJetC_TotDown_weight": DeepJetC_totDown_weight[req_nbjet],
+               "DeepJetB_TotDown_weight": DeepJetB_totDown_weight[req_nbjet],
 ##               "DeepJetC_TotDown_weight": ak.to_numpy(DeepJetC_totDown_weight),
 ##               "DeepJetB_TotDown_weight": ak.to_numpy(DeepJetB_totDown_weight),
                # need to check
-               "L1PreFiringDown_weight": ak.to_numpy(events.L1PreFiringWeight.Up),
+               "L1PreFiringDown_weight": ak.to_numpy(events.L1PreFiringWeight.Up[req_nbjet]),
 #
             })
 #"""
