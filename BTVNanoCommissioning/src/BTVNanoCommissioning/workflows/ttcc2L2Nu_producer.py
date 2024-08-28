@@ -105,8 +105,8 @@ class NanoProcessor(processor.ProcessorABC):
         else:
             shifts[0][0]["Muon"] = events.Muon
 
-        for collections, name in shifts:
-            print('c:', collections, 'n:', name)
+        #for collections, name in shifts:
+            #print('c:', collections, 'n:', name)
         return processor.accumulate(
             self.process_shift(update(events, collections), name)
             for collections, name in shifts
@@ -503,8 +503,8 @@ class NanoProcessor(processor.ProcessorABC):
         pad_muons = ak.pad_none(muons, 2, axis=1)[req_event]
         #pad_jets = ak.pad_none(jets, 6, axis=1)[req_event]
         pad_jets = ak.pad_none(jets, 4, axis=1)[req_event]
-        print('pad jets pt:', pad_jets.pt)
-        print('pad jets pt:', pad_jets.pt)
+        #print('pad jets pt:', pad_jets.pt)
+        #print('pad jets pt:', pad_jets.pt)
         #pad_jets = pad_jets[:, :4]
         pad_lep1 = lep1[req_event]
         pad_lep2 = lep2[req_event]
