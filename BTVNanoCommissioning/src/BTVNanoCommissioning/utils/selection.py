@@ -24,6 +24,7 @@ def jet_id(events, campaign):
 			(events.Jet.pt > 30)
 			& (abs(events.Jet.eta) < 2.4)
 			& (events.Jet.jetId > 4)
+			& ((events.Jet.pt > 50) | (events.Jet.puId >= 7))
 		)
 	return jetmask
 
