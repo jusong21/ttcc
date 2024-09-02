@@ -78,7 +78,8 @@ class NanoProcessor(processor.ProcessorABC):
         req_nbjet = events.nbJets >= 2
         #req_nbjet = events.nbJets >= 0
         #njets = ak.num(events.Jet)
-        jets = events.Jet[:,:4] # use only 4 jets
+        #jets = events.Jet[:,:4] # use only 4 jets
+        jets = events.Jet
         jets_bsort = jets[ak.argsort(jets.btagDeepFlavB, ascending=False)]
         jets_bsort = jets_bsort[req_nbjet][:,:4]
 
