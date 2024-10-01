@@ -14,8 +14,11 @@ class DataPreprocessing_BaseClass(processor.ProcessorABC):
     def __init__(
         self,
         output_directory=None,
-        bins_pt: List = None,
-        bins_eta: List = None,
+        ##bins_pt: List = None,
+        #bins_eta: List = None,
+        #bins_class: List = None,
+        bins_nbjets: List = None,
+        bins_ncjets: List = None,
         prefix="",
         precision=np.float32,
         global_features: List[str] = None,
@@ -27,8 +30,11 @@ class DataPreprocessing_BaseClass(processor.ProcessorABC):
         n_lepton_candidates=2,
     ):
         self._accumulator = processor.dict_accumulator({})
-        self.bins_eta = bins_eta
-        self.bins_pt = bins_pt
+        #self.bins_eta = bins_eta
+        #self.bins_pt = bins_pt
+        #self.bins_class = bins_class
+        self.bins_nbjets = bins_nbjets
+        self.bins_ncjets = bins_ncjets
         self.output_dir = output_directory
         self.precision = precision
         self.prefix = prefix
@@ -44,10 +50,16 @@ class DataPreprocessing_BaseClass(processor.ProcessorABC):
 
         self.truth_hists = {}
 
+#        for truth in self.truths:
+#            self.truth_hists[truth] = (
+#                hist.Hist.new.Variable(self.bins_pt, name="pt")
+#                .Variable(self.bins_eta, name="eta")
+#                .Int64()
+#            )
         for truth in self.truths:
             self.truth_hists[truth] = (
-                hist.Hist.new.Variable(self.bins_pt, name="pt")
-                .Variable(self.bins_eta, name="eta")
+                hist.Hist.new.Variable(self.bins_nbjets, name="nbjets")
+                .Variable(self.bins_ncjets, name="ncjets")
                 .Int64()
             )
         self.setFeatureNamesAndEdges()
@@ -107,11 +119,15 @@ class DataPreprocessing_BaseClass(processor.ProcessorABC):
         ) = self.callColumnAccumulator(
             output, events, proc_flag, filename=events.metadata["filename"]
         )
-
+            
         for truth_label in self.truths:
+           # print('nb')
+           # print(global_arr["nbJets"][truth[truth_label]])
+           # print('nc')
+           # print(global_arr["ncJets"][truth[truth_label]])
             self.truth_hists[truth_label].fill(
-                global_arr["nJets"][truth[truth_label]],
                 global_arr["nbJets"][truth[truth_label]],
+                global_arr["ncJets"][truth[truth_label]],
             )
 
         output_location = os.path.join(

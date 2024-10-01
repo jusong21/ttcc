@@ -18,16 +18,20 @@ class LZ4Dataset(IterableDataset):
         histogram_training=None,
         max_length=1,
         process_weights=None,
-        bins_pt=None,
-        bins_eta=None,
+        #bins_pt=None,
+        #bins_eta=None,
+        bins_nbjets=None,
+        bins_ncjets=None,
         verbose=0,
     ):
         self.verbose = verbose
         self.files = files
-        if (bins_pt is None) or (bins_eta is None):
+        if (bins_nbjets is None) or (bins_ncjets is None):
             raise ValueError("You need to specify bins!")
-        self.bins_pt = bins_pt
-        self.bins_eta = bins_eta
+        #self.bins_pt = bins_pt
+        #self.bins_eta = bins_eta
+        self.bins_nbjets = bins_nbjets
+        self.bins_ncjets = bins_ncjets
         self.Nedges = [0]
         self.data_type = data_type
         if data_type == "validation":
@@ -52,6 +56,7 @@ class LZ4Dataset(IterableDataset):
         self.num_ele = 0
 
         for list_truth in model.classes:
+            print('list truth:', list_truth)
             self.num_ele += len(model.classes[list_truth])
 
     def __len__(self):
@@ -79,33 +84,62 @@ class LZ4Dataset(IterableDataset):
                 output_data = data.read()
             s = np.frombuffer(output_data, dtype='float32')
             s = s[2:].reshape(-1, int(s[1])).astype('float32')
-
+            
             s1 = ~np.isnan(s).any(axis = 1)
             s2 = ~np.isinf(s).any(axis = 1)
             s = s[s1*s2]
-
-#            if self.weighted_sampling:
- #               random_number = np.random.rand(s.shape[0])
-  #              mask = random_number < s[:, -1]
-   #             s = s[mask]
+            
+            #if self.weighted_sampling:
+            #    random_number = np.random.rand(s.shape[0])
+            #    mask = random_number < s[:, -1]
+            #    s = s[mask]
 
             if self.verbose:
                 print(f"Keeping {np.sum(mask)}/{len(mask)} events")
 
             truths = np.zeros(s.shape[0])
-            labels = s[:,-(self.num_ele+1):-1]
+            #labels = s[:,-(self.num_ele+1):-1]
+            labels = s[:,-(self.num_ele):]
             idx = 0
             for index, (name, flavours) in enumerate(self.model.classes.items()):
                 for flav in flavours:
                     truths[labels[:,idx] == 1] = index
                     idx += 1
-            weights = s[:, -1]
-            process = s[:, -(self.num_ele+2)]
+            #weights = s[:, -1]
+            #process = s[:, -(self.num_ele+2)]
+            process = s[:, -(self.num_ele+1)]
             s = s[:,:-(self.num_ele+1)]
 
-            for (si, yi, wi, pi) in zip(s, truths, weights, process):
-                yield np.expand_dims(si, axis=-1), yi, wi, pi
+            #for (si, yi, wi, pi) in zip(s, truths, weights, process):
+            #    yield np.expand_dims(si, axis=-1), yi, wi, pi
+            for (si, yi, pi) in zip(s, truths, process):
+                yield np.expand_dims(si, axis=-1), yi, pi
         return None
+
+#            if self.weighted_sampling:
+#                random_number = np.random.rand(s.shape[0])
+#                mask = random_number < s[:, -1]
+#                s = s[mask]
+
+#            if self.verbose:
+#                print(f"Keeping {np.sum(mask)}/{len(mask)} events")
+#
+#            truths = np.zeros(s.shape[0])
+#            labels = s[:,-self.num_ele:]
+#            idx = 0
+#            for index, (name, flavours) in enumerate(self.model.classes.items()):
+#                for flav in flavours:
+#                    truths[labels[:,idx] == 1] = index
+#                    idx += 1
+#            #weights = s[:, -1]
+#            process = s[:, -(self.num_ele+1)]
+#            s = s[:,:-(self.num_ele+1)]
+#
+#            #for (si, yi, wi, pi) in zip(s, truths, weights, process):
+#            #    yield np.expand_dims(si, axis=-1), yi, wi, pi
+#            for (si, yi, pi) in zip(s, truths, process):
+#                yield np.expand_dims(si, axis=-1), yi, pi
+#        return None
 
     def get_all_weights(self):
         weights = np.empty((self.Nedges[-1]))

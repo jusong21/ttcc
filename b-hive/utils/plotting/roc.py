@@ -18,6 +18,8 @@ logging.getLogger('matplotlib').setLevel(logging.WARNING)
 color_set_name = "Dark2"
 cmap = get_cmap(color_set_name)  # type: matplotlib.colors.ListedColormap
 color_set_list = cmap.colors  # type: list
+#print(color_set_list[9])
+print(len(color_set_list))
 
 plt.style.use(hep.cms.style.CMS)
 
@@ -34,7 +36,7 @@ def plot_roc_list(
     pt_max,
     name,
     xmin=0.0,
-    energy="13.6 TeV",
+    energy="13 TeV",
     save_numpy=True,
 ):
     for disc, truth, veto, roc_label, xlabel, ylabel, color in zip(
@@ -44,8 +46,13 @@ def plot_roc_list(
         labels,
         xlabels,
         ylabels,
-        color_set_list[0:5],
+        color_set_list[0:5]+color_set_list[0:5],
     ):
+        print('truth[veto]')
+        print(truth)
+        print(len(truth))
+        print(truth[veto])
+        print(len(truth[veto]))
         try:
             fpr, tpr, _ = roc_curve(truth[veto], disc[veto])
         except ValueError as e:
@@ -57,11 +64,13 @@ def plot_roc_list(
         area = auc(fpr, tpr)
         if save_numpy:
             np.save(
-                os.path.join(output_directory, f"roc_{name}_{roc_label}.npy"),
+                #os.path.join(output_directory, f"roc_{name}_{roc_label}.npy"),
+                os.path.join(output_directory, f"roc_{roc_label}.npy"),
                 np.array((fpr, tpr)),
             )
-        for ext in [".png", ".pdf"]:
-            plot_name = os.path.join(output_directory, f"roc_{name}_{roc_label}.{ext}")
+        for ext in ["png", "pdf"]:
+            #plot_name = os.path.join(output_directory, f"roc_{name}_{roc_label}.{ext}")
+            plot_name = os.path.join(output_directory, f"roc_{roc_label}.{ext}")
             plot_roc(
                 [(fpr, tpr, area)],
                 [roc_label],
@@ -141,6 +150,8 @@ def plot_roc(
             index = np.unique(fpr, return_index=True)[1]
             fpr = np.asarray([fpr[i] for i in sorted(index)])
             tpr = np.asarray([tpr[i] for i in sorted(index)])
+            print('fpr', fpr)
+            print('tpr', tpr)
             area = auc(fpr, tpr)
         plt.plot(
             tpr,
@@ -157,7 +168,8 @@ def plot_roc(
     plt.grid(which="major", alpha=0.95, color="black")
     title = ""
     if dataset_label:
-        title+=f"{dataset_label} jets \n"
+        #title+=f"{dataset_label} jets \n"
+        title+="TTdileptonic events\n"
     if pt_min and pt_max:
         title+=f"{pt_text}, {eta_text}"
     plt.legend(

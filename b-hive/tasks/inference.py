@@ -45,6 +45,7 @@ class InferenceTask(
     def output(self):
         return {
             # "output_root": self.local_target("output.root"),
+            "pred_class": self.local_target("pred_class.npy"),
             "prediction": self.local_target("prediction.npy"),
             "process": self.local_target("process.npy"),
             "truth": self.local_target("truth.npy"),
@@ -103,8 +104,8 @@ class InferenceTask(
             model,
             data_type="test",
             histogram_training=histogram_test,
-            bins_pt=config["bins_pt"],
-            bins_eta=config["bins_eta"],
+            bins_nbjets=config["bins_nbjets"],
+            bins_ncjets=config["bins_ncjets"],
         )
         test_dataloader = DataLoader(
             test_data,
@@ -120,9 +121,14 @@ class InferenceTask(
             test_dataloader, self.device, attack=attack
         )
 
+        # test
+        from scipy.special import softmax
+        pred_class = softmax(predictions, axis=-1)
         np.save(self.output()["kinematics"].path, kinematics)
         np.save(self.output()["prediction"].path, predictions)
+        np.save(self.output()["pred_class"].path, pred_class)
         np.save(self.output()["process"].path, processes)
         np.save(self.output()["truth"].path, truths)
 
-        terminal_roc(predictions, truths, title="Inference ROC")
+        terminal_roc(predictions, truths, title="Inference ROC", xlabel="ttbb-id")
+        terminal_roc(predictions, truths, title="Inference ROC", xlabel="ttcc-id")

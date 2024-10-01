@@ -86,8 +86,11 @@ Either you forgot to specify the path to the file or are using a wrong dataset-v
         #processorClass = ProcessorLoader(config.get("processor", "PFCandidateAndVertexProcessing"),  
         processorClass = ProcessorLoader(config.get("processor", "TTCCLZ4Processing"),  
                 output_directory=self.local_path(),
-                bins_pt=config.get("bins_pt", None),
-                bins_eta=config.get("bins_eta", None),
+                #bins_pt=config.get("bins_pt", None),
+                #bins_eta=config.get("bins_eta", None),
+                #bins_class=config.get("bins_class", None),
+                bins_nbjets=config.get("bins_nbjets", None),
+                bins_ncjets=config.get("bins_ncjets", None),
                 processes=config.get("processes", None),
                 global_features=config.get("global_features", []),
                 jet_features=config.get("jet_features", []),
@@ -117,6 +120,10 @@ Either you forgot to specify the path to the file or are using a wrong dataset-v
         training_histograms = {
             key: value for key, value in output.items() if not "output_location" in key
         }
+        #print('train _hist')
+        #for key in training_histograms:
+        #    print(key)
+        #    print(training_histograms[key])
 
         np.save(
             self.output()[f"histogram"].path,
@@ -135,9 +142,12 @@ Either you forgot to specify the path to the file or are using a wrong dataset-v
             chunk_size=self.chunk_size,
             shuffle=True,
             histograms=np.array(histograms, dtype=np.float32),
+            #reference_key=0,
             reference_key=0,
-            bins_pt=config["bins_pt"],
-            bins_eta=config["bins_eta"],
+            #bins_pt=config["bins_pt"],
+            #bins_eta=config["bins_eta"],
+            bins_nbjets=config["bins_nbjets"],
+            bins_ncjets=config["bins_ncjets"],
         )
         if "LZ4" not in config.get("processor", "TTCCLZ4Processing"):
             # delete unmerged files
@@ -149,8 +159,10 @@ Either you forgot to specify the path to the file or are using a wrong dataset-v
             all_files = weight_all_files_histrogram_weighting(
                 all_files,
                 histograms=training_histograms,
-                bins_pt=config["bins_pt"],
-                bins_eta=config["bins_eta"],
+                #bins_pt=config["bins_pt"],
+                #bins_eta=config["bins_eta"],
+                bins_nbjets=config["bins_nbjets"],
+                bins_ncjets=config["bins_ncjets"],
                 reference_key=config["reference_flavour"],
             )
 

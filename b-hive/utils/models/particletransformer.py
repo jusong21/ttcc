@@ -618,8 +618,6 @@ class ParticleTransformer(nn.Module):
     ]
         
     jet_features = [
-        "sortJet_drLep1",
-        "sortJet_drLep2",
         "sortJet_btagDeepFlavB",
         "sortJet_btagDeepFlavCvB",
         "sortJet_btagDeepFlavCvL",
@@ -844,11 +842,12 @@ class ParticleTransformer(nn.Module):
             N = 1
             task = progress.add_task("Inference...", total=dataloader.nits_expected)
             
-            for (x, truth, w, process) in dataloader:
+            #for (x, truth, w, process) in dataloader:
+            for (x, truth, process) in dataloader:
 
                 x = x.float().to(device)
                 truth = truth.float().to(device)
-                w = w.float().to(device)
+                #w = w.float().to(device)
 
                 inpt = self.get_inpt(x)
                 
@@ -917,11 +916,12 @@ class ParticleTransformer(nn.Module):
             N = 1
             task = progress.add_task("Training...", total=dataloader.nits_expected)
             print("entering traing loop")
-            for (x, truth, w, p) in dataloader:
+            #for (x, truth, w, p) in dataloader:
+            for (x, truth, p) in dataloader:
 
                 x = x.float().to(device)
                 truth = truth.type(torch.LongTensor).to(device)
-                w = w.float().to(device)
+                #w = w.float().to(device)
 
                 pred, loss = self.step(x, truth, loss_fn)
 
@@ -982,11 +982,12 @@ class ParticleTransformer(nn.Module):
         ) as progress:
             N = 1
             task = progress.add_task("Validation...", total=dataloader.nits_expected)
-            for (x, truth, w, process) in dataloader:
+            #for (x, truth, w, process) in dataloader:
+            for (x, truth, process) in dataloader:
 
                 x = x.float().to(device)
                 truth = truth.float().to(device)
-                w = w.float().to(device)
+                #w = w.float().to(device)
 
                 inpt = self.get_inpt(x)
 
@@ -1024,16 +1025,19 @@ class ParticleTransformer(nn.Module):
 
         if verbose:
             print("Printing terminal ROC")
-            terminal_roc(predictions, truths, title="Validation ROC")
+            terminal_roc(predictions, truths, title="Validation ROC", xlabel="ttbb-id")
+            terminal_roc(predictions, truths, title="Validation ROC", xlabel="ttcc-id")
 
         return np.array(losses).mean(), float(accuracy)
 
     def get_inpt(self, x):
-
-        feature_edges = torch.Tensor(self.feature_edges).int()
         
+        #print(x.shape)
+        feature_edges = torch.Tensor(self.feature_edges).int()
+        #print(feature_edges)
         feature_lengths = feature_edges[1:] - feature_edges[:-1]
         feature_lengths = torch.cat((feature_edges[:1], feature_lengths))
+        #print(feature_lengths)
         glob, jet, lepton = x.split(feature_lengths.tolist(), dim=1)
         
         glob = glob.reshape(glob.shape[0], self.input_dims[0][1])
@@ -1050,39 +1054,90 @@ class ParticleTransformer(nn.Module):
         if np.abs(np.mean(np.sum(predictions, axis=-1)) - 1) > 1e-3:
             predictions = softmax(predictions, axis=-1)
 
-        b_jets = (truth == 0) | (truth == 1) | (truth == 2)
-        c_jets = truth == 3
-        l_jets = (truth == 4) | (truth == 5)
-        summed_jets = b_jets + c_jets + l_jets
+#        b_jets = (truth == 0) | (truth == 1) | (truth == 2)
+#        c_jets = truth == 3
+#        l_jets = (truth == 4) | (truth == 5)
+#        summed_jets = b_jets + c_jets + l_jets
 
-        b_pred = predictions[:, :3].sum(axis=1)
-        c_pred = predictions[:, 3]
-        l_pred = predictions[:, -2:].sum(axis=1)
+        ttbb_ev = (truth == 0)
+        ttbj_ev = (truth == 1)
+        ttcc_ev = (truth == 2)
+        ttcj_ev = (truth == 3)
+        ttother_ev = (truth == 4)
+        summed_ev = ttbb_ev + ttbj_ev + ttcc_ev + ttcj_ev + ttother_ev
 
-        bvsl = np.where((b_pred + l_pred) > 0, (b_pred) / (b_pred + l_pred), -1)
-        bvsc = np.where((b_pred + c_pred) > 0, (b_pred) / (b_pred + c_pred), -1)
-        cvsb = np.where((b_pred + c_pred) > 0, (c_pred) / (b_pred + c_pred), -1)
-        cvsl = np.where((l_pred + c_pred) > 0, (c_pred) / (l_pred + c_pred), -1)
-        bvsall = np.where(
-            (b_pred + l_pred + c_pred) > 0, (b_pred) / (b_pred + l_pred + c_pred), -1
-        )
+#        b_pred = predictions[:, :3].sum(axis=1)
+#        c_pred = predictions[:, 3]
+#        l_pred = predictions[:, -2:].sum(axis=1)
 
-        b_veto = (truth != 0) & (truth != 1) & (truth != 2) & (summed_jets != 0)
-        c_veto = (truth != 3) & (summed_jets != 0)
-        l_veto = (truth != 4) & (truth != 5) & (summed_jets != 0)
-        no_veto = np.ones(b_veto.shape, dtype=np.bool)
+        ttbb_pred = predictions[:,0]
+        ttbj_pred = predictions[:,1]
+        ttcc_pred = predictions[:,2]
+        ttcj_pred = predictions[:,3]
+        ttother_pred = predictions[:,4]
 
-        labels = ["bvsl", "bvsc", "cvsb", "cvsl", "bvsall"]
-        discs = [bvsl, bvsc, cvsb, cvsl, bvsall]
-        vetos = [c_veto, l_veto, l_veto, b_veto, no_veto]
-        truths = [b_jets, b_jets, c_jets, c_jets, b_jets]
+        bbvsall = np.where((ttbb_pred + ttbj_pred + ttcc_pred + ttcj_pred + ttother_pred) > 0, (ttbb_pred) / (ttbb_pred + ttbj_pred + ttcc_pred + ttcj_pred + ttother_pred), -1)
+        bbvsbj = np.where((ttbb_pred + ttbj_pred) > 0, (ttbb_pred) / (ttbb_pred + ttbj_pred), -1)
+        bbvscc = np.where((ttbb_pred + ttcc_pred) > 0, (ttbb_pred) / (ttbb_pred + ttcc_pred), -1)
+        bbvscj = np.where((ttbb_pred + ttcj_pred) > 0, (ttbb_pred) / (ttbb_pred + ttcj_pred), -1)
+        bbvsother = np.where((ttbb_pred + ttother_pred) > 0, (ttbb_pred) / (ttbb_pred + ttother_pred), -1)
+
+        ccvsall = np.where((ttbb_pred + ttbj_pred + ttcc_pred + ttcj_pred + ttother_pred) > 0, (ttcc_pred) / (ttbb_pred + ttbj_pred + ttcc_pred + ttcj_pred + ttother_pred), -1)
+        ccvsbb = np.where((ttcc_pred + ttbb_pred) > 0, (ttcc_pred) / (ttcc_pred + ttbb_pred), -1)
+        ccvsbj = np.where((ttcc_pred + ttbj_pred) > 0, (ttcc_pred) / (ttcc_pred + ttbj_pred), -1)
+        ccvscj = np.where((ttcc_pred + ttcj_pred) > 0, (ttcc_pred) / (ttcc_pred + ttcj_pred), -1)
+        ccvsother = np.where((ttcc_pred + ttother_pred) > 0, (ttcc_pred) / (ttcc_pred + ttother_pred), -1)
+
+#        bvsl = np.where((b_pred + l_pred) > 0, (b_pred) / (b_pred + l_pred), -1)
+#        bvsc = np.where((b_pred + c_pred) > 0, (b_pred) / (b_pred + c_pred), -1)
+#        cvsb = np.where((b_pred + c_pred) > 0, (c_pred) / (b_pred + c_pred), -1)
+#        cvsl = np.where((l_pred + c_pred) > 0, (c_pred) / (l_pred + c_pred), -1)
+#        bvsall = np.where(
+#            (b_pred + l_pred + c_pred) > 0, (b_pred) / (b_pred + l_pred + c_pred), -1
+#        )
+
+        ttbb_veto = (truth != 0) & (summed_ev != 0)
+        ttbj_veto = (truth != 1) & (summed_ev != 0)
+        ttcc_veto = (truth != 2) & (summed_ev != 0)
+        ttcj_veto = (truth != 3) & (summed_ev != 0)
+        ttother_veto = (truth != 4) & (summed_ev != 0)
+        no_veto_ttbb = np.ones(ttbb_veto.shape, dtype=np.bool)
+        no_veto_ttcc = np.ones(ttcc_veto.shape, dtype=np.bool)
+
+#        b_veto = (truth != 0) & (truth != 1) & (truth != 2) & (summed_jets != 0)
+#        c_veto = (truth != 3) & (summed_jets != 0)
+#        l_veto = (truth != 4) & (truth != 5) & (summed_jets != 0)
+#        no_veto = np.ones(b_veto.shape, dtype=np.bool)
+
+        labels = ["ttbbvsall", "ttbbvsttbj", "ttbbvsttcc", "ttbbvsttcj", "ttbbvsttother", "ttccvsall", "ttccvsttbb", "ttccvsttbj", "ttccvsttcj", "ttccvsttother"]
+        discs = [bbvsall, bbvsbj, bbvscc, bbvscj, bbvsother, ccvsall, ccvsbb, ccvsbj, ccvscj, ccvsother]
+        vetos = [no_veto_ttbb, (ttcc_veto & ttcj_veto & ttother_veto), (ttbj_veto & ttcj_veto & ttother_veto), (ttbj_veto & ttcc_veto & ttother_veto), (ttbj_veto & ttcc_veto & ttcj_veto), no_veto_ttcc, (ttbj_veto & ttcj_veto & ttother_veto), (ttbb_veto & ttcj_veto & ttother_veto), (ttbb_veto & ttbj_veto & ttother_veto), (ttbb_veto & ttbj_veto & ttcj_veto)]
+        truths = [ttbb_ev, ttbb_ev, ttbb_ev, ttbb_ev, ttbb_ev, ttcc_ev, ttcc_ev, ttcc_ev, ttcc_ev, ttcc_ev]
         xlabels = [
-            "b-identification",
-            "b-identification",
-            "c-identification",
-            "c-identification",
-            "b-identification",
+            "ttbb-identification",
+            "ttbb-identification",
+            "ttbb-identification",
+            "ttbb-identification",
+            "ttbb-identification",
+            "ttcc-identification",
+            "ttcc-identification",
+            "ttcc-identification",
+            "ttcc-identification",
+            "ttcc-identification",
         ]
-        ylabels = ["light mis-id.", "c mis-id", "b mis-id.", "light mis-id.", "mis-id."]
+        ylabels = ["mid-id.", "ttbj mis-id.", "ttcc mis-id.", "ttcj mis-id.", "ttother mis-id.", "mid-id.", "ttbb mis-id.", "ttbj mis-id.", "ttcj mis-id.", "ttother mis-id."]
+
+#        labels = ["bvsl", "bvsc", "cvsb", "cvsl", "bvsall"]
+#        discs = [bvsl, bvsc, cvsb, cvsl, bvsall]
+#        vetos = [c_veto, l_veto, l_veto, b_veto, no_veto]
+#        truths = [b_jets, b_jets, c_jets, c_jets, b_jets]
+#        xlabels = [
+#            "b-identification",
+#            "b-identification",
+#            "c-identification",
+#            "c-identification",
+#            "b-identification",
+#        ]
+#        ylabels = ["light mis-id.", "c mis-id", "b mis-id.", "light mis-id.", "mis-id."]
 
         return discs, truths, vetos, labels, xlabels, ylabels

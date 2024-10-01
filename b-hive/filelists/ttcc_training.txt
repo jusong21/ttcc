@@ -1,0 +1,5 @@
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_1.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_2.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_3.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_4.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_5.root

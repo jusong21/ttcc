@@ -52,7 +52,7 @@ def check_memory_usage():
 
 
 def merge_datasets(
-        files, path, label="", chunk_size=100000, verbose=0, processor = "", shuffle=True, debug=False, histograms = None, reference_key= None, bins_pt=None, bins_eta=None,
+        files, path, label="", chunk_size=100000, verbose=0, processor = "", shuffle=True, debug=False, histograms = None, reference_key= None, bins_nbjets=None, bins_ncjets=None,
 ):
     if shuffle:
         np.random.shuffle(files)
@@ -68,7 +68,7 @@ def merge_datasets(
         TextColumn(f"0/{len(files)} files merged"),
     ) as progress:
         task = progress.add_task("Merging...", total=len(files))
-        print(processor)
+        #print(processor)
         if (processor == "LZ4Processing") or (processor == "LZ4FP16Processing") or (processor == "TTCCLZ4Processing"):
             if processor == "LZ4FP16Processing":
                 dtype = np.float16
@@ -78,21 +78,31 @@ def merge_datasets(
             chunk = np.empty((chunk_size, dim), dtype=dtype)
 
             reference_histogram = histograms[0]
+            print('sum ref:', np.sum(reference_histogram))
             reference_histogram = reference_histogram / np.max(reference_histogram)
+            print('sum ref:', np.sum(reference_histogram))
+            print(np.max(reference_histogram))
             weights_list = []
             for c in range(histograms.shape[0]):
                 other_histogram = histograms[c]
+                print('sum oth:', np.sum(other_histogram))
                 other_histogram = other_histogram / np.max(other_histogram)
+                print('sum oth:', np.sum(other_histogram))
                 with np.errstate(divide="ignore", invalid="ignore"):
                     weights = np.where(other_histogram > 0, reference_histogram / other_histogram, -10)
                 weights = weights / np.max(weights)
                 
                 weights[weights < 0] = 1
-                weights[weights == np.nan] = 1
+                weights[np.isnan(weights)] = 1
                 
                 weights_list.append(weights)
                 
             weights_list = np.array(weights_list)
+            print('weights_list')
+            print(weights_list)
+            print('weights_list')
+            print(weights_list)
+            
             
             for i, file in enumerate(files):
                 data = np.load(file[:-4]+'.npy', allow_pickle=True)
@@ -106,7 +116,7 @@ def merge_datasets(
                 chunk[n_chunk : n_chunk + index_range] = data[:index_range]
                 n_chunk += index_range
                 
-                if n_chunk >= chunk_size:
+                if n_chunk >= chunk_size or i == len(files)-1:
                     filename = os.path.join(path, f"{label}_{len(file_list)}.lz4")
                     file_list.append(filename)
 
@@ -114,16 +124,32 @@ def merge_datasets(
                     s2 = ~np.isinf(chunk).any(axis = 1)
                     chunk = chunk[s1*s2]
 
-                    pt_coordinate = np.digitize(chunk[:,0], bins_pt) - 1
-                    eta_coordinate = np.digitize(chunk[:,1], bins_eta) - 1
+#                    pt_coordinate = np.digitize(chunk[:,0], bins_pt) - 1
+#                    eta_coordinate = np.digitize(chunk[:,1], bins_eta) - 1
+#                    flavour_idx = np.argmax(chunk[:,-histograms.shape[0]:], axis=-1)
+#
+#                    w = weights_list[flavour_idx, pt_coordinate, eta_coordinate].astype(dtype)
+                    nbjets_coordinate = np.digitize(chunk[:,0], bins_nbjets) - 1
+                    print('nbjets_coordi')
+                    print(chunk[:,0])
+                    print(nbjets_coordinate)
+                    ncjets_coordinate = np.digitize(chunk[:,1], bins_ncjets) - 1
+                    print('ncjets_coordi')
+                    print(chunk[:,1])
+                    print(ncjets_coordinate)
                     flavour_idx = np.argmax(chunk[:,-histograms.shape[0]:], axis=-1)
 
-                    #w = weights_list[flavour_idx, pt_coordinate, eta_coordinate].astype(dtype)
+                    nbjets_coordinate = np.clip(nbjets_coordinate, 0, weights_list.shape[1] - 1)
+                    ncjets_coordinate = np.clip(ncjets_coordinate, 0, weights_list.shape[2] - 1)
+
+                    #w = weights_list[flavour_idx, nbjets_coordinate, ncjets_coordinate].astype(dtype)
+
                     #chunk = np.concatenate((chunk,w.reshape(-1,1)), axis=1)
                     size = np.array(chunk.shape).astype(dtype)
                     
                     arr = np.concatenate((size, chunk.astype(dtype).flatten()))
                     arr = arr.tobytes()
+                    print(filename)
                     with lz4.frame.open(filename, mode='wb') as fp:
                         bytes_written = fp.write(arr)
 
@@ -131,6 +157,7 @@ def merge_datasets(
                     chunk[: n_samples - index_range] = data[index_range:]
                     n_chunk = n_samples - index_range
             for i, file in enumerate(files):
+                #print(f"Deleting file: {file[:-4]+'.npy'}") 
                 os.remove(file[:-4]+'.npy')
             
         else:
@@ -187,3 +214,4 @@ def merge_datasets(
                 np.savez(filename, **merged)
             
     return file_list
+

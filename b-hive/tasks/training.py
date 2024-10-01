@@ -169,8 +169,8 @@ class TrainingTask(AttackDependency, TrainingDependency, DatasetDependency, Base
             data_type="training",
             weighted_sampling=not (self.loss_weighting),
 
-            bins_pt=config["bins_pt"],
-            bins_eta=config["bins_eta"],
+            bins_nbjets=config["bins_nbjets"],
+            bins_ncjets=config["bins_ncjets"],
             verbose=self.verbose,
             process_weights=[
                 config.get("process-weights", {}).get(proc, 1.0)
@@ -184,8 +184,8 @@ class TrainingTask(AttackDependency, TrainingDependency, DatasetDependency, Base
             weighted_sampling=not (self.loss_weighting),
             device=self.device,
             histogram_training=None,
-            bins_pt=config["bins_pt"],
-            bins_eta=config["bins_eta"],
+            bins_nbjets=config["bins_nbjets"],
+            bins_ncjets=config["bins_ncjets"],
             verbose=self.verbose,
             process_weights=[
                 config.get("process-weights", {}).get(proc, 1.0)

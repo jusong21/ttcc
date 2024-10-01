@@ -30,8 +30,31 @@ bins_eta:
 - 2.0
 - 2.51
 
+bins_class:
+- 0
+- 1
+- 2
+- 3
+- 4
+- 5
+
+bins_nbjets:
+- 2
+- 3
+- 4
+- 5
+- 6
+
+bins_ncjets:
+- 0
+- 1
+- 2
+- 3
+- 4
+- 5
+
 treename:
-  "Events"
+ "Events"
 
 global_features:
 - "nJets"
@@ -41,8 +64,8 @@ global_features:
 - "MET_phi"
 
 jet_features:
-- "sortJet_drLep1"
-- "sortJet_drLep2"
+#- "sortJet_drLep1"
+#- "sortJet_drLep2"
 - "sortJet_btagDeepFlavB"
 - "sortJet_btagDeepFlavCvB"
 - "sortJet_btagDeepFlavCvL"
@@ -65,5 +88,8 @@ truths:
 - "isttother"
 
 reference_flavour:
-  "isttcc"
+ "isttcc"
+
+processor:
+ "TTCCLZ4Processing"
 

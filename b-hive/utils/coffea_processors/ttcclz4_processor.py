@@ -11,7 +11,6 @@ from utils.dataset.structured_arrays import (
 
 class TTCCLZ4Processing(DataPreprocessing_BaseClass):
     def callColumnAccumulator(self, output, events, flag, **kwargs):
-        # slicing based on p_T and eta
 
         if isinstance(self.truths, dict):
             truth_arr = structured_array_from_tree_truth_from_dict(

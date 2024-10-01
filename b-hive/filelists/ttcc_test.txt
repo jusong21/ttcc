@@ -1,3 +1,14 @@
-/afs/cern.ch/user/j/jusong/analysis/ttcc/b-hive/filelists/nominal_1.root
-/afs/cern.ch/user/j/jusong/analysis/ttcc/b-hive/filelists/nominal_10.root
-/afs/cern.ch/user/j/jusong/analysis/ttcc/b-hive/filelists/nominal_11.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_6.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_7.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_8.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_9.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_10.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_11.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_12.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_13.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_14.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_15.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_16.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_17.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_18.root
+/eos/home-j/jusong/samples/ttcc/v3/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/nominal_19.root
