@@ -21,7 +21,7 @@ correction_config = {
     "2017_UL": {
         "lumiMask": "Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt",
         "PU": None,
-	"HLT": "TriggerSF_2017_ULv2.root",
+	    "HLT": "TriggerSF_2017_ULv2.root",
         "JME": "jec_compiled.pkl.gz",
         "BTV": {"deepCSV": "shape", "deepJet": "shape"},
         "LSF": {
@@ -30,7 +30,22 @@ correction_config = {
             "mu_Reco 2017_UL": "NUM_TrackerMuons_DEN_genTracks",
             "mu_ID 2017_UL": "NUM_TightID_DEN_TrackerMuons",
             "mu_Iso 2017_UL": "NUM_TightRelIso_DEN_TightIDandIPCut",
-#            "mu_ID_low *": "Efficiency_muon_trackerMuon_Run2017_UL_ID.histo.json",
+            "mu_Reco_low *": "Efficiency_muon_generalTracks_Run2017_UL_trackerMuon.histo.json",
+        },
+    },
+# FIXME
+    "2018_UL": {
+        "lumiMask": "Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt",
+        "PU": None,
+	    "HLT": "TriggerSF_2017_ULv2.root",
+        "JME": "jec_compiled.pkl.gz",
+        "BTV": {"deepCSV": "shape", "deepJet": "shape"},
+        "LSF": {
+            "ele_ID 2017 UL-Electron-ID-SF": "Tight",
+            "ele_Reco 2017 UL-Electron-ID-SF": "RecoAbove20",
+            "mu_Reco 2017_UL": "NUM_TrackerMuons_DEN_genTracks",
+            "mu_ID 2017_UL": "NUM_TightID_DEN_TrackerMuons",
+            "mu_Iso 2017_UL": "NUM_TightRelIso_DEN_TightIDandIPCut",
             "mu_Reco_low *": "Efficiency_muon_generalTracks_Run2017_UL_trackerMuon.histo.json",
         },
     },

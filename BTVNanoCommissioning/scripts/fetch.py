@@ -144,6 +144,9 @@ def getFilesFromDas(args):
 			.read()
 			.split("\n")
 		)
+
+		#print('flist')
+		#print(flist)
 		import json
 
 		dataset = dataset[:-1] if "\n" in dataset else dataset
@@ -281,6 +284,8 @@ def getRootFilesFromPath(d, lim=None):
 
 def validate(file):
 	n_tries = 0
+	#print('file')
+	#print(file)
 	check_path = os.popen(f"gfal-ls {file}").read()
 	if check_path == "":
 		return f"NotFound: {file}"
