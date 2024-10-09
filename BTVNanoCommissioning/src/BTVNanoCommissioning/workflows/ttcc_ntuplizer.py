@@ -87,6 +87,62 @@ class NanoProcessor(processor.ProcessorABC):
         #dr_leptons = leptons[:,0].delta_r(leptons[:,1])
         met = events.MET[req_nbjet]
 
+        genbjet = events.Jet[events.Jet.hadronFlavour==5]
+        gencjet = events.Jet[events.Jet.hadronFlavour==4]
+        genlfjet = events.Jet[events.Jet.hadronFlavour==0]
+        
+        ngenbjets = ak.num(genbjet)
+        ngencjets = ak.num(gencjet)
+        ngenlfjets = ak.num(genlfjet)
+
+        ttbar_criteria = {
+            'ttbb': ngenbjets >= 4,
+            'ttbj': ngenbjets == 3,
+            'ttcc': (ngenbjets == 2) & (ngencjets >= 2),
+            'ttcj': (ngenbjets == 2) & (ngencjets == 1),
+            'ttother': (ngenbjets == 2) & (ngencjets == 0) & (ngenlfjets >=2),
+        }
+            
+        zeros = ak.zeros_like(events.nbJets, dtype=bool)
+        isttbb_new, isttbj_new = zeros, zeros
+        isttcc_new, isttcj_new = zeros, zeros
+        isttother_new = zeros
+            
+        isttbb_new = ak.to_numpy(
+            ak.where(
+                ttbar_criteria['ttbb'],
+                True,
+                isttbb_new,
+            )
+        )
+        isttbj_new = ak.to_numpy(
+            ak.where(
+                ttbar_criteria['ttbj'],
+                True, 
+                isttbj_new,
+            )
+        )
+        isttcc_new = ak.to_numpy(
+            ak.where(
+                ttbar_criteria['ttcc'],
+                True,
+                isttcc_new,
+            )
+        )
+        isttcj_new = ak.to_numpy(
+            ak.where(
+                ttbar_criteria['ttcj'],
+                True,
+                isttcj_new,
+            )
+        )
+        isttother_new = ak.to_numpy(
+            ak.where(
+                ttbar_criteria['ttother'],
+                True,
+                isttother_new,
+            )
+        )
 
         jet_drLep1 = ak.to_numpy(jets_bsort.delta_r(leptons[:,0]))
         jet_drLep2 = ak.to_numpy(jets_bsort.delta_r(leptons[:,1]))
@@ -141,7 +197,13 @@ class NanoProcessor(processor.ProcessorABC):
                 'isttbj': ak.to_numpy(events.isttbj[req_nbjet]), 
                 'isttcc': ak.to_numpy(events.isttcc[req_nbjet]), 
                 'isttcj': ak.to_numpy(events.isttcj[req_nbjet]), 
-                'isttother': ak.to_numpy(events.isttother[req_nbjet])
+                'isttother': ak.to_numpy(events.isttother[req_nbjet]),
+                'isttbb_new': isttbb_new[req_nbjet], 
+                'isttbj_new': isttbj_new[req_nbjet], 
+                'isttcc_new': isttcc_new[req_nbjet], 
+                'isttcj_new': isttcj_new[req_nbjet], 
+                'isttother_new': isttother_new[req_nbjet],
+
             })
 #            #nbJetFromT = ak.num(events.nbJetsFromT)
 #            for ibj in range(events.nbJetsFromT):
@@ -225,7 +287,9 @@ class NanoProcessor(processor.ProcessorABC):
 #
             })
 #"""
-        out_branch = list(pruned_ev.keys())
+        out_branch = ["events", "run", "luminosityBlock"]
+        out_branch = np.append(out_branch, list(pruned_ev.keys()))
+        #out_branch = list(pruned_ev.keys())
         for kin in ["pt", "eta", "phi", "mass"]:
             for obj in ["sortJet", "Jet", "Lepton"]:
                 out_branch = np.append(out_branch, [f"{obj}_{kin}"])
