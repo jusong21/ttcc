@@ -163,7 +163,7 @@ class NanoProcessor(processor.ProcessorABC):
         #lep_drJet4 = leptons.delta_r(jets_bsort[:,3])
 
         #pruned_ev = {'Channel': ak.to_numpy(events.Channel), 'nJets': ak.to_numpy(njets), 'nbJets': ak.to_numpy(events.nbJets), 'nbJets_T': ak.to_numpy(events.nbJets_T), 'ncJets': ak.to_numpy(events.ncJets), 'ncJets_T': ak.to_numpy(events.ncJets_T)}
-        pruned_ev = {'sortJet': jets_bsort, 'Jet': jets[req_nbjet], 'Lepton': leptons, 'Channel': ak.to_numpy(events.Channel[req_nbjet]), 'nJets': ak.to_numpy(events.nJets[req_nbjet]), 'nbJets': ak.to_numpy(events.nbJets[req_nbjet]), 'nbJets_T': ak.to_numpy(events.nbJetsT[req_nbjet]), 'ncJets': ak.to_numpy(events.ncJets[req_nbjet]), 'ncJets_T': ak.to_numpy(events.ncJetsT[req_nbjet])}
+        pruned_ev = {'sortJet': jets_bsort, 'Jet': jets[req_nbjet], 'Lepton': leptons, 'Channel': ak.to_numpy(events.Channel[req_nbjet]), 'nJets': ak.to_numpy(events.nJets[req_nbjet]), 'nbJets': ak.to_numpy(events.nbJets[req_nbjet]), 'nbJets_T': ak.to_numpy(events.nbJetsT[req_nbjet]), 'ncJets': ak.to_numpy(events.ncJets[req_nbjet]), 'ncJets_T': ak.to_numpy(events.ncJetsT[req_nbjet]), "ngenbJets": ak.to_numpy(ngenbjets[req_nbjet]), "ngencJets": ak.to_numpy(ngencjets[req_nbjet]), "ngenlfJets": ak.to_numpy(ngenlfjets[req_nbjet]), }
 
         # leptons
 #        #pruned_ev['drLepton12'] = ak.to_numpy(dr_leptons)
