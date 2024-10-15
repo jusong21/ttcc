@@ -87,6 +87,7 @@ class NanoProcessor(processor.ProcessorABC):
         #dr_leptons = leptons[:,0].delta_r(leptons[:,1])
         met = events.MET[req_nbjet]
 
+        # genJets category
         genbjet = events.Jet[events.Jet.hadronFlavour==5]
         gencjet = events.Jet[events.Jet.hadronFlavour==4]
         genlfjet = events.Jet[events.Jet.hadronFlavour==0]
@@ -107,6 +108,37 @@ class NanoProcessor(processor.ProcessorABC):
         isttbb_new, isttbj_new = zeros, zeros
         isttcc_new, isttcj_new = zeros, zeros
         isttother_new = zeros
+
+        category_genJets = ak.full(events.nbJets, 4)
+        category_genJets = ak.to_numpy(
+            ak.where(
+                ttbar_criteria["ttbb"],
+                0,
+                category_genJets,
+            )
+        )
+        category_genJets = ak.to_numpy(
+            ak.where(
+                ttbar_criteria["ttbj"],
+                1,
+                category_genJets,
+            )
+        )
+        category_genJets = ak.to_numpy(
+            ak.where(
+                ttbar_criteria["ttcc"],
+                2,
+                category_genJets,
+            )
+        )
+        category_genJets = ak.to_numpy(
+            ak.where(
+                ttbar_criteria["ttcj"],
+                3,
+                category_genJets,
+            )
+        )
+            
             
         isttbb_new = ak.to_numpy(
             ak.where(
@@ -138,12 +170,61 @@ class NanoProcessor(processor.ProcessorABC):
         )
         isttother_new = ak.to_numpy(
             ak.where(
-                ttbar_criteria['ttother'],
+                (!isttbb_new & !isttbj_new & !isttcc_new & !isttcj_new),
+                #ttbar_criteria['ttother'],
                 True,
                 isttother_new,
             )
         )
 
+        # genTtbarId category
+        genTtbarId = events.genTtbarId
+
+        ttbar_criteria2 = {
+            'ttbb': (genTtbarId%100 == 53) or (genTtbarId%100 == 54) or (genTtbarId%100 == 55),
+            'ttbj': (genTtbarId%100 == 51) or (genTtbarId%100 == 52),
+            'ttcc': (genTtbarId%100 == 43) or (genTtbarId%100 == 44) or (genTtbarId%100 == 45),
+            'ttcj': (genTtbarId%100 == 41) or (genTtbarId%100 == 42),
+            'ttother': (genTtbarId%100 == 0),
+        }
+        category_genTtbarId = ak.full(events.nbJets, 5)
+        category_genTtbarId = ak.to_numpy(
+            ak.where(
+                ttbar_criteria["ttbb"],
+                0,
+                category_genTtbarId,
+            )
+        )
+        category_genTtbarId = ak.to_numpy(
+            ak.where(
+                ttbar_criteria["ttbj"],
+                1,
+                category_genTtbarId,
+            )
+        )
+        category_genTtbarId = ak.to_numpy(
+            ak.where(
+                ttbar_criteria["ttcc"],
+                2,
+                category_genTtbarId,
+            )
+        )
+        category_genTtbarId = ak.to_numpy(
+            ak.where(
+                ttbar_criteria["ttcj"],
+                3,
+                category_genTtbarId,
+            )
+        )
+        category_genTtbarId = ak.to_numpy(
+            ak.where(
+                ttbar_criteria["ttother"],
+                4,
+                category_genTtbarId,
+            )
+        )
+            
+            
         jet_drLep1 = ak.to_numpy(jets_bsort.delta_r(leptons[:,0]))
         jet_drLep2 = ak.to_numpy(jets_bsort.delta_r(leptons[:,1]))
         
@@ -203,38 +284,11 @@ class NanoProcessor(processor.ProcessorABC):
                 'isttcc_new': isttcc_new[req_nbjet], 
                 'isttcj_new': isttcj_new[req_nbjet], 
                 'isttother_new': isttother_new[req_nbjet],
+                "category_genJets": category_genJets[req_nbjet],
+                "category_genTtbarId": category_genTtbarId[req_nbjet],
 
             })
-#            #nbJetFromT = ak.num(events.nbJetsFromT)
-#            for ibj in range(events.nbJetsFromT):
-#                idx = ibj+1
-#                pruned_ev[f"bJetFromT{idx}_pt"] = ak.to_numpy(events.bJetFromT.pt[:,ibj])
-#                pruned_ev[f"bJetFromT{idx}_eta"] = ak.to_numpy(events.bJetFromT.eta[:,ibj])
-#                pruned_ev[f"bJetFromT{idx}_phi"] = ak.to_numpy(events.bJetFromT.phi[:,ibj])
-#                pruned_ev[f"bJetFromT{idx}_mass"] = ak.to_numpy(events.bJetFromT.mass[:,ibj])
-#
-#            for ibj in range(events.naddbJet):
-#                idx = ibj+1
-#                pruned_ev[f"addbJet{idx}_pt"] = ak.to_numpy(events.addbJet.pt[:,ibj])
-#                pruned_ev[f"addbJet{idx}_eta"] = ak.to_numpy(events.addbJet.eta[:,ibj])
-#                pruned_ev[f"addbJet{idx}_phi"] = ak.to_numpy(events.addbJet.phi[:,ibj])
-#                pruned_ev[f"addbJet{idx}_mass"] = ak.to_numpy(events.addbJet.mass[:,ibj])
-#
-#            for icj in range(events.naddcJet):
-#                idx = icj+1
-#                pruned_ev[f"addcJet{idx}_pt"] = ak.to_numpy(events.addcJet.pt[:,icj])
-#                pruned_ev[f"addcJet{idx}_eta"] = ak.to_numpy(events.addcJet.eta[:,icj])
-#                pruned_ev[f"addcJet{idx}_phi"] = ak.to_numpy(events.addcJet.phi[:,icj])
-#                pruned_ev[f"addcJet{idx}_mass"] = ak.to_numpy(events.addcJet.mass[:,icj])
-#
-#            for ilf in range(events.naddlfJet):
-#                idx = ilf+1
-#                pruned_ev[f"addlfJet{idx}_pt"] = ak.to_numpy(events.addlfJet.pt[:,ilf])
-#                pruned_ev[f"addlfJet{idx}_eta"] = ak.to_numpy(events.addlfJet.eta[:,ilf])
-#                pruned_ev[f"addlfJet{idx}_phi"] = ak.to_numpy(events.addlfJet.phi[:,ilf])
-#                pruned_ev[f"addlfJet{idx}_mass"] = ak.to_numpy(events.addlfJet.mass[:,ilf])
 
-#"""
         if not isRealData:
             print("is not RealData")
             DeepJetC_totDown_weight, DeepJetC_totUp_weight = calc_tot_unc(events, "DeepJetCJet")
