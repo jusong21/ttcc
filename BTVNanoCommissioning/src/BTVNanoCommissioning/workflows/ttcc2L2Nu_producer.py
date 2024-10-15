@@ -675,6 +675,7 @@ class NanoProcessor(processor.ProcessorABC):
                     "isttcc": isttcc[req_event],
                     "isttcj": isttcj[req_event],
                     "isttother": isttother[req_event],
+                    "genTtbarId": ak.to_numpy(events.genTtbarId[req_event]),
                 }
                 pruned_ev.update(ttbar_ev)
                 for kin in ["pt", "eta", "phi", "mass"]:
