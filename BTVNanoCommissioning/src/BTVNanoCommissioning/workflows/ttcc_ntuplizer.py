@@ -109,7 +109,8 @@ class NanoProcessor(processor.ProcessorABC):
         isttcc_new, isttcj_new = zeros, zeros
         isttother_new = zeros
 
-        category_genJets = ak.full(events.nbJets, 4)
+        #category_genJets = ak.full(events.nbJets, 4)
+        category_genJets = ak.Array(np.full(len(events.nbJets), 4))
         category_genJets = ak.to_numpy(
             ak.where(
                 ttbar_criteria["ttbb"],
@@ -170,7 +171,7 @@ class NanoProcessor(processor.ProcessorABC):
         )
         isttother_new = ak.to_numpy(
             ak.where(
-                (!isttbb_new & !isttbj_new & !isttcc_new & !isttcj_new),
+                (~isttbb_new & ~isttbj_new & ~isttcc_new & ~isttcj_new),
                 #ttbar_criteria['ttother'],
                 True,
                 isttother_new,
@@ -187,7 +188,8 @@ class NanoProcessor(processor.ProcessorABC):
             'ttcj': (genTtbarId%100 == 41) or (genTtbarId%100 == 42),
             'ttother': (genTtbarId%100 == 0),
         }
-        category_genTtbarId = ak.full(events.nbJets, 5)
+        #category_genTtbarId = ak.full(events.nbJets, 5)
+        category_genJets = ak.Array(np.full(len(events.nbJets), 5))
         category_genTtbarId = ak.to_numpy(
             ak.where(
                 ttbar_criteria["ttbb"],
