@@ -680,7 +680,7 @@ class NanoProcessor(processor.ProcessorABC):
                 pruned_ev.update(ttbar_ev)
                 for kin in ["pt", "eta", "phi", "mass"]:
                     for obj in list(ttbar_ev.keys()):
-                        if ("nG" in obj) or ("nbJ" in obj) or ("ncJ" in obj) or ("nadd" in obj) or ("istt" in obj):
+                        if ("nG" in obj) or ("nbJ" in obj) or ("ncJ" in obj) or ("nadd" in obj) or ("istt" in obj) or ("genTtbarId" in obj):
                             out_branch = np.append(out_branch, [obj])
                             continue
                         out_branch = np.append(out_branch, [f"{obj}_{kin}"])
