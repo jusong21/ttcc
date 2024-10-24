@@ -335,20 +335,28 @@ class NanoProcessor(processor.ProcessorABC):
             ############
             # Genlep: same with nominal BTA workflow
             _fix = lambda x: ak.fill_none(x, 0)
+#            is_lep = (
+#                lambda p: (abs(_fix(p.pdgId)) == 11)
+#                | (abs(_fix(p.pdgId)) == 13)
+#                | (abs(_fix(p.pdgId)) == 15)
+#            )
+            # electrons or muons
             is_lep = (
                 lambda p: (abs(_fix(p.pdgId)) == 11)
                 | (abs(_fix(p.pdgId)) == 13)
-                | (abs(_fix(p.pdgId)) == 15)
             )
-            is_WZ = lambda p: (abs(_fix(p.pdgId)) == 23) | (abs(_fix(p.pdgId)) == 24)
-            is_heavy_hadron = lambda p, pid: (abs(_fix(p.pdgId)) // 100 == pid) | (
-                abs(_fix(p.pdgId)) // 1000 == pid
-            )
+            is_tau = lambda p: (abs(_fix(p.pdgId)) == 15)
+            is_W = lambda p: (abs(_fix(p.pdgId)) == 24)
+            is_T = lambda p: (abs(_fix(p.pdgId)) == 6)
+#            is_WZ = lambda p: (abs(_fix(p.pdgId)) == 23) | (abs(_fix(p.pdgId)) == 24)
+#            is_heavy_hadron = lambda p, pid: (abs(_fix(p.pdgId)) // 100 == pid) | (
+#                abs(_fix(p.pdgId)) // 1000 == pid
+#            )
             
             genlep_cut = (
                 is_lep(events.GenPart)
                 & (events.GenPart.hasFlags("isLastCopy"))
-                & (events.GenPart.pt > 20)
+                & (events.GenPart.pt > 25)
                 & (abs(events.GenPart.eta) < 2.4)
             )
             genlep = events.GenPart[genlep_cut]
@@ -357,30 +365,48 @@ class NanoProcessor(processor.ProcessorABC):
             genlep_pa1G = genlep.parent
             genlep_pa2G = genlep.parent.parent
             genlep_pa3G = genlep.parent.parent.parent
-            genlep_pa4G = genlep.parent.parent.parent.parent
+#            genlep_pa4G = genlep.parent.parent.parent.parent
             istau = abs(genlep_pa1G.pdgId) == 15
-            isWZ = is_WZ(genlep_pa1G) | is_WZ(genlep_pa2G)
-            isD = is_heavy_hadron(genlep_pa1G, 4) | is_heavy_hadron(genlep_pa2G, 4)
-            isB = (
-                is_heavy_hadron(genlep_pa1G, 5)
-                | is_heavy_hadron(genlep_pa2G, 5)
-                | is_heavy_hadron(genlep_pa3G, 5)
-                | is_heavy_hadron(genlep_pa4G, 5)
-            )
+            #isWZ = is_WZ(genlep_pa1G) | is_WZ(genlep_pa2G)
+            isW = is_W(genlep_pa1G) | is_W(genlep_pa2G)
+            isT = is_T(genlep_pa2G) | is_T(genlep_pa3G)
+#            isD = is_heavy_hadron(genlep_pa1G, 4) | is_heavy_hadron(genlep_pa2G, 4)
+#            isB = (
+#                is_heavy_hadron(genlep_pa1G, 5)
+#                | is_heavy_hadron(genlep_pa2G, 5)
+#                | is_heavy_hadron(genlep_pa3G, 5)
+#                | is_heavy_hadron(genlep_pa4G, 5)
+#            )
             
             Genlep = ak.zip(
                 {
                     "pT": genlep.pt,
                     "eta": genlep.eta,
                     "phi": genlep.phi,
-                    "pdgID": genlep.pdgId,
+                    "pdgId": genlep.pdgId,
                     "status": genlep.status,
-                    "mother": ak.fill_none(ak.where(isB | isD, 5 * isB + 4 * isD, 10 * istau + 100 * isWZ), 0),
+                    #"mother": ak.fill_none(ak.where(isB | isD, 5 * isB + 4 * isD, 10 * istau + 100 * isWZ), 0),
+                    "mother": ak.fill_none(ak.where(istau & isW & isT, 45, ak.where(isW & isT, 30, 0)), 0),
                 }
             )
             # gen-level jet cleaning aginst prompt leptons from WZ or tau
-            genlep_prompt = genlep[(Genlep.mother != 0) & (Genlep.mother % 10 == 0)]
+            #genlep_prompt = genlep[(Genlep.mother != 0) & (Genlep.mother % 10 == 0)]
+
+            # gen-level lepton from W boson and Top
+            genlep_fromTW = genlep[Genlep.mother != 0]
+
+
+
+            ngenlep_fromTW = ak.num(genlep_fromTW)
+            ngenlep_mask = ngenlep_fromTW >= 2
+
+            pad_genlep_fromTW = ak.pad_none(genlep_fromTW, 2, axis=1)
+            genlep1 = pad_genlep_fromTW[:,0]
+            genlep2 = pad_genlep_fromTW[:,1]
+            charge_mask = genlep1.pdgId * genlep2.pdgId < 0
             
+            req_Genlep = ngenlep_mask & charge_mask
+
             ############
             #  GenJet  #
             ############
@@ -388,10 +414,10 @@ class NanoProcessor(processor.ProcessorABC):
             Genjets = Genjets[
                 (Genjets.pt > 20)
                 & (abs(Genjets.eta) < 2.4)
-                & (ak.all(Genjets.metric_table(genlep_prompt) > 0.4, axis=-1))
+                & (ak.all(Genjets.metric_table(genlep_fromTW) > 0.4, axis=-1))
             ]
             nGenjets = ak.num(Genjets)
-            req_Genjet = nGenjets > 1
+            req_Genjet = nGenjets >= 4
             
             bjetFromTop_cut = (
                 ((Genjets.nBHadFromT+Genjets.nBHadFromTbar) > 0)
@@ -489,7 +515,7 @@ class NanoProcessor(processor.ProcessorABC):
         #req_event = req_trig & req_lumi & req_lep & req_jet & req_bjet & req_mll & req_mz & req_met & req_flag
         req_event = req_trig & req_lumi & req_lep & req_jet & req_mll & req_mz & req_met & req_flag
 
-        if isTTbar: req_event = req_event & req_Genjet
+        if isTTbar: req_event = req_event & req_Genjet & req_Genlep
         
         req_event = ak.fill_none(req_event, False)
 
@@ -676,6 +702,8 @@ class NanoProcessor(processor.ProcessorABC):
                     "isttcj": isttcj[req_event],
                     "isttother": isttother[req_event],
                     "genTtbarId": ak.to_numpy(events.genTtbarId[req_event]),
+                    "genLepFromTW": genlep_fromTW[req_event],
+                    "GenLep": Genlep[req_event],
                 }
                 pruned_ev.update(ttbar_ev)
                 for kin in ["pt", "eta", "phi", "mass"]:
@@ -684,6 +712,7 @@ class NanoProcessor(processor.ProcessorABC):
                             out_branch = np.append(out_branch, [obj])
                             continue
                         out_branch = np.append(out_branch, [f"{obj}_{kin}"])
+                out_branch = np.append(out_branch, ["GenLep_mother", "GenLep_pdgId", "genLepFromTW_pdgId"])
 
             # write to root files
             os.system(f"mkdir -p {self.name}/{dataset}")
