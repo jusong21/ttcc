@@ -182,47 +182,84 @@ class NanoProcessor(processor.ProcessorABC):
         genTtbarId = events.genTtbarId
 
         ttbar_criteria2 = {
-            'ttbb': (genTtbarId%100 == 53) or (genTtbarId%100 == 54) or (genTtbarId%100 == 55),
-            'ttbj': (genTtbarId%100 == 51) or (genTtbarId%100 == 52),
-            'ttcc': (genTtbarId%100 == 43) or (genTtbarId%100 == 44) or (genTtbarId%100 == 45),
-            'ttcj': (genTtbarId%100 == 41) or (genTtbarId%100 == 42),
+            'ttbb': (genTtbarId%100 == 53) | (genTtbarId%100 == 54) | (genTtbarId%100 == 55),
+            'ttbj': (genTtbarId%100 == 51) | (genTtbarId%100 == 52),
+            'ttcc': (genTtbarId%100 == 43) | (genTtbarId%100 == 44) | (genTtbarId%100 == 45),
+            'ttcj': (genTtbarId%100 == 41) | (genTtbarId%100 == 42),
             'ttother': (genTtbarId%100 == 0),
         }
         #category_genTtbarId = ak.full(events.nbJets, 5)
-        category_genJets = ak.Array(np.full(len(events.nbJets), 5))
+        category_genTtbarId = ak.Array(np.full(len(events.nbJets), 5))
         category_genTtbarId = ak.to_numpy(
             ak.where(
-                ttbar_criteria["ttbb"],
+                ttbar_criteria2["ttbb"],
                 0,
                 category_genTtbarId,
             )
         )
         category_genTtbarId = ak.to_numpy(
             ak.where(
-                ttbar_criteria["ttbj"],
+                ttbar_criteria2["ttbj"],
                 1,
                 category_genTtbarId,
             )
         )
         category_genTtbarId = ak.to_numpy(
             ak.where(
-                ttbar_criteria["ttcc"],
+                ttbar_criteria2["ttcc"],
                 2,
                 category_genTtbarId,
             )
         )
         category_genTtbarId = ak.to_numpy(
             ak.where(
-                ttbar_criteria["ttcj"],
+                ttbar_criteria2["ttcj"],
                 3,
                 category_genTtbarId,
             )
         )
         category_genTtbarId = ak.to_numpy(
             ak.where(
-                ttbar_criteria["ttother"],
+                ttbar_criteria2["ttother"],
                 4,
                 category_genTtbarId,
+            )
+        )
+            
+        category_addJet = ak.Array(np.full(len(events.nbJets), 5))
+        category_addJet = ak.to_numpy(
+            ak.where(
+                events.isttbb,
+                0,
+                category_addJet,
+            )
+        )
+        category_addJet = ak.to_numpy(
+            ak.where(
+                events.isttbj,
+                1,
+                category_addJet,
+            )
+        )
+        category_addJet = ak.to_numpy(
+            ak.where(
+                events.isttcc,
+                2,
+                category_addJet,
+            )
+        )
+        category_addJet = ak.to_numpy(
+            ak.where(
+                events.isttcj,
+                3,
+                category_addJet,
+            )
+        )
+        category_addJet = ak.to_numpy(
+            ak.where(
+                events.isttother,
+                4,
+                category_addJet,
             )
         )
             
@@ -288,6 +325,14 @@ class NanoProcessor(processor.ProcessorABC):
                 'isttother_new': isttother_new[req_nbjet],
                 "category_genJets": category_genJets[req_nbjet],
                 "category_genTtbarId": category_genTtbarId[req_nbjet],
+                "genTtbarId": ak.to_numpy(genTtbarId[req_nbjet]),
+				"category_addJet": category_addJet[req_nbjet],
+				"nbJetsFromT": ak.to_numpy(events.nbJetsFromT[req_nbjet]),
+				"nbJetsFromW": ak.to_numpy(events.nbJetsFromW[req_nbjet]),
+				"ncJetsFromW": ak.to_numpy(events.ncJetsFromW[req_nbjet]),
+				"naddbJets": ak.to_numpy(events.naddbJets[req_nbjet]),
+				"naddcJets": ak.to_numpy(events.naddcJets[req_nbjet]),
+
 
             })
 
