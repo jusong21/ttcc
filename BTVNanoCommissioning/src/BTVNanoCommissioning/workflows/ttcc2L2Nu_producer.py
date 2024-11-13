@@ -417,7 +417,7 @@ class NanoProcessor(processor.ProcessorABC):
                 & (ak.all(Genjets.metric_table(genlep_fromTW) > 0.4, axis=-1))
             ]
             nGenjets = ak.num(Genjets)
-            req_Genjet = nGenjets >= 4
+            req_Genjet = nGenjets >= 2
             
             bjetFromTop_cut = (
                 ((Genjets.nBHadFromT+Genjets.nBHadFromTbar) > 0)
@@ -427,19 +427,25 @@ class NanoProcessor(processor.ProcessorABC):
                 (Genjets.nBHadFromW > 0)
                 & ((Genjets.nBHadFromT+Genjets.nBHadFromTbar) == 0)
             )
-            cjetFromW_cut = (
-                (Genjets.nCHadFromW > 0)
-            )
             addbjet_cut = (
                 ((Genjets.nBHadFromT+Genjets.nBHadFromTbar+Genjets.nBHadFromW) == 0)
                 & (Genjets.nBHadOther > 0)
             )
+            noBHad_cut = (
+                (Genjets.nBHadFromT+Genjets.nBHadFromTbar+Genjets.nBHadFromW+Genjets.nBHadOther) == 0
+            )
+            cjetFromW_cut = (
+                noBHad_cut
+                & (Genjets.nCHadFromW > 0)
+            )
             addcjet_cut = (
-                ((Genjets.nCHadFromW) == 0)
+                noBHad_cut
+                & ((Genjets.nCHadFromW) == 0)
                 & (Genjets.nCHadOther > 0)
             )
             addlfjets_cut = (
-                (Genjets.nBHadFromT+Genjets.nBHadFromTbar+Genjets.nBHadFromW+Genjets.nCHadFromW+Genjets.nBHadOther+Genjets.nCHadOther) == 0
+                noBHad_cut
+                & (Genjets.nCHadFromW+Genjets.nCHadOther == 0)
             )
 
             bjetsFromTop = Genjets[ak.fill_none(bjetFromTop_cut, False)]
