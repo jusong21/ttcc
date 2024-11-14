@@ -338,7 +338,7 @@ class NanoProcessor(processor.ProcessorABC):
                 "cJetFromW": events.cJetFromW[req_nbjet],
                 "addbJet": events.addbJet[req_nbjet],
                 "addcJet": events.addcJet[req_nbjet],
-                "addlfJet": events.addlfJets[req_nbjet],
+                "addlfJet": events.addlfJet[req_nbjet],
                 "nGenJets": ak.to_numpy(events.nGenJets[req_nbjet]),
 
 
