@@ -691,7 +691,7 @@ class NanoProcessor(processor.ProcessorABC):
                 ttbar_ev = {
                     "bJetFromT": bjetsFromTop[req_event],
                     "bJetFromW": bjetsFromW[req_event],
-                    "cJetFromW": bjetsFromW[req_event],
+                    "cJetFromW": cjetsFromW[req_event],
                     "addbJet": addbjets[req_event],
                     "addcJet": addcjets[req_event],
                     "addlfJet": addlfjets[req_event],

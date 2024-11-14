@@ -311,6 +311,7 @@ class NanoProcessor(processor.ProcessorABC):
 
 #        # btag sorting jets
 
+        out_branch = ["events", "run", "luminosityBlock"]
         if isTTbar:
             pruned_ev.update({
                 'isttbb': ak.to_numpy(events.isttbb[req_nbjet]), 
@@ -326,12 +327,19 @@ class NanoProcessor(processor.ProcessorABC):
                 "category_genJets": category_genJets[req_nbjet],
                 "category_genTtbarId": category_genTtbarId[req_nbjet],
                 "genTtbarId": ak.to_numpy(genTtbarId[req_nbjet]),
-				"category_addJet": category_addJet[req_nbjet],
-				"nbJetsFromT": ak.to_numpy(events.nbJetsFromT[req_nbjet]),
-				"nbJetsFromW": ak.to_numpy(events.nbJetsFromW[req_nbjet]),
-				"ncJetsFromW": ak.to_numpy(events.ncJetsFromW[req_nbjet]),
-				"naddbJets": ak.to_numpy(events.naddbJets[req_nbjet]),
-				"naddcJets": ak.to_numpy(events.naddcJets[req_nbjet]),
+		"category_addJet": category_addJet[req_nbjet],
+		"nbJetsFromT": ak.to_numpy(events.nbJetsFromT[req_nbjet]),
+		"nbJetsFromW": ak.to_numpy(events.nbJetsFromW[req_nbjet]),
+		"ncJetsFromW": ak.to_numpy(events.ncJetsFromW[req_nbjet]),
+		"naddbJets": ak.to_numpy(events.naddbJets[req_nbjet]),
+		"naddcJets": ak.to_numpy(events.naddcJets[req_nbjet]),
+                "bJetFromT": events.bjetsFromTop[req_nbjet],
+                "bJetFromW": events.bjetsFromW[req_nbjet],
+                "cJetFromW": events.bjetsFromW[req_nbjet],
+                "addbJet": events.addbjets[req_nbjet],
+                "addcJet": events.addcjets[req_nbjet],
+                "addlfJet": events.addlfjets[req_nbjet],
+                "nGenJets": ak.to_numpy(events.nGenJets[req_nbjet]),
 
 
             })
@@ -387,8 +395,11 @@ class NanoProcessor(processor.ProcessorABC):
                "L1PreFiringDown_weight": ak.to_numpy(events.L1PreFiringWeight.Up[req_nbjet]),
 #
             })
+
+            for kin in ["pt", "eta"]:
+                for obj in ["bJetFromT", "bJetFromW", "addbJet", "addcJet", "addlfJet"]:
+                    out_branch = np.append(out_branch, [f"{obj}_{kin}"])
 #"""
-        out_branch = ["events", "run", "luminosityBlock"]
         out_branch = np.append(out_branch, list(pruned_ev.keys()))
         #out_branch = list(pruned_ev.keys())
         for kin in ["pt", "eta", "phi", "mass"]:
