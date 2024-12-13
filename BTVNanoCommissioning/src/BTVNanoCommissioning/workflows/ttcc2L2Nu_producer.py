@@ -14,7 +14,6 @@ from BTVNanoCommissioning.utils.correction import (
     muSFs,
     puwei,
     btagSFs,
-    btagSFs_JetByJet,
     JME_shifts,
     Roccor_shifts,
 )
@@ -30,12 +29,7 @@ from BTVNanoCommissioning.helpers.update_branch import missing_branch
 
 ## load histograms & selctions for this workflow
 from BTVNanoCommissioning.utils.histogrammer import histogrammer
-from BTVNanoCommissioning.utils.selection import (
-    jet_id, mu_idiso, 
-    ele_cuttightid,
-    btag_wp_dict,
-    btag_wp,
-)
+from BTVNanoCommissioning.utils.selection import *
 from BTVNanoCommissioning.helpers.ttcc2L2Nu_helper import (
     sel_HLT,
     to_bitwise_trigger,
@@ -92,21 +86,11 @@ class NanoProcessor(processor.ProcessorABC):
                 shifts, self.SF_map, events, self._campaign, isRealData, syst_JERC
             )
         else:
-            if "Run3" not in self._campaign:
-                shifts = [
-                    ({"Jet": events.Jet, "MET": events.MET, "Muon": events.Muon}, None)
-                ]
-            else:
-                shifts = [
-                    ({"Jet": events.Jet, "MET": events.PuppiMET, "Muon": events.Muon,}, None,)
-                ]
-        if "roccor" in self.SF_map.keys():
-            shifts = Roccor_shifts(shifts, self.SF_map, events, isRealData, False)
-        else:
-            shifts[0][0]["Muon"] = events.Muon
+            shifts = [
+                ({"Jet": events.Jet, "MET": events.PuppiMET, "Muon": events.Muon,}, None,)
+            ]
+        shifts[0][0]["Muon"] = events.Muon
 
-        #for collections, name in shifts:
-            #print('c:', collections, 'n:', name)
         return processor.accumulate(
             self.process_shift(update(events, collections), name)
             for collections, name in shifts
@@ -116,6 +100,7 @@ class NanoProcessor(processor.ProcessorABC):
         dataset = events.metadata["dataset"]
         isRealData = not hasattr(events, "genWeight")
         isTTbar = ("TTTo" in dataset) or ("TTbb" in dataset)
+        print('dataset: ', dataset)
         print('isTTbar: ', isTTbar)
 
         ## Create histograms
@@ -183,7 +168,6 @@ class NanoProcessor(processor.ProcessorABC):
         for t in trig_arrs:
             req_trig = req_trig | t
 
-        # pass_trig.shape = (nevents, len(triggers))
         pass_trig = np.array([
             events.HLT[_trig] for _trig in triggers if hasattr(events.HLT, _trig)
         ]).T
@@ -195,29 +179,43 @@ class NanoProcessor(processor.ProcessorABC):
         for i, (trig, chn) in enumerate(ttdilep_HLT_chns):  # loop over ee, mm, em chanenl
             pass_trig_chn[chn] |= pass_trig[:, i]
         
-        #################
+        ####################
         #    Electronss    #
-        #################
+        ####################
 
         electrons = events.Electron[ele_cuttightid(events, self._campaign)]
         nelectrons = ak.num(electrons)
         
-        #############
+        ###############
         #    Muons    #
-        #############
+        ###############
 
         muons = events.Muon[mu_idiso(events, self._campaign)]
         nmuons = ak.num(muons)
         
-        ###############
+        ################
         #    Leptons   #
-        ###############
+        ################
 
         leptons = ak.concatenate([electrons, muons], axis=1)
         leptons = leptons[ak.argsort(leptons.pt, ascending=False)]
         #nleptons = ak.num(leptons)
         nleptons = nmuons+nelectrons
         pair_lep = ak.combinations(leptons, 2) 
+#        lep1_chr = ak.flatten(ak.fill_none(pair_lep["0"].charge, 0))
+#        lep2_chr = ak.flatten(pair_lep["1"].charge)
+#        print(len(pair_lep["0"].charge))
+#        print(pair_lep["0"].charge)
+#        print(len(events.run))
+#        print(len(lep1_chr))
+#        print(lep1_chr)
+#        print(len(lep2_chr))
+#        
+#        com_chr = ak.fill_none(pair_lep["0"].charge*pair_lep["1"].charge, 0)
+#
+#        print(com_chr)
+#        print(len(com_chr))
+
         
         ####################
         #  dilep channels  #
@@ -235,21 +233,40 @@ class NanoProcessor(processor.ProcessorABC):
         zeros = ak.zeros_like(events.run, dtype=int)
         channel = zeros
         # ee: 11*11, mm: 13*13, em: 11*13, oppositely-charged < 0
+#        channel = ak.where(
+#            chn_criteria["ee"] & (channel == 0),
+#            ak.fill_none(11 * 11 * lep1_chr * lep2_chr, 0),
+#            channel,
+#        )
+#        channel = ak.where(
+#            chn_criteria["mm"] & (channel == 0),
+#            ak.fill_none(13 * 13 *  lep1_chr * lep2_chr, 0),
+#            channel,
+#        )
+#        channel = ak.where(
+#            chn_criteria["em"] & (channel == 0),
+#            ak.fill_none(11 * 13 *  lep1_chr * lep2_chr, 0),
+#            channel,
+#        )
+
         channel = ak.where(
             chn_criteria["ee"] & (channel == 0),
-            ak.fill_none(11 * 11 * pair_lep["0"].charge * pair_lep["1"].charge, 0),
+            11 * 11 * pair_lep["0"].charge * pair_lep["1"].charge, 
             channel,
         )
         channel = ak.where(
             chn_criteria["mm"] & (channel == 0),
-            ak.fill_none(13 * 13 * pair_lep["0"].charge * pair_lep["1"].charge, 0),
+            13 * 13 * pair_lep["0"].charge * pair_lep["1"].charge, 
             channel,
         )
         channel = ak.where(
             chn_criteria["em"] & (channel == 0),
-            ak.fill_none(11 * 13 * pair_lep["0"].charge * pair_lep["1"].charge, 0),
+            11 * 13 * pair_lep["0"].charge * pair_lep["1"].charge, 
             channel,
         )
+
+#        print(ak.type(channel))
+#        print(channel[:5])
 
         ch = [] # make flat channel
         for chn in channel:
@@ -257,6 +274,7 @@ class NanoProcessor(processor.ProcessorABC):
             else: ch.append(chn[0])
         channel = np.array(ch)
         
+        #channel = ak.to_numpy(channel)
         req_lep = (nleptons == 2) & (channel < 0)
 
         # invariant mass of two leptons
@@ -298,26 +316,26 @@ class NanoProcessor(processor.ProcessorABC):
         njets = ak.num(jets)
         req_jet = njets >= 4
 
-        # b tagged jets (M)
-        bjets = jets[
-            btag_wp(jets, self._campaign, "DeepFlav", "b", "M")
-        ]
-        nbjets = ak.num(bjets)
-        req_bjet = nbjets >= 2
+        jet_category = PNet_btag_category(jets, self._year)
+        jets["category"] = jet_category
+        
+        bjets_l = jet_category[PNet_btag_wp(jet_category, "b", "L")]
+        nbjets_l = ak.num(bjets_l)
+        
 
-        bjets_t = jets[
-            btag_wp(jets, self._campaign, "DeepFlav", "b", "T")
-        ]
+        bjets_m = jet_category[PNet_btag_wp(jet_category, "b", "M")]
+        nbjets_m = ak.num(bjets_m)
+
+        bjets_t = jet_category[PNet_btag_wp(jet_category, "b", "T")]
         nbjets_t = ak.num(bjets_t)
 
-        # c tagged jets (M)
-        cjets = jets[
-            btag_wp(jets, self._campaign, "DeepFlav", "c", "M")
-        ]
-        ncjets = ak.num(cjets)
-        cjets_t = jets[
-            btag_wp(jets, self._campaign, "DeepFlav", "c", "T")
-        ]
+        cjets_l = jet_category[PNet_btag_wp(jet_category, "c", "L")]
+        ncjets_l = ak.num(cjets_l)
+
+        cjets_m = jet_category[PNet_btag_wp(jet_category, "c", "M")]
+        ncjets_m = ak.num(cjets_m)
+
+        cjets_t = jet_category[PNet_btag_wp(jet_category, "c", "T")]
         ncjets_t = ak.num(cjets_t)
 
         ####################
@@ -333,13 +351,7 @@ class NanoProcessor(processor.ProcessorABC):
             ############
             #  Genlep  #
             ############
-            # Genlep: same with nominal BTA workflow
             _fix = lambda x: ak.fill_none(x, 0)
-#            is_lep = (
-#                lambda p: (abs(_fix(p.pdgId)) == 11)
-#                | (abs(_fix(p.pdgId)) == 13)
-#                | (abs(_fix(p.pdgId)) == 15)
-#            )
             # electrons or muons
             is_lep = (
                 lambda p: (abs(_fix(p.pdgId)) == 11)
@@ -348,10 +360,6 @@ class NanoProcessor(processor.ProcessorABC):
             is_tau = lambda p: (abs(_fix(p.pdgId)) == 15)
             is_W = lambda p: (abs(_fix(p.pdgId)) == 24)
             is_T = lambda p: (abs(_fix(p.pdgId)) == 6)
-#            is_WZ = lambda p: (abs(_fix(p.pdgId)) == 23) | (abs(_fix(p.pdgId)) == 24)
-#            is_heavy_hadron = lambda p, pid: (abs(_fix(p.pdgId)) // 100 == pid) | (
-#                abs(_fix(p.pdgId)) // 1000 == pid
-#            )
             
             genlep_cut = (
                 is_lep(events.GenPart)
@@ -361,22 +369,15 @@ class NanoProcessor(processor.ProcessorABC):
             )
             genlep = events.GenPart[genlep_cut]
 
-            # trace parents up to 4 generations (from BTA code)
+            # trace parents up to 3 gen
             genlep_pa1G = genlep.parent
             genlep_pa2G = genlep.parent.parent
             genlep_pa3G = genlep.parent.parent.parent
-#            genlep_pa4G = genlep.parent.parent.parent.parent
-            istau = abs(genlep_pa1G.pdgId) == 15
-            #isWZ = is_WZ(genlep_pa1G) | is_WZ(genlep_pa2G)
+
+            #istau = abs(genlep_pa1G.pdgId) == 15
+            istau = is_tau(genlep_pa1G)
             isW = is_W(genlep_pa1G) | is_W(genlep_pa2G)
             isT = is_T(genlep_pa2G) | is_T(genlep_pa3G)
-#            isD = is_heavy_hadron(genlep_pa1G, 4) | is_heavy_hadron(genlep_pa2G, 4)
-#            isB = (
-#                is_heavy_hadron(genlep_pa1G, 5)
-#                | is_heavy_hadron(genlep_pa2G, 5)
-#                | is_heavy_hadron(genlep_pa3G, 5)
-#                | is_heavy_hadron(genlep_pa4G, 5)
-#            )
             
             Genlep = ak.zip(
                 {
@@ -385,17 +386,11 @@ class NanoProcessor(processor.ProcessorABC):
                     "phi": genlep.phi,
                     "pdgId": genlep.pdgId,
                     "status": genlep.status,
-                    #"mother": ak.fill_none(ak.where(isB | isD, 5 * isB + 4 * isD, 10 * istau + 100 * isWZ), 0),
                     "mother": ak.fill_none(ak.where(istau & isW & isT, 45, ak.where(isW & isT, 30, 0)), 0),
                 }
             )
-            # gen-level jet cleaning aginst prompt leptons from WZ or tau
-            #genlep_prompt = genlep[(Genlep.mother != 0) & (Genlep.mother % 10 == 0)]
-
             # gen-level lepton from W boson and Top
             genlep_fromTW = genlep[Genlep.mother != 0]
-
-
 
             ngenlep_fromTW = ak.num(genlep_fromTW)
             ngenlep_mask = ngenlep_fromTW >= 2
@@ -417,103 +412,14 @@ class NanoProcessor(processor.ProcessorABC):
                 & (ak.all(Genjets.metric_table(genlep_fromTW) > 0.4, axis=-1))
             ]
             nGenjets = ak.num(Genjets)
-            req_Genjet = nGenjets >= 2
-            
-            bjetFromTop_cut = (
-                ((Genjets.nBHadFromT+Genjets.nBHadFromTbar) > 0)
-                & (Genjets.nBHadOther+Genjets.nBHadFromW == 0)
-            )
-            bjetFromW_cut = (
-                (Genjets.nBHadFromW > 0)
-                & ((Genjets.nBHadFromT+Genjets.nBHadFromTbar) == 0)
-            )
-            addbjet_cut = (
-                ((Genjets.nBHadFromT+Genjets.nBHadFromTbar+Genjets.nBHadFromW) == 0)
-                & (Genjets.nBHadOther > 0)
-            )
-            noBHad_cut = (
-                (Genjets.nBHadFromT+Genjets.nBHadFromTbar+Genjets.nBHadFromW+Genjets.nBHadOther) == 0
-            )
-            cjetFromW_cut = (
-                noBHad_cut
-                & (Genjets.nCHadFromW > 0)
-            )
-            addcjet_cut = (
-                noBHad_cut
-                & ((Genjets.nCHadFromW) == 0)
-                & (Genjets.nCHadOther > 0)
-            )
-            addlfjets_cut = (
-                noBHad_cut
-                & (Genjets.nCHadFromW+Genjets.nCHadOther == 0)
-            )
-
-            bjetsFromTop = Genjets[ak.fill_none(bjetFromTop_cut, False)]
-            bjetsFromW = Genjets[ak.fill_none(bjetFromW_cut, False)]
-            cjetsFromW = Genjets[ak.fill_none(cjetFromW_cut, False)]
-            addbjets = Genjets[ak.fill_none(addbjet_cut, False)]
-            addcjets = Genjets[ak.fill_none(addcjet_cut, False)]
-            addlfjets = Genjets[ak.fill_none(addlfjets_cut, False)]
-            
-            nbjetsFromTop = ak.num(bjetsFromTop)
-            nbjetsFromW = ak.num(bjetsFromW)
-            ncjetsFromW = ak.num(bjetsFromW)
-            naddbjets = ak.num(addbjets)
-            naddcjets = ak.num(addcjets)
-            naddlfjets = ak.num(addlfjets)
+            req_Genjet = nGenjets >= 4
             
             ####################
             #  ttbar category  #
             ####################
 
-            ttbar_criteria = {
-                'ttbb': naddbjets >= 2,
-                'ttbj': naddbjets == 1,
-                'ttcc': (naddbjets == 0) & (naddcjets >= 2),
-                'ttcj': (naddbjets == 0) & (naddcjets == 1),
-                'ttother': (naddbjets+naddcjets == 0) & (nGenjets >=2),
-            }
-            
-            zeros = ak.zeros_like(events.run, dtype=bool)
-            isttbb, isttbj = zeros, zeros
-            isttcc, isttcj = zeros, zeros
-            isttother = zeros
-            
-            isttbb = ak.to_numpy(
-                ak.where(
-                    ttbar_criteria['ttbb'],
-                    True,
-                    isttbb,
-                )
-            )
-            isttbj = ak.to_numpy(
-                ak.where(
-                    ttbar_criteria['ttbj'],
-                    True, 
-                    isttbj,
-                )
-            )
-            isttcc = ak.to_numpy(
-                ak.where(
-                    ttbar_criteria['ttcc'],
-                    True,
-                    isttcc,
-                )
-            )
-            isttcj = ak.to_numpy(
-                ak.where(
-                    ttbar_criteria['ttcj'],
-                    True,
-                    isttcj,
-                )
-            )
-            isttother = ak.to_numpy(
-                ak.where(
-                    ttbar_criteria['ttother'],
-                    True,
-                    isttother,
-                )
-            )
+            genTtbarId = events.genTtbarId
+            ttbar_category = ttbar_categorizer(genTtbarId)
 
         #####################
         #  Event selections  #
@@ -535,6 +441,7 @@ class NanoProcessor(processor.ProcessorABC):
         pad_muons = ak.pad_none(muons, 2, axis=1)[req_event]
         #pad_jets = ak.pad_none(jets, 6, axis=1)[req_event]
         pad_jets = ak.pad_none(jets, 4, axis=1)[req_event]
+        pad_jet_category = ak.pad_none(jet_category, 4, axis=1)[req_event]
         #print('pad jets pt:', pad_jets.pt)
         #print('pad jets pt:', pad_jets.pt)
         #pad_jets = pad_jets[:, :4]
@@ -556,9 +463,9 @@ class NanoProcessor(processor.ProcessorABC):
         weightsup = Weights(len(events[req_event]), storeIndividual=True)
         weightsdown = Weights(len(events[req_event]), storeIndividual=True)
 
-        weights_btagJet = Weights(len(ak.flatten(pad_jets)), storeIndividual=True)
-        weightsup_btagJet = Weights(len(ak.flatten(pad_jets)), storeIndividual=True)
-        weightsdown_btagJet = Weights(len(ak.flatten(pad_jets)), storeIndividual=True)
+#        weights_btagJet = Weights(len(ak.flatten(pad_jets)), storeIndividual=True)
+#        weightsup_btagJet = Weights(len(ak.flatten(pad_jets)), storeIndividual=True)
+#        weightsdown_btagJet = Weights(len(ak.flatten(pad_jets)), storeIndividual=True)
 
         if not isRealData:
             weights.add("genweight", events[req_event].genWeight)
@@ -582,11 +489,8 @@ class NanoProcessor(processor.ProcessorABC):
                     eleSFs(pad_electrons, self.SF_map, weights, weightsup, weightsdown, syst_wei, False)
                 #if "BTV" in self.SF_map.keys():
                 if "btag" in self.SF_map.keys():
-#                    btagSFs(pad_jets, self.SF_map, weights, weightsup, weightsdown, "DeepJetC", syst_wei)
-#                    btagSFs(pad_jets, self.SF_map, weights, weightsup, weightsdown, "DeepJetB", syst_wei)
-
-                    btagSFs_JetByJet(pad_jets, self.SF_map, weights_btagJet, weightsup_btagJet, weightsdown_btagJet, "DeepJetC", syst_wei)
-                    btagSFs_JetByJet(pad_jets, self.SF_map, weights_btagJet, weightsup_btagJet, weightsdown_btagJet, "DeepJetB", syst_wei)
+                    # consider only four jets
+                    btagSFs(pad_jets, pad_jet_category, self.SF_map, weights, weightsup, weightsdown, "PNet", syst_wei)
 
         # Systematics information
         if shift_name is None:
@@ -605,14 +509,16 @@ class NanoProcessor(processor.ProcessorABC):
             pruned_ev = {'Jet': sel_jets, 'Muon': sel_muons, 'Electron': sel_electrons, 'Lepton': sel_leptons, 'MET': sel_met, 'PV_npvs': ak.to_numpy(events.PV.npvs[req_event]), 'PV_npvsGood': ak.to_numpy(events.PV.npvsGood[req_event])}
             pruned_ev['Channel'] = channel[req_event]
             pruned_ev['nJets'] = ak.to_numpy(njets[req_event])
-            pruned_ev['nbJets'] = ak.to_numpy(nbjets[req_event])
+            pruned_ev['nbJetsL'] = ak.to_numpy(nbjets_l[req_event])
+            pruned_ev['nbJetsM'] = ak.to_numpy(nbjets_m[req_event])
             pruned_ev['nbJetsT'] = ak.to_numpy(nbjets_t[req_event])
-            pruned_ev['ncJets'] = ak.to_numpy(ncjets[req_event])
+            pruned_ev['ncJetsL'] = ak.to_numpy(ncjets_l[req_event])
+            pruned_ev['ncJetsM'] = ak.to_numpy(ncjets_m[req_event])
             pruned_ev['ncJetsT'] = ak.to_numpy(ncjets_t[req_event])
             pruned_ev['mll'] = ak.to_numpy(mll[req_event])
 
             # Create a list of variables want to store. For objects from the PFNano file, specify as {object}_{variable}, wildcard option only accepted at the end of the string
-            out_branch = ["events", "run", "luminosityBlock", 'PV_npvs', 'PV_npvsGood', "Channel", "nJets", "nbJets", "nbJetsT", "ncJets", "ncJetsT"]
+            out_branch = ["events", "run", "luminosityBlock", 'PV_npvs', 'PV_npvsGood', "Channel", "nJets", "nbJetsL", "nbJetsM", "nbJetsT", "ncJetsL", "ncJetsM", "ncJetsT"]
             if not isRealData:
                 pruned_ev["weight"] = weights.weight()
                 pruned_ev["L1PreFiringWeight_Nom"] = ak.to_numpy(events.L1PreFiringWeight.Nom[req_event])
@@ -638,33 +544,33 @@ class NanoProcessor(processor.ProcessorABC):
                     )   
                     out_branch = np.append(out_branch, f"{ind_wei}Down_weight")
 
-                # b/c tagging SF
-                for ind_wei in weights_btagJet.weightStatistics.keys():
-                    pruned_ev[f"{ind_wei}_weight"] = ak.unflatten(
-                        weights_btagJet.partial_weight(
-                            include=[ind_wei]
-                        ),
-                        counts = ak.num(pad_jets)
-                    )
-                    out_branch = np.append(out_branch, f"{ind_wei}_weight")
-
-                for ind_wei in weightsup_btagJet.weightStatistics.keys():
-                    pruned_ev[f"{ind_wei}Up_weight"] = ak.unflatten(
-                        weightsup_btagJet.partial_weight(
-                            include=[ind_wei]
-                        ),
-                        counts = ak.num(pad_jets)
-                    )
-                    out_branch = np.append(out_branch, f"{ind_wei}Up_weight")
-
-                for ind_wei in weightsdown_btagJet.weightStatistics.keys():
-                    pruned_ev[f"{ind_wei}Down_weight"] = ak.unflatten(
-                        weightsdown_btagJet.partial_weight(
-                            include=[ind_wei]
-                        ),
-                        counts = ak.num(pad_jets)
-                    )
-                    out_branch = np.append(out_branch, f"{ind_wei}Down_weight")
+#                # b/c tagging SF
+#                for ind_wei in weights_btagJet.weightStatistics.keys():
+#                    pruned_ev[f"{ind_wei}_weight"] = ak.unflatten(
+#                        weights_btagJet.partial_weight(
+#                            include=[ind_wei]
+#                        ),
+#                        counts = ak.num(pad_jets)
+#                    )
+#                    out_branch = np.append(out_branch, f"{ind_wei}_weight")
+#
+#                for ind_wei in weightsup_btagJet.weightStatistics.keys():
+#                    pruned_ev[f"{ind_wei}Up_weight"] = ak.unflatten(
+#                        weightsup_btagJet.partial_weight(
+#                            include=[ind_wei]
+#                        ),
+#                        counts = ak.num(pad_jets)
+#                    )
+#                    out_branch = np.append(out_branch, f"{ind_wei}Up_weight")
+#
+#                for ind_wei in weightsdown_btagJet.weightStatistics.keys():
+#                    pruned_ev[f"{ind_wei}Down_weight"] = ak.unflatten(
+#                        weightsdown_btagJet.partial_weight(
+#                            include=[ind_wei]
+#                        ),
+#                        counts = ak.num(pad_jets)
+#                    )
+#                    out_branch = np.append(out_branch, f"{ind_wei}Down_weight")
                 
             for kin in ["pt", "eta", "phi", "mass", "dz", "dxy"]:
                 for obj in ["Jet", "Electron", "Muon", "Lepton"]:
@@ -689,32 +595,16 @@ class NanoProcessor(processor.ProcessorABC):
             if isTTbar:
                 print('here in ttbar arr')
                 ttbar_ev = {
-                    "bJetFromT": bjetsFromTop[req_event],
-                    "bJetFromW": bjetsFromW[req_event],
-                    "cJetFromW": cjetsFromW[req_event],
-                    "addbJet": addbjets[req_event],
-                    "addcJet": addcjets[req_event],
-                    "addlfJet": addlfjets[req_event],
                     "nGenJets": ak.to_numpy(nGenjets[req_event]),
-                    "nbJetsFromT": ak.to_numpy(nbjetsFromTop[req_event]),
-                    "nbJetsFromW": ak.to_numpy(nbjetsFromW[req_event]),
-                    "ncJetsFromW": ak.to_numpy(nbjetsFromW[req_event]),
-                    "naddbJets": ak.to_numpy(naddbjets[req_event]),
-                    "naddcJets": ak.to_numpy(naddcjets[req_event]),
-                    "naddlfJets": ak.to_numpy(naddlfjets[req_event]),
-                    "isttbb": isttbb[req_event],
-                    "isttbj": isttbj[req_event],
-                    "isttcc": isttcc[req_event],
-                    "isttcj": isttcj[req_event],
-                    "isttother": isttother[req_event],
-                    "genTtbarId": ak.to_numpy(events.genTtbarId[req_event]),
                     "genLepFromTW": genlep_fromTW[req_event],
-                    "GenLep": Genlep[req_event],
+                    #"GenLep": Genlep[req_event],
+                    "genTtbarId": ak.to_numpy(events.genTtbarId[req_event]),
+                    "ttbar_category": ttbar_category[req_event],
                 }
                 pruned_ev.update(ttbar_ev)
                 for kin in ["pt", "eta", "phi", "mass"]:
                     for obj in list(ttbar_ev.keys()):
-                        if ("nG" in obj) or ("nbJ" in obj) or ("ncJ" in obj) or ("nadd" in obj) or ("istt" in obj) or ("genTtbarId" in obj):
+                        if ("nG" in obj) or ("genTtbarId" in obj):
                             out_branch = np.append(out_branch, [obj])
                             continue
                         out_branch = np.append(out_branch, [f"{obj}_{kin}"])
@@ -723,8 +613,8 @@ class NanoProcessor(processor.ProcessorABC):
             # write to root files
             os.system(f"mkdir -p {self.name}/{dataset}")
 
-            if isTTbar: outname = f"{self.name}/{dataset}/f{events.metadata['filename'].split('_')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root"
-            else: outname = f"{self.name}/{dataset}/f{events.metadata['filename'].split('/')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root"
+            outname = f"{self.name}/{dataset}/f{events.metadata['filename'].split('_')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root"
+            #else: outname = f"{self.name}/{dataset}/f{events.metadata['filename'].split('/')[-1].replace('.root','')}_{systematics[0]}_{int(events.metadata['entrystop']/self.chunksize)}.root"
             #else: outname = f"{self.name}/{dataset}/f{events.metadata['filename'].split('/')[-1].replace('.root','')}_{int(events.metadata['entrystop']/self.chunksize)}.root"
 
             #print('outname:', outname)

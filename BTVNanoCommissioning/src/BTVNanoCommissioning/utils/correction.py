@@ -64,61 +64,53 @@ def load_SF(campaign, syst=False):
             ext_err = extractor()
         ## btag weight
         elif SF == "BTV":
-            if "btag" in config[campaign]["BTV"].keys() and config[campaign]["BTV"][
-                "btag"
-            ].endswith(".json.gz"):
-                correct_map["btag"] = correctionlib.CorrectionSet.from_file(
-                    importlib.resources.path(
-                        f"BTVNanoCommissioning.data.BTV.{campaign}", filename
-                    )
-                )
-            if "ctag" in config[campaign]["BTV"].keys() and config[campaign]["BTV"][
-                "btag"
-            ].endswith(".json.gz"):
-                correct_map["btag"] = correctionlib.CorrectionSet.from_file(
-                    importlib.resources.path(
-                        f"BTVNanoCommissioning.data.BTV.{campaign}", filename
-                    )
-                )
-            if os.path.exists(
-                f"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/{campaign}"
-            ):
-                correct_map["btag"] = correctionlib.CorrectionSet.from_file(
-                    f"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/{campaign}/btagging.json.gz"
-                )
-                correct_map["ctag"] = correctionlib.CorrectionSet.from_file(
-                    f"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/{campaign}/ctagging.json.gz"
-                )
-            else:
-                correct_map["btag"] = {}
-                correct_map["ctag"] = {}
-                _btag_path = f"BTVNanoCommissioning.data.BTV.{campaign}"
-                for tagger in config[campaign]["BTV"]:
-                    with importlib.resources.path(
-                        _btag_path, config[campaign]["BTV"][tagger]
-                    ) as filename:
-                        if "B" in tagger:
-                            if filename.endswith(".json.gz"):
-                                correct_map["btag"] = (
-                                    correctionlib.CorrectionSet.from_file(filename)
-                                )
-                            else:
-                                correct_map["btag"][tagger] = BTagScaleFactor(
-                                    filename,
-                                    BTagScaleFactor.RESHAPE,
-                                    methods="iterativefit,iterativefit,iterativefit",
-                                )
-                        else:
-                            if filename.endswith(".json.gz"):
-                                correct_map["ctag"] = (
-                                    correctionlib.CorrectionSet.from_file(filename)
-                                )
-                            else:
-                                correct_map["ctag"][tagger] = BTagScaleFactor(
-                                    filename,
-                                    BTagScaleFactor.RESHAPE,
-                                    methods="iterativefit,iterativefit,iterativefit",
-                                )
+            correct_map["btag"] = correctionlib.CorrectionSet.from_file(
+                f"src/BTVNanoCommissioning/data/BTV/{campaign}/{config[campaign]['BTV']}"
+            )
+#            if "btag" in config[campaign]["BTV"].keys() and config[campaign]["BTV"][
+#                "btag"
+#            ].endswith(".json.gz"):
+#                correct_map["btag"] = correctionlib.CorrectionSet.from_file(
+#                    importlib.resources.path(
+#                        f"BTVNanoCommissioning.data.BTV.{campaign}", filename
+#                    )
+#                )
+#            if os.path.exists(
+#                f"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/{campaign}"
+#            ):
+#                correct_map["btag"] = correctionlib.CorrectionSet.from_file(
+#                    f"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/{campaign}/btagging.json.gz"
+#                )
+#            else:
+#                correct_map["btag"] = {}
+#                correct_map["ctag"] = {}
+#                _btag_path = f"BTVNanoCommissioning.data.BTV.{campaign}"
+#                for tagger in config[campaign]["BTV"]:
+#                    with importlib.resources.path(
+#                        _btag_path, config[campaign]["BTV"][tagger]
+#                    ) as filename:
+#                        if "B" in tagger:
+#                            if filename.endswith(".json.gz"):
+#                                correct_map["btag"] = (
+#                                    correctionlib.CorrectionSet.from_file(filename)
+#                                )
+#                            else:
+#                                correct_map["btag"][tagger] = BTagScaleFactor(
+#                                    filename,
+#                                    BTagScaleFactor.RESHAPE,
+#                                    methods="iterativefit,iterativefit,iterativefit",
+#                                )
+#                        else:
+#                            if filename.endswith(".json.gz"):
+#                                correct_map["ctag"] = (
+#                                    correctionlib.CorrectionSet.from_file(filename)
+#                                )
+#                            else:
+#                                correct_map["ctag"][tagger] = BTagScaleFactor(
+#                                    filename,
+#                                    BTagScaleFactor.RESHAPE,
+#                                    methods="iterativefit,iterativefit,iterativefit",
+#                                )
         ## lepton SFs
         elif SF == "LSF":
             correct_map["MUO_cfg"] = {
@@ -258,29 +250,39 @@ def load_SF(campaign, syst=False):
             )
             correct_map["roccor"] = rochester_lookup.rochester_lookup(rochester_data)
         elif SF == "JME":
-            year = int(re.search(r"\d+", campaign).group())
-            if type(config[campaign]["JME"]) == str:
-                correct_map["JME"] = load_jmefactory(campaign)
-            elif os.path.exists(
-                f"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/20{year}_{campaign}/jet_jerc.json.gz"
-            ):
+            if config[campaign]["JME"] == "jet_jerc.json.gz":
+                # JME file with Puppi jets
                 correct_map["JME"] = correctionlib.CorrectionSet.from_file(
-                    f"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/20{year}_{campaign}/jet_jerc.json.gz"
+                    f"src/BTVNanoCommissioning/data/JME/{campaign}/{config[campaign]['JME']}"
                 )
-                correct_map["JME_cfg"] = config[campaign]["JME"]
-                for dataset in correct_map["JME_cfg"].keys():
-                    if (
-                        np.all(
-                            np.char.find(
-                                np.array(list(correct_map["JME"].keys())),
-                                correct_map["JME_cfg"][dataset],
-                            )
-                        )
-                        == -1
-                    ):
-                        raise (
-                            f"{dataset} has no JEC map : {correct_map['JME_cfg'][dataset]} available"
-                        )
+            else:
+                print('no')
+                #raise(f"{campaign} has no JME map")
+                
+
+#            year = int(re.search(r"\d+", campaign).group())
+#            if type(config[campaign]["JME"]) == str:
+#                correct_map["JME"] = load_jmefactory(campaign)
+#            elif os.path.exists(
+#                f"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/20{year}_{campaign}/jet_jerc.json.gz"
+#            ):
+#                correct_map["JME"] = correctionlib.CorrectionSet.from_file(
+#                    f"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/20{year}_{campaign}/jet_jerc.json.gz"
+#                )
+#                correct_map["JME_cfg"] = config[campaign]["JME"]
+#                for dataset in correct_map["JME_cfg"].keys():
+#                    if (
+#                        np.all(
+#                            np.char.find(
+#                                np.array(list(correct_map["JME"].keys())),
+#                                correct_map["JME_cfg"][dataset],
+#                            )
+#                        )
+#                        == -1
+#                    ):
+#                        raise (
+#                            f"{dataset} has no JEC map : {correct_map['JME_cfg'][dataset]} available"
+#                        )
 
         elif SF == "JMAR":
             if os.path.exists(
@@ -429,13 +431,13 @@ def jetveto(events, correct_map):
 ##JEC
 # FIXME: would be nicer if we can move to correctionlib in the future together with factory and workable
 #def load_jmefactory(campaign, cfg):
-def load_jmefactory(campaign):
-    _jet_path = f"BTVNanoCommissioning.data.JME.{campaign}"
-    with importlib.resources.path(_jet_path, config[campaign]["JME"]) as filename:
-        with gzip.open(filename) as fin:
-            jmestuff = cloudpickle.load(fin)
-
-    return jmestuff
+#def load_jmefactory(campaign):
+#    _jet_path = f"BTVNanoCommissioning.data.JME.{campaign}"
+#    with importlib.resources.path(_jet_path, config[campaign]["JME"]) as filename:
+#        with gzip.open(filename) as fin:
+#            jmestuff = cloudpickle.load(fin)
+#
+#    return jmestuff
 
 
 def add_jec_variables(jets, event_rho):
@@ -467,23 +469,33 @@ def JME_shifts(
     syst_list = [
         i.split("_")[3]
         for i in correct_map["JME"].keys()
-        if "MC" in i and "L1" not in i and "L2" not in i and "L3" not in i
+        if "MC" in i and all(x not in i.split("_")[3] for x in ["L1", "L2", "L3"])
     ]
+
     if "JME" in correct_map.keys():
         ## correctionlib
-        if "JME_cfg" in correct_map.keys():
+        #if "JME_cfg" in correct_map.keys():
+        if "JME" in correct_map.keys():
             if isRealData:
-                jecname = [
-                    v
-                    for k, v in correct_map["JME_cfg"].items()
-                    if k in events.metadata["dataset"]
-                ]
-                if len(jecname) > 1:
-                    raise ("Multiple uncertainties match to this era")
-                else:
-                    jecname = jecname[0] + "_DATA"
+                run = events.metadata["dataset"][-1]
+                if campaign == "2018_UL": jecname = f"Summer19UL18_Run{run}_V5_DATA"
+#                jecname = [
+#                    v
+#                    #for k, v in correct_map["JME_cfg"].items()
+#                    for k, v in correct_map["JME"].items()
+#                    if k in events.metadata["dataset"]
+#                ]
+#                if len(jecname) > 1:
+#                    raise ("Multiple uncertainties match to this era")
+#                else:
+#                    jecname = jecname[0] + "_DATA"
             else:
-                jecname = correct_map["JME_cfg"]["MC"] + "_MC"
+                #jecname = correct_map["JME_cfg"]["MC"] + "_MC"
+                #jecname = correct_map["JME"]["MC"] + "_MC"
+                if campaign == "2018_UL": jecname = "Summer19UL18_V5_MC"
+
+            print('jecname', jecname)
+            print()
             corr = correct_map["JME"].compound[f"{jecname}_L1L2L3Res_AK4PFPuppi"]
             nocorrjet = events.Jet
             nocorrjet["pt_raw"] = (1 - nocorrjet["rawFactor"]) * nocorrjet["pt"]
@@ -492,35 +504,22 @@ def JME_shifts(
                 events.fixedGridRhoFastjetAll, nocorrjet.pt
             )[0]
             j, nj = ak.flatten(nocorrjet), ak.num(nocorrjet)
-            values = [
-                np.array(
-                    j[
-                        inputs.name.replace("Jet", "")
-                        .replace("Pt", "pt")
-                        .replace("Phi", "phi")
-                        .replace("Eta", "eta")
-                        .replace("Mass", "mass")
-                        .replace("Rho", "rho")
-                        .replace("A", "area")
-                    ]
-                )
-                for inputs in corr.inputs
-            ]
-            flatCorrFactor = corr.evaluate(*values)
+            
+            jvalues = [j.area, j.eta, j.pt_raw, j.rho]
+            flatCorrFactor = corr.evaluate(*jvalues)
             corrFactor = ak.unflatten(flatCorrFactor, nj)
+
             jets = copy.copy(nocorrjet)
             jets["pt_orig"] = ak.values_astype(nocorrjet["pt"], np.float32)
+            # pt = pt_raw * corrFactor
             jets["pt"] = ak.values_astype(nocorrjet["pt_raw"] * corrFactor, np.float32)
-            jets["mass"] = ak.values_astype(
-                nocorrjet["mass_raw"] * corrFactor, np.float32
-            )
+            # mass = mass_raw * corrFactor
+            jets["mass"] = ak.values_astype(nocorrjet["mass_raw"] * corrFactor, np.float32)
 
             # MET correction, from MET correct factory
             # https://github.com/CoffeaTeam/coffea/blob/d7d02634a8d268b130a4d71f76d8eba6e6e27b96/coffea/jetmet_tools/CorrectedMETFactory.py#L105
 
-            nocorrmet = (
-                events.PuppiMET if "22" in campaign or "23" in campaign else events.MET
-            )
+            nocorrmet = events.MET
             form = ak.forms.RecordForm(
                 {
                     "pt": nocorrmet.pt.layout.form,
@@ -534,13 +533,13 @@ def JME_shifts(
                 ak.values_astype(corrected_polar_met(*metinfo).pt, np.float32),
                 ak.values_astype(corrected_polar_met(*metinfo).phi, np.float32),
             )
-            met["orig_pt"], met["orig_phi"] = nocorrmet["pt"], nocorrmet["phi"]
+            met["pt_orig"], met["phi_orig"] = nocorrmet["pt"], nocorrmet["phi"]
             if systematic != False:
 
                 if systematic != "JERC_split":
                     jesuncmap = correct_map["JME"][f"{jecname}_Total_AK4PFPuppi"]
 
-                    jesunc = ak.unflatten(jesuncmap.evaluate(j.eta, j.pt), nj)
+                    jesunc = ak.unflatten(jesuncmap.evaluate(j.eta, j.pt_raw), nj)
 
                     jets["JES_Total"] = ak.zip(
                         {
@@ -557,12 +556,8 @@ def JME_shifts(
                     for var in ["up", "down"]:
                         fac = 1.0 if var == "up" else -1.0
 
-                        jets["JES_Total"][var]["pt"] = jets["pt"] * (
-                            corrFactor + fac * jesunc
-                        )
-                        jets["JES_Total"][var]["mass"] = jets["mass"] * (
-                            corrFactor + fac * jesunc
-                        )
+                        jets["JES_Total"][var]["pt"] = jets["pt_raw"] * (corrFactor + fac * jesunc)
+                        jets["JES_Total"][var]["mass"] = jets["mass_raw"] * (corrFactor + fac * jesunc)
 
                         met["JES_Total"][var]["pt"] = corrected_polar_met(
                             nocorrmet.pt,
@@ -821,320 +816,61 @@ def puwei(nPU, correct_map, weights, weightsup, weightsdown, syst=False):
             )
     return weights
 
-def btagSFs(jet, correct_map, weights, weightsup, weightsdown, SFtype, syst=False):
-    if SFtype == "DeepJetC" or SFtype == "DeepCSVC":
+# jet1 * jet2 * jet3 * jet4 -> one value per event
+# using PNet+PUPPI
+#FIXME still bit confuing with uncertainties...
+def btagSFs(alljet, alljet_category, correct_map, weights, weightsup, weightsdown, SFtype, syst=False):
+    if SFtype == "PNet":
         systlist = [
-            "Extrap",
-            "Interp",
-            "LHEScaleWeight_muF",
-            "LHEScaleWeight_muR",
-            "PSWeightFSR",
-            "PSWeightISR",
-            "PUWeight",
-            "Stat",
-            "XSec_BRUnc_DYJets_b",
-            "XSec_BRUnc_DYJets_c",
-            "XSec_BRUnc_WJets_c",
-            "jer",
-            "jesTotal",
+            "test",
+            "test"
         ]
-    elif SFtype == "DeepJetB" or SFtype == "DeepCSVB":
-        systlist = [
-            "hf",
-            "lf",
-            "cferr1",
-            "cferr2",
-            "hfstats1",
-            "hfstats2",
-            "lfstats1",
-            "lfstats2",
-        ]
-    sfs_up_all, sfs_down_all = {}, {}
-    alljet = jet if jet.ndim > 1 else ak.singletons(jet)
-
-
+    # only four jets!
+    nj = 4
+    jet = alljet[:, 0:nj]
+    jet_category = alljet_category[:, 0:nj]
     for i, sys in enumerate(systlist):
-        sfs, sfs_down, sfs_up = (
-            np.ones_like(alljet[:, 0].pt),
-            np.ones_like(alljet[:, 0].pt),
-            np.ones_like(alljet[:, 0].pt),
-        )
-        for nj in range(ak.num(alljet.pt)[0]):
-            jet = alljet[:, nj]
-            masknone = ak.is_none(jet.pt)
-            maskcjet = (jet.hadronFlavour==4)
 
-            jet_pt = ak.fill_none(jet.pt, 20)
-            jet_eta = ak.fill_none(jet.eta, 2.39)
-            jet_hadronFlavour = ak.fill_none(jet.hadronFlavour, 0)
-            jet_btagDeepFlavB = ak.fill_none(jet.btagDeepFlavB, 0.0)
-            jet_btagDeepFlavCvL = ak.fill_none(jet.btagDeepFlavCvL, 0.0)
-            jet_btagDeepFlavCvB = ak.fill_none(jet.btagDeepFlavCvB, 0.0)
-
-            if "correctionlib" in str(type(correct_map["ctag"])):
-                if SFtype == "DeepJetC":
-                    tmp_sfs = np.where(
-                        masknone,
-                        1.0,
-                        correct_map["ctag"]["deepJet_shape"].evaluate(
-                            "central",
-                            jet_hadronFlavour,
-                            jet_btagDeepFlavCvL,
-                            jet_btagDeepFlavCvB,
-                        ),
-                    )
-                    if syst:
-                        tmp_sfs_up = np.where(
-                            masknone,
-                            1.0,
-                            correct_map["ctag"]["deepJet_shape"].evaluate(
-                                f"up_{systlist[i]}",
-                                jet_hadronFlavour,
-                                jet_btagDeepFlavCvL,
-                                jet_btagDeepFlavCvB,
-                            ),
-                        )
-                        tmp_sfs_down = np.where(
-                            masknone,
-                            1.0,
-                            correct_map["ctag"]["deepJet_shape"].evaluate(
-                                f"down_{systlist[i]}",
-                                jet_hadronFlavour,
-                                jet_btagDeepFlavCvL,
-                                jet_btagDeepFlavCvB,
-                            ),
-                        )
-            if "correctionlib" in str(type(correct_map["btag"])):
-                if SFtype == "DeepJetB":
-                    tmp_sfs = np.where(
-                        masknone,
-                        1.0,
-                        correct_map["btag"]["deepJet_shape"].evaluate(
-                            "central",
-                            jet_hadronFlavour,
-                            abs(jet_eta),
-                            jet_pt,
-                            jet_btagDeepFlavB,
-                        ),
-                    )
-                    if syst:
-                        if (systlist[i]=="cferr1") or (systlist[i]=="cferr2"):
-                            #print("it's c jet dedicated")
-                            jet_hadronFlavour_c = np.where(jet_hadronFlavour!=4, 4, jet_hadronFlavour)
-                            tmp_sfs_up = np.where(
-                                (~masknone) & maskcjet,
-                                correct_map["btag"]["deepJet_shape"].evaluate(
-                                    f"up_{systlist[i]}",
-                                    jet_hadronFlavour_c,
-                                    abs(jet_eta),
-                                    jet_pt,
-                                    jet_btagDeepFlavB,
-                                ),
-                                sfs,
-                            )
-                            tmp_sfs_down = np.where(
-                                (~masknone) & maskcjet,
-                                correct_map["btag"]["deepJet_shape"].evaluate(
-                                    f"down_{systlist[i]}",
-                                    jet_hadronFlavour_c,
-                                    abs(jet_eta),
-                                    jet_pt,
-                                    jet_btagDeepFlavB,
-                                ),
-                                sfs,
-                            )
-                        else: 
-                            #print("It's not c jet dedicated")
-                            jet_hadronFlavour_bl = np.where(jet_hadronFlavour==4, 0, jet_hadronFlavour)
-                            tmp_sfs_up = np.where(
-                                (~masknone) & (~maskcjet),
-                                correct_map["btag"]["deepJet_shape"].evaluate(
-                                    f"up_{systlist[i]}",
-                                    jet_hadronFlavour_bl,
-                                    abs(jet_eta),
-                                    jet_pt,
-                                    jet_btagDeepFlavB,
-                                ),
-                                sfs,
-                            )
-                            tmp_sfs_down = np.where(
-                                (~masknone) & (~maskcjet),
-                                correct_map["btag"]["deepJet_shape"].evaluate(
-                                    f"down_{systlist[i]}",
-                                    jet_hadronFlavour_bl,
-                                    abs(jet_eta),
-                                    jet_pt,
-                                    jet_btagDeepFlavB,
-                                ),
-                                sfs,
-                            )
-            sfs = sfs * tmp_sfs
-            if syst:
-                sfs_up = sfs_up * tmp_sfs_up
-                sfs_down = sfs_down * tmp_sfs_down
-
-        if i == 0 and syst == False:
-            #weights.add(SFtype, sfs)
-            break
-        else:
-            sfs_up_all[sys] = sfs_up
-            sfs_down_all[sys] = sfs_down
-
-            weightsup.add(f"{SFtype}_{sys}", sfs_up)
-            weightsdown.add(f"{SFtype}_{sys}", sfs_down)
-
-    weights.add(SFtype, sfs)
-    return weights
-
-# save btagSF jet by jet
-def btagSFs_JetByJet(jet, correct_map, weights, weightsup, weightsdown, SFtype, syst=False):
-    if SFtype == "DeepJetC" or SFtype == "DeepCSVC":
-        systlist = [
-            "Extrap",
-            "Interp",
-            "LHEScaleWeight_muF",
-            "LHEScaleWeight_muR",
-            "PSWeightFSR",
-            "PSWeightISR",
-            "PUWeight",
-            "Stat",
-            "XSec_BRUnc_DYJets_b",
-            "XSec_BRUnc_DYJets_c",
-            "XSec_BRUnc_WJets_c",
-            "jer",
-            "jesTotal",
-        ]
-    elif SFtype == "DeepJetB" or SFtype == "DeepCSVB":
-        systlist = [
-            "hf",
-            "lf",
-            "cferr1",
-            "cferr2",
-            "hfstats1",
-            "hfstats2",
-            "lfstats1",
-            "lfstats2",
-        ]
-
-    for i, sys in enumerate(systlist):
-        jet_pt = ak.flatten(ak.fill_none(jet.pt, 20))
+        jet_pt = ak.flatten(ak.fill_none(jet.pt, 25))
         jet_eta = ak.flatten(ak.fill_none(jet.eta, 2.39))
         jet_hadronFlavour = ak.flatten(ak.fill_none(jet.hadronFlavour, 0))
-        jet_btagDeepFlavB = ak.flatten(ak.fill_none(jet.btagDeepFlavB, 0.0))
-        jet_btagDeepFlavCvL = ak.flatten(ak.fill_none(jet.btagDeepFlavCvL, 0.0))
-        jet_btagDeepFlavCvB = ak.flatten(ak.fill_none(jet.btagDeepFlavCvB, 0.0))
+        jet_wp = ak.flatten(ak.fill_none(jet_category, 0))
+#        jet_btagPNetB = ak.flatten(ak.fill_none(jet.btagPNetB, 0.0))
+#        jet_btagPNetCvL = ak.flatten(ak.fill_none(jet.btagPNetCvL, 0.0))
+#        jet_btagPNetCvB = ak.flatten(ak.fill_none(jet.btagPNetCvB, 0.0))
         sfs, sfs_down, sfs_up = (
             np.ones_like(jet_pt),
             np.ones_like(jet_pt),
             np.ones_like(jet_pt),
         )
         masknone = ak.is_none(jet_pt)
-        maskcjet = (jet_hadronFlavour==4)
 
+        # input: syst, flav, pnet wp, abseta, pt
+        sfs = ak.where(
+            masknone,
+            1.0,
+            correct_map["btag"]["particleNetAK4_shape"].evaluate(
+                "central",
+                jet_hadronFlavour,
+                jet_wp,
+                abs(jet_eta),
+                jet_pt,
+            )
+        )
 
-        if "correctionlib" in str(type(correct_map["ctag"])):
-            if SFtype == "DeepJetC":
-                sfs = ak.where(
-                    masknone,
-                    1.0,
-                    correct_map["ctag"]["deepJet_shape"].evaluate(
-                        "central",
-                        jet_hadronFlavour,
-                        jet_btagDeepFlavCvL,
-                        jet_btagDeepFlavCvB,
-                    ),
-                )
-                if syst:
-                    sfs_up = ak.where(
-                        masknone,
-                        1.0,
-                        correct_map["ctag"]["deepJet_shape"].evaluate(
-                            f"up_{systlist[i]}",
-                            jet_hadronFlavour,
-                            jet_btagDeepFlavCvL,
-                            jet_btagDeepFlavCvB,
-                        ),
-                    )
-                    sfs_down = ak.where(
-                        masknone,
-                        1.0,
-                        correct_map["ctag"]["deepJet_shape"].evaluate(
-                            f"down_{systlist[i]}",
-                            jet_hadronFlavour,
-                            jet_btagDeepFlavCvL,
-                            jet_btagDeepFlavCvB,
-                        ),
-                    )
-        if "correctionlib" in str(type(correct_map["btag"])):
-            if SFtype == "DeepJetB":
-                sfs = ak.where(
-                    masknone,
-                    1.0,
-                    correct_map["btag"]["deepJet_shape"].evaluate(
-                        "central",
-                        jet_hadronFlavour,
-                        abs(jet_eta),
-                        jet_pt,
-                        jet_btagDeepFlavB,
-                    ),
-                )
-                if syst:
-                    if (systlist[i]=="cferr1") or (systlist[i]=="cferr2"):
-                        jet_hadronFlavour_c = ak.where(jet_hadronFlavour!=4, 4, jet_hadronFlavour)
-                        sfs_up = ak.where(
-                            (~masknone) & maskcjet,
-                            correct_map["btag"]["deepJet_shape"].evaluate(
-                                f"up_{systlist[i]}",
-                                jet_hadronFlavour_c,
-                                abs(jet_eta),
-                                jet_pt,
-                                jet_btagDeepFlavB,
-                            ),
-                            sfs,
-                        )
-                        sfs_down = ak.where(
-                            (~masknone) & maskcjet,
-                            correct_map["btag"]["deepJet_shape"].evaluate(
-                                f"down_{systlist[i]}",
-                                jet_hadronFlavour_c,
-                                abs(jet_eta),
-                                jet_pt,
-                                jet_btagDeepFlavB,
-                            ),
-                            sfs,
-                        )
-                    else: 
-                        jet_hadronFlavour_bl = ak.where(jet_hadronFlavour==4, 0, jet_hadronFlavour)
-                        sfs_up = ak.where(
-                            (~masknone) & (~maskcjet),
-                            correct_map["btag"]["deepJet_shape"].evaluate(
-                                f"up_{systlist[i]}",
-                                jet_hadronFlavour_bl,
-                                abs(jet_eta),
-                                jet_pt,
-                                jet_btagDeepFlavB,
-                            ),
-                            sfs,
-                        )
-                        sfs_down = ak.where(
-                            (~masknone) & (~maskcjet),
-                            correct_map["btag"]["deepJet_shape"].evaluate(
-                                f"down_{systlist[i]}",
-                                jet_hadronFlavour_bl,
-                                abs(jet_eta),
-                                jet_pt,
-                                jet_btagDeepFlavB,
-                            ),
-                            sfs,
-                        )
-    
+        sfs = ak.unflatten(sfs, counts = np.full((len(jet),), 4))
+        sfs = ak.prod(sfs, axis=1)
+
         if i == 0 and syst == False:
             break
         else:
-            weightsup.add(f"{SFtype}Jet_{sys}", ak.to_numpy(sfs_up))
-            weightsdown.add(f"{SFtype}Jet_{sys}", ak.to_numpy(sfs_down))
+            # for a moment..
+            break
+            #weightsup.add(f"{SFtype}_{sys}", ak.to_numpy(sfs_up))
+            #weightsdown.add(f"{SFtype}_{sys}", ak.to_numpy(sfs_down))
 
-    weights.add(f"{SFtype}Jet", ak.to_numpy(sfs))
+
+    weights.add(f"{SFtype}", ak.to_numpy(sfs))
     return weights
 
 def HLTSFs(lep1, lep2, channel, correct_map, weights, weightsup, weightsdown, syst=True):

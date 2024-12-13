@@ -1,0 +1,8 @@
+{
+	"EGammaRun2018A": [
+        "root://maite.iihe.ac.be//store/user/vanderli/Run2PuppiNano_hadded/2018/EGamma/NanoTuples-28Aug2023_Run2ULNanoAOD_AK4Puppi_Run2018A-UL2018_MiniAODv2_GT36-v1/230911_163914/0000/nano_1.root"
+	],
+    "TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8": [
+		"root://maite.iihe.ac.be//store/user/vanderli/Run2PuppiNano_hadded/2018/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NanoTuples-28Aug2023_Run2ULNanoAOD_AK4Puppi_RunIISummer20UL18MiniAODv2-106X_v16-v1/230907_091953/0000/nano_2.root"
+	]
+}
