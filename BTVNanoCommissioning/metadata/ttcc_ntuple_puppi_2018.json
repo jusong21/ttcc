@@ -1,0 +1,83 @@
+{
+    "Data": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/Data/data.root"
+    ],
+    "DYJetsToLL_M-10to50_TuneCP5_13TeV-amcatnloFXFX-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/DYJetsToLL_M-10to50_TuneCP5_13TeV-amcatnloFXFX-pythia8/merged_nominal.root"
+    ],
+    "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/merged_nominal.root"
+    ],
+    "ST_s-channel_4f_hadronicDecays_TuneCP5_13TeV-amcatnlo-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/ST_s-channel_4f_hadronicDecays_TuneCP5_13TeV-amcatnlo-pythia8/merged_nominal.root"
+    ],
+    "ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/merged_nominal.root"
+    ],
+    "ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/merged_nominal.root"
+    ],
+    "ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/merged_nominal.root"
+    ],
+    "ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/merged_nominal.root"
+    ],
+    "ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/merged_nominal.root"
+    ],
+    "TTbb_4f_TTTo2L2Nu_TuneCP5-Powheg-Openloops-Pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/TTbb_4f_TTTo2L2Nu_TuneCP5-Powheg-Openloops-Pythia8/merged_nominal.root"
+    ],
+    "TTbb_4f_TTToSemiLeptonic_TuneCP5-Powheg-Openloops-Pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/TTbb_4f_TTToSemiLeptonic_TuneCP5-Powheg-Openloops-Pythia8/merged_nominal.root"
+    ],
+    "ttHTobb_M125_TuneCP5_13TeV-powheg-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/ttHTobb_M125_TuneCP5_13TeV-powheg-pythia8/merged_nominal.root"
+    ],
+    "ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/merged_nominal.root"
+    ],
+    "TTTo2L2Nu_bbDPS_TuneCP5_13TeV-powheg-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/TTTo2L2Nu_bbDPS_TuneCP5_13TeV-powheg-pythia8/merged_nominal.root"
+    ],
+    "TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/merged_nominal.root"
+    ],
+    "TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/merged_nominal.root"
+    ],
+    "TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/merged_nominal.root"
+    ],
+    "TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/merged_nominal.root"
+    ],
+    "TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/merged_nominal.root"
+    ],
+    "TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/merged_nominal.root"
+    ],
+    "WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/merged_nominal.root"
+    ],
+    "WWTo2L2Nu_TuneCP5_13TeV-powheg-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/WWTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/merged_nominal.root"
+    ],
+    "WZTo2Q2L_mllmin4p0_TuneCP5_13TeV-amcatnloFXFX-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/WZTo2Q2L_mllmin4p0_TuneCP5_13TeV-amcatnloFXFX-pythia8/merged_nominal.root"
+    ],
+    "WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/merged_nominal.root"
+    ],
+    "ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/merged_nominal.root"
+    ],
+    "ZZTo2Q2L_mllmin4p0_TuneCP5_13TeV-amcatnloFXFX-pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/ZZTo2Q2L_mllmin4p0_TuneCP5_13TeV-amcatnloFXFX-pythia8/merged_nominal.root"
+    ],
+    "ZZTo4L_TuneCP5_13TeV_powheg_pythia8": [
+        "/pnfs/iihe/cms/store/user/jusong/ttcc/puppi/skim/2018_UL/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/merged_nominal.root"
+    ]
+}
