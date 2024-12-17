@@ -314,7 +314,7 @@ class NanoProcessor(processor.ProcessorABC):
             & ak.all(events.Jet.metric_table(electrons) > 0.4, axis=2),
         ]
         njets = ak.num(jets)
-        req_jet = njets >= 4
+        req_jet = njets >= 3
 
         jet_category = PNet_btag_category(jets, self._year)
         jets["category"] = jet_category
@@ -364,7 +364,7 @@ class NanoProcessor(processor.ProcessorABC):
             genlep_cut = (
                 is_lep(events.GenPart)
                 & (events.GenPart.hasFlags("isLastCopy"))
-                & (events.GenPart.pt > 25)
+                & (events.GenPart.pt > 15)
                 & (abs(events.GenPart.eta) < 2.4)
             )
             genlep = events.GenPart[genlep_cut]
@@ -412,7 +412,7 @@ class NanoProcessor(processor.ProcessorABC):
                 & (ak.all(Genjets.metric_table(genlep_fromTW) > 0.4, axis=-1))
             ]
             nGenjets = ak.num(Genjets)
-            req_Genjet = nGenjets >= 4
+            req_Genjet = nGenjets >= 3
             
             ####################
             #  ttbar category  #

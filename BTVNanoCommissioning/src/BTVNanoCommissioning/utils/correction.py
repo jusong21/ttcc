@@ -825,10 +825,10 @@ def btagSFs(alljet, alljet_category, correct_map, weights, weightsup, weightsdow
             "test",
             "test"
         ]
-    # only four jets!
-    nj = 4
-    jet = alljet[:, 0:nj]
-    jet_category = alljet_category[:, 0:nj]
+
+    jet = alljet
+    jet_category = alljet_category
+    njets = ak.num(jet)
     for i, sys in enumerate(systlist):
 
         jet_pt = ak.flatten(ak.fill_none(jet.pt, 25))
@@ -858,7 +858,8 @@ def btagSFs(alljet, alljet_category, correct_map, weights, weightsup, weightsdow
             )
         )
 
-        sfs = ak.unflatten(sfs, counts = np.full((len(jet),), 4))
+        #sfs = ak.unflatten(sfs, counts = np.full((len(jet),), 4))
+        sfs = ak.unflatten(sfs, counts=njets)
         sfs = ak.prod(sfs, axis=1)
 
         if i == 0 and syst == False:
