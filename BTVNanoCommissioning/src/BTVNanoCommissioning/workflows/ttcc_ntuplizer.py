@@ -76,12 +76,12 @@ class NanoProcessor(processor.ProcessorABC):
         else:
             output["sumw"] = ak.sum(events.weight)
 
-        req_nbjet = events.nbJetsM >= 2
+        req_nbjet = (events.nbJetsM >= 2) & (events.nJets >=4)
         #req_nbjet = events.nbJets >= 0
         #njets = ak.num(events.Jet)
         #jets = events.Jet[:,:4] # use only 4 jets
         jets = events.Jet
-        jets_bsort = jets[ak.argsort(jets.btagDeepFlavB, ascending=False)]
+        jets_bsort = jets[ak.argsort(jets.btagPNetB, ascending=False)]
         jets_bsort = jets_bsort[req_nbjet][:,:4]
 
         leptons = events.Lepton[req_nbjet]
@@ -105,6 +105,96 @@ class NanoProcessor(processor.ProcessorABC):
         #lep_drJet2 = leptons.delta_r(jets_bsort[:,1])
         #lep_drJet3 = leptons.delta_r(jets_bsort[:,2])
         #lep_drJet4 = leptons.delta_r(jets_bsort[:,3])
+        if isTTbar:
+            ttbarId = events.genTtbarId
+            crit = {
+                "tt1b": ttbarId%100==51 ,
+                "tt2b": ttbarId%100==52 ,
+                "ttbb": (ttbarId%100==53) | (ttbarId%100==54) | (ttbarId%100==55) ,
+                "tt1c": ttbarId%100==41 ,
+                "tt2c": ttbarId%100==42 ,
+                "ttcc": (ttbarId%100==43) | (ttbarId%100==44) | (ttbarId%100==45) ,
+                "ttLF": ttbarId%100==0 ,
+            }
+            ttbar_category = events.ttbar.category
+            ttbar_criteria = {
+                "ttbb": ttbar_category==0,
+                "ttbj": ttbar_category==1,
+                "ttcc": ttbar_category==2,
+                "ttcj": ttbar_category==3,
+                "ttother": ttbar_category==4,
+            }
+    
+            zeros = ak.zeros_like(events.nJets, dtype=bool)
+            isttbb, isttbj, isttcc, isttcj, isttother = zeros, zeros, zeros, zeros, zeros
+            istt1b, istt2b, istt1c, istt2c = zeros, zeros, zeros, zeros
+            
+            isttbb = ak.to_numpy(
+                ak.where(
+                    ttbar_criteria["ttbb"],
+                    1,
+                    isttbb
+                )
+            )
+            isttbj = ak.to_numpy(
+                ak.where(
+                    ttbar_criteria["ttbj"],
+                    1,
+                    isttbj
+                )
+            )
+            isttcc = ak.to_numpy(
+                ak.where(
+                    ttbar_criteria["ttcc"],
+                    1,
+                    isttcc
+                )
+            )
+            isttcj = ak.to_numpy(
+                ak.where(
+                    ttbar_criteria["ttcj"],
+                    1,
+                    isttcj
+                )
+            )
+            isttother = ak.to_numpy(
+                ak.where(
+                    ttbar_criteria["ttother"],
+                    1,
+                    isttother
+                )
+            )
+            istt1b = ak.to_numpy(
+                ak.where(
+                    crit["tt1b"],
+                    1,
+                    istt1b
+                )
+            )
+
+            istt2b = ak.to_numpy(
+                ak.where(
+                    crit["tt2b"],
+                    1,
+                    istt2b
+                )
+            )
+            istt1c = ak.to_numpy(
+                ak.where(
+                    crit["tt1c"],
+                    1,
+                    istt1c
+                )
+            )
+
+            istt2c = ak.to_numpy(
+                ak.where(
+                    crit["tt2c"],
+                    1,
+                    istt2c
+                )
+            )
+
 
         #pruned_ev = {'Channel': ak.to_numpy(events.Channel), 'nJets': ak.to_numpy(njets), 'nbJets': ak.to_numpy(events.nbJets), 'nbJets_T': ak.to_numpy(events.nbJets_T), 'ncJets': ak.to_numpy(events.ncJets), 'ncJets_T': ak.to_numpy(events.ncJets_T)}
         pruned_ev = {'sortJet': jets_bsort, 'Jet': jets[req_nbjet], 'Lepton': leptons, 'Channel': events.Channel[req_nbjet], 'nJets': events.nJets[req_nbjet], 'nbJetsL': events.nbJetsL[req_nbjet], "nbJetsM": events.nbJetsM[req_nbjet], 'nbJetsT': events.nbJetsT[req_nbjet], 'ncJetsL': events.ncJetsL[req_nbjet], 'ncJetsM': events.ncJetsM[req_nbjet], 'ncJetsT': events.ncJetsT[req_nbjet], }
@@ -138,6 +228,15 @@ class NanoProcessor(processor.ProcessorABC):
         out_branch = ["events", "run", "luminosityBlock"]
         if isTTbar:
             pruned_ev.update({
+                "isttbb": isttbb[req_nbjet],
+                "isttbj": isttbj[req_nbjet],
+                "isttcc": isttcc[req_nbjet],
+                "isttcj": isttcj[req_nbjet],
+                "isttother": isttother[req_nbjet],
+                "istt1b": istt1b[req_nbjet],
+                "istt2b": istt2b[req_nbjet],
+                "istt1c": istt1c[req_nbjet],
+                "istt2c": istt2c[req_nbjet],
                 "ttbar_category": events.ttbar.category[req_nbjet],
                 "genTtbarId": events.genTtbarId[req_nbjet],
             #    "nGenJets": ak.to_numpy(events.nGenJets[req_nbjet]),
