@@ -427,7 +427,8 @@ class NanoProcessor(processor.ProcessorABC):
         #req_event = req_trig & req_lumi & req_lep & req_jet & req_bjet & req_mll & req_mz & req_met & req_flag
         req_event = req_trig & req_lumi & req_lep & req_jet & req_mll & req_mz & req_met & req_flag
 
-        if isTTbar: req_event = req_event & req_Genjet & req_Genlep
+        # if isTTbar: req_event = req_event & req_Genjet & req_Genlep
+        if isTTbar: req_event = req_event 
         
         req_event = ak.fill_none(req_event, False)
 

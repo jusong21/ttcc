@@ -1,4 +1,4 @@
-name: btv_cof
+name: btv_coffea
 channels:
   - conda-forge
   - defaults
